@@ -42,6 +42,8 @@ public abstract class AbstractNodeParser implements NodeParser {
 		model.setName(element.getAttribute(ATTR_NAME));
 		model.setDisplayName(element.getAttribute(ATTR_DISPLAYNAME));
 		model.setLayout(element.getAttribute(ATTR_LAYOUT));
+		model.setPreInterceptors(element.getAttribute(ATTR_PREINTERCEPTORS));
+		model.setPostInterceptors(element.getAttribute(ATTR_POSTINTERCEPTORS));
 		
 		List<Element> transitions = XmlHelper.elements(element, NODE_TRANSITION);
 		for(Element te : transitions) {

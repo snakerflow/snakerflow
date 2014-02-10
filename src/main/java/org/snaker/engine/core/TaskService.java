@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
@@ -204,17 +205,13 @@ public class TaskService extends AccessService implements ITaskService {
 	@Override
 	public List<Task> createTask(TaskModel taskModel, Execution execution) {
 		List<Task> tasks = new ArrayList<Task>();
-		String[] actors = null;
+		
 		Map<String, Object> args = execution.getArgs();
 		String expireTime = null;
 		if(args != null && !args.isEmpty()) {
-			/**
-			 * 分配任务给相关参与者
-			 */
-			String key = taskModel.getAssignee();
-			actors = getTaskActors(args.get(key), key);
 			expireTime = DateHelper.parseTime(args.get(taskModel.getExpireTime()));
 		}
+		String[] actors = getTaskActors(taskModel.getAssignee(), args, taskModel.getAssignmentHandler(), execution);
 		
 		String type = taskModel.getPerformType();
 		if(type == null || type.equalsIgnoreCase(TaskModel.TYPE_ANY)) {
@@ -302,6 +299,24 @@ public class TaskService extends AccessService implements ITaskService {
 		task.setId(StringHelper.getPrimaryKey());//uuid
 		return task;
 	}
+	
+	/**
+	 * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
+	 * @param assignee
+	 * @param args
+	 * @param handler
+	 * @param execution
+	 * @return
+	 */
+	private String[] getTaskActors(String assignee, Map<String, Object> args, AssignmentHandler handler, Execution execution) {
+		Object assigneeObject = null;
+		if(StringHelper.isNotEmpty(assignee) && args != null && !args.isEmpty()) {
+			assigneeObject = args.get(assignee);
+		} else if(handler != null) {
+			assigneeObject = handler.assign(execution);
+		}
+		return assigneeObject == null ? new String[]{assignee } : getTaskActors(assigneeObject);
+	}
 
 	/**
 	 * 根据taskmodel指定的assignee属性，从args中取值
@@ -310,19 +325,15 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param key
 	 * @return
 	 */
-	private String[] getTaskActors(Object actors, String key) {
-		if(actors == null) return new String[]{key};
+	private String[] getTaskActors(Object actors) {
+		if(actors == null) return null;
 		String[] results = null;
 		if(actors instanceof String) {
 			//如果值为字符串类型，则使用逗号,分隔，并解析为Long类型
 			String[] actorStrs = ((String)actors).split(",");
 			results = new String[actorStrs.length];
-			try {
-				for(int i = 0; i < actorStrs.length; i++) {
-					results[i] = actorStrs[i];
-				}
-			} catch(RuntimeException e) {
-				throw new SnakerException("任务参与者ID解析失败，请检查参数是否合法[" + key + "].", e.getCause());
+			for(int i = 0; i < actorStrs.length; i++) {
+				results[i] = actorStrs[i];
 			}
 			return results;
 		} else if(actors instanceof Long) {

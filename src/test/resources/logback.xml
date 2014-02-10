@@ -26,6 +26,7 @@
 	<!--logger 模块-->
 	<logger name="org.snaker.engine" level="INFO">
 		<appender-ref ref="file" />
+		<appender-ref ref="console" />
 	</logger>
 	
 	<root level="DEBUG">

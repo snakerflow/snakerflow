@@ -3,9 +3,10 @@
 <config>
 	<!--jdbc的数据库访问与事务拦截器-->
 	<bean class="org.snaker.engine.access.jdbc.JdbcAccess"/>
-	<bean class="org.snaker.engine.access.transaction.JtaTransactionInterceptor"/>
-	<!-- 
 	<bean class="org.snaker.engine.access.transaction.DataSourceTransactionInterceptor"/>
+	
+	<!-- 
+	<bean class="org.snaker.engine.access.transaction.JtaTransactionInterceptor"/>
 	 -->
 	<!--hibernate3的数据库访问与事务拦截器
 	<bean class="org.snaker.engine.access.hibernate3.HibernateAccess"/>

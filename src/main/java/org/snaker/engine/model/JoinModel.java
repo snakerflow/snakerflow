@@ -30,8 +30,8 @@ public class JoinModel extends NodeModel {
 	private static final long serialVersionUID = 5296621319088076775L;
 	
 	@Override
-	public void execute(Execution execution) {
+	public void exec(Execution execution) {
 		fire(new MergeBranchHandler(this), execution);
-		if(execution.isMerged()) super.execute(execution);
+		if(execution.isMerged()) runOutTransition(execution);
 	}
 }

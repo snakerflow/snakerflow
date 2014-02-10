@@ -14,6 +14,8 @@
  */
 package org.snaker.engine.model;
 
+import org.snaker.engine.core.Execution;
+
 /**
  * 子流程定义subprocess元素
  * @author yuqs
@@ -32,6 +34,11 @@ public class SubProcessModel extends WorkModel {
 	 * 子流程定义引用
 	 */
 	private ProcessModel subProcess;
+
+	@Override
+	protected void exec(Execution execution) {
+		runOutTransition(execution);	
+	}
 	
 	public ProcessModel getSubProcess() {
 		return subProcess;

@@ -17,19 +17,25 @@ package org.snaker.engine.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snaker.engine.Action;
+import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.core.Execution;
+import org.snaker.engine.helper.ClassHelper;
+import org.snaker.engine.helper.StringHelper;
 
 /**
  * 节点元素（存在输入输出的变迁）
  * @author yuqs
  * @version 1.0
  */
-public class NodeModel extends BaseModel implements Action {
+public abstract class NodeModel extends BaseModel implements Action {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2377317472320109317L;
+	private static final Logger log = LoggerFactory.getLogger(NodeModel.class);
 	/**
 	 * 输入变迁集合
 	 */
@@ -42,17 +48,65 @@ public class NodeModel extends BaseModel implements Action {
 	 * layout
 	 */
 	private String layout;
+	/**
+	 * 局部前置拦截器
+	 */
+	private String preInterceptors;
+	/**
+	 * 局部后置拦截器
+	 */
+	private String postInterceptors;
+	/**
+	 * 前置局部拦截器实例集合
+	 */
+	private List<SnakerInterceptor> preInterceptorList = new ArrayList<SnakerInterceptor>();
+	/**
+	 * 后置局部拦截器实例集合
+	 */
+	private List<SnakerInterceptor> postInterceptorList = new ArrayList<SnakerInterceptor>();
 	
 	/**
-	 * 默认执行方法，子类如无特殊情况，可直接使用该方法
+	 * 具体节点模型需要完成的执行逻辑
+	 * @param execution
+	 */
+	protected abstract void exec(Execution execution);
+	
+	/**
+	 * 对执行逻辑增加前置、后置拦截处理
 	 * @param order
 	 * @param args
 	 * @return
 	 */
 	public void execute(Execution execution) {
-		for(TransitionModel tm : getOutputs()) {
+		intercept(preInterceptorList, execution);
+		exec(execution);
+		intercept(postInterceptorList, execution);
+	}
+	
+	/**
+	 * 运行变迁继续执行
+	 * @param execution
+	 */
+	protected void runOutTransition(Execution execution) {
+		for (TransitionModel tm : getOutputs()) {
 			tm.setEnabled(true);
 			tm.execute(execution);
+		}
+	}
+	
+	/**
+	 * 拦截方法
+	 * @param interceptorList
+	 * @param execution
+	 */
+	private void intercept(List<SnakerInterceptor> interceptorList, Execution execution) {
+		try {
+			for(SnakerInterceptor interceptor : interceptorList) {
+				interceptor.intercept(execution);
+			}
+		} catch(Exception e) {
+			//拦截器执行过程中出现的异常不影响流程执行逻辑
+			log.error("拦截器执行失败=" + e.getMessage());
 		}
 	}
 	
@@ -102,5 +156,33 @@ public class NodeModel extends BaseModel implements Action {
 
 	public void setLayout(String layout) {
 		this.layout = layout;
+	}
+
+	public String getPreInterceptors() {
+		return preInterceptors;
+	}
+
+	public void setPreInterceptors(String preInterceptors) {
+		this.preInterceptors = preInterceptors;
+		if(StringHelper.isNotEmpty(preInterceptors)) {
+			for(String interceptor : preInterceptors.split(",")) {
+				SnakerInterceptor instance = (SnakerInterceptor)ClassHelper.newInstance(interceptor);
+				if(instance != null) this.preInterceptorList.add(instance);
+			}
+		}
+	}
+
+	public String getPostInterceptors() {
+		return postInterceptors;
+	}
+
+	public void setPostInterceptors(String postInterceptors) {
+		this.postInterceptors = postInterceptors;
+		if(StringHelper.isNotEmpty(postInterceptors)) {
+			for(String interceptor : postInterceptors.split(",")) {
+				SnakerInterceptor instance = (SnakerInterceptor)ClassHelper.newInstance(interceptor);
+				if(instance != null) this.postInterceptorList.add(instance);
+			}
+		}
 	}
 }

@@ -12,23 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.model;
+package org.snaker.engine;
 
 import org.snaker.engine.core.Execution;
 
 /**
- * 分支定义fork元素
+ * 任务拦截器，对产生的任务结果进行拦截
  * @author yuqs
  * @version 1.0
  */
-public class ForkModel extends NodeModel {
+public interface SnakerInterceptor {
 	/**
-	 * 
+	 * 拦截方法，参数为产生的task对象
+	 * @param task
 	 */
-	private static final long serialVersionUID = 2030281774771653617L;
-
-	@Override
-	protected void exec(Execution execution) {
-		runOutTransition(execution);
-	}
+	public void intercept(Execution execution);
 }

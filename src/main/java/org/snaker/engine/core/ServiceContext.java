@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.TaskInterceptor;
+import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.access.dialect.Dialect;
 import org.snaker.engine.parser.NodeParser;
 
@@ -87,8 +87,8 @@ public class ServiceContext {
 	 * 获取注册的任务拦截器列表
 	 * @return
 	 */
-	public List<TaskInterceptor> findInterceptors() {
-		return findList(TaskInterceptor.class);
+	public List<SnakerInterceptor> findInterceptors() {
+		return findList(SnakerInterceptor.class);
 	}
 
 	/**

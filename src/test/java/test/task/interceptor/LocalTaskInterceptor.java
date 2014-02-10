@@ -14,24 +14,23 @@
  */
 package test.task.interceptor;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.snaker.engine.TaskInterceptor;
+import org.snaker.engine.SnakerInterceptor;
+import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Task;
 
 /**
  * @author yuqs
  * @version 1.0
  */
-public class LocalTaskInterceptor implements TaskInterceptor {
+public class LocalTaskInterceptor implements SnakerInterceptor {
 	private static final Log log = LogFactory.getLog(LocalTaskInterceptor.class);
 	@Override
-	public void intercept(List<Task> tasks) {
+	public void intercept(Execution execution) {
 		if(log.isInfoEnabled()) {
 			log.info("LocalTaskInterceptor start...");
-			for(Task task : tasks) {
+			for(Task task : execution.getTasks()) {
 				StringBuffer buffer = new StringBuffer(100);
 				buffer.append("创建任务[标识=").append(task.getId());
 				buffer.append(",名称=").append(task.getDisplayName());

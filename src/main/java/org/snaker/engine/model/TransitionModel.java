@@ -65,7 +65,6 @@ public class TransitionModel extends BaseModel implements Action {
 		if(target instanceof TaskModel || target instanceof CustomModel) {
 			//如果目标节点模型为TaskModel，则创建task
 			fire(new CreateTaskHandler((WorkModel)target), execution);
-			
 		} else if(target instanceof SubProcessModel) {
 			//如果目标节点模型为SubProcessModel，则启动子流程
 			fire(new StartSubProcessHandler((SubProcessModel)target), execution);

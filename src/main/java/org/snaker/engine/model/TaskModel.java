@@ -14,12 +14,10 @@
  */
 package org.snaker.engine.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.snaker.engine.TaskInterceptor;
+import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.handlers.impl.MergeActorHandler;
+import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
 
@@ -62,24 +60,17 @@ public class TaskModel extends WorkModel {
 	 */
 	private String expireTime;
 	/**
-	 * 局部拦截器
+	 * 分配参与者处理类
 	 */
-	private String interceptors;
-	/**
-	 * 局部拦截器实例集合
-	 */
-	private List<TaskInterceptor> interceptorList = new ArrayList<TaskInterceptor>();
-	
-	/**
-	 * 所有task节点的transition子节点都会执行
-	 */
+	private AssignmentHandler assignmentHandler;
+
 	@Override
-	public void execute(Execution execution) {
+	protected void exec(Execution execution) {
 		if(performType == null || performType.equalsIgnoreCase(TYPE_ANY)) {
 			/**
 			 * any方式，直接执行输出变迁
 			 */
-			super.execute(execution);
+			runOutTransition(execution);
 		} else {
 			/**
 			 * all方式，需要判断是否已全部合并
@@ -87,7 +78,7 @@ public class TaskModel extends WorkModel {
 			 * 那么此时需要判断之前分配的所有任务都执行完成后，才可执行下一步，否则不处理
 			 */
 			fire(new MergeActorHandler(getName()), execution);
-			if(execution.isMerged()) super.execute(execution);
+			if(execution.isMerged()) runOutTransition(execution);
 		}
 	}
 	
@@ -114,21 +105,14 @@ public class TaskModel extends WorkModel {
 		this.performType = performType;
 	}
 
-	public String getInterceptors() {
-		return interceptors;
+	public AssignmentHandler getAssignmentHandler() {
+		return assignmentHandler;
 	}
 
-	public void setInterceptors(String interceptors) {
-		this.interceptors = interceptors;
-		if(StringHelper.isNotEmpty(interceptors)) {
-			for(String interceptor : interceptors.split(",")) {
-				TaskInterceptor instance = (TaskInterceptor)ClassHelper.newInstance(interceptor);
-				if(instance != null) this.interceptorList.add(instance);
-			}
+	public void setAssignmentHandler(String assignmentHandlerStr) {
+		if(StringHelper.isNotEmpty(assignmentHandlerStr)) {
+			assignmentHandler = (AssignmentHandler)ClassHelper.newInstance(assignmentHandlerStr);
+			AssertHelper.notNull(assignmentHandler, "分配参与者处理类实例化失败");
 		}
-	}
-
-	public List<TaskInterceptor> getInterceptorList() {
-		return interceptorList;
 	}
 }

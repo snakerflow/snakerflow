@@ -57,7 +57,7 @@ public class CustomModel extends WorkModel {
 	private Object invokeObject;
 	
 	@Override
-	public void execute(Execution execution) {
+	public void exec(Execution execution) {
 		if(invokeObject == null) {
 			invokeObject = ClassHelper.newInstance(clazz);
 		}
@@ -79,7 +79,7 @@ public class CustomModel extends WorkModel {
 				execution.getArgs().put(var, returnValue);
 			}
 		}
-		super.execute(execution);
+		runOutTransition(execution);
 	}
 	
 	/**

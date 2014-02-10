@@ -14,19 +14,17 @@
  */
 package org.snaker.engine;
 
-import java.util.List;
-
-import org.snaker.engine.entity.Task;
+import org.snaker.engine.core.Execution;
 
 /**
- * 任务拦截器，对产生的任务结果进行拦截
+ * 分配参与者的处理接口
  * @author yuqs
  * @version 1.0
  */
-public interface TaskInterceptor {
+public interface AssignmentHandler {
 	/**
-	 * 拦截方法，参数为产生的task对象
-	 * @param task
+	 * 分配参与者方法，可获取到当前的执行对象
+	 * @param execution
 	 */
-	public void intercept(List<Task> tasks);
+	Object assign(Execution execution);
 }

@@ -17,6 +17,8 @@ package org.snaker.engine.model;
 import java.util.Collections;
 import java.util.List;
 
+import org.snaker.engine.core.Execution;
+
 /**
  * 开始节点定义start元素
  * @author yuqs
@@ -34,5 +36,10 @@ public class StartModel extends NodeModel {
 	@Override
 	public List<TransitionModel> getInputs() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	protected void exec(Execution execution) {
+		runOutTransition(execution);
 	}
 }

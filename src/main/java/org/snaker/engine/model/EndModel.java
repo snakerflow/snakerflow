@@ -32,7 +32,7 @@ public class EndModel extends NodeModel {
 	private static final long serialVersionUID = -7793175180140842894L;
 
 	@Override
-	public void execute(Execution execution) {
+	public void exec(Execution execution) {
 		fire(new EndProcessHandler(), execution);
 	}
 	

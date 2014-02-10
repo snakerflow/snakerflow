@@ -18,12 +18,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snaker.engine.TaskInterceptor;
+import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.handlers.IHandler;
-import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.WorkModel;
 
 /**
@@ -52,24 +51,18 @@ public class CreateTaskHandler implements IHandler {
 	@Override
 	public void handle(Execution execution) {
 		List<Task> tasks = execution.getEngine().createTask(model, execution);
-		
+		execution.addTasks(tasks);
 		/**
 		 * 从服务上下文中查找任务拦截器列表，依次对task集合进行拦截处理
 		 */
-		List<TaskInterceptor> interceptors = ServiceContext.getContext().findInterceptors();
-		if(model instanceof TaskModel) {
-			List<TaskInterceptor> localInterceptors = ((TaskModel)model).getInterceptorList();
-			interceptors.addAll(localInterceptors);
-		}
+		List<SnakerInterceptor> interceptors = ServiceContext.getContext().findInterceptors();
 		try {
-			for(TaskInterceptor interceptor : interceptors) {
-				interceptor.intercept(tasks);
+			for(SnakerInterceptor interceptor : interceptors) {
+				interceptor.intercept(execution);
 			}
 		} catch(Exception e) {
 			//拦截器执行过程中出现的异常不影响流程执行逻辑
 			log.error("拦截器执行失败=" + e.getMessage());
 		}
-
-		execution.addTasks(tasks);
 	}
 }

@@ -41,18 +41,19 @@ public class DecisionModel extends NodeModel {
 	 * 决策处理类，对于复杂的分支条件，可通过handleClass来处理
 	 */
 	private String handleClass;
+	/**
+	 * 决策处理类实例
+	 */
+	private DecisionHandler decide;
 	
 	@Override
-	public void execute(Execution execution) {
+	public void exec(Execution execution) {
 		log.info(execution.getOrder().getId() + "->decision execution.getArgs():" + execution.getArgs());
 		String next = null;
 		if(StringHelper.isNotEmpty(expr)) {
 			next = ExprHelper.evalString(execution.getArgs(), expr);
-		} else if(StringHelper.isNotEmpty(handleClass)) {
-			DecisionHandler handler = (DecisionHandler)ClassHelper.newInstance(handleClass);
-			if(handler != null) {
-				next = handler.decide(execution);
-			}
+		} else if(decide != null) {
+			next = decide.decide(execution);
 		}
 		log.info(execution.getOrder().getId() + "->decision expression[expr=" + expr + "] return result:" + next);
 		boolean isfound = false;
@@ -88,5 +89,8 @@ public class DecisionModel extends NodeModel {
 
 	public void setHandleClass(String handleClass) {
 		this.handleClass = handleClass;
+		if(StringHelper.isNotEmpty(handleClass)) {
+			decide = (DecisionHandler)ClassHelper.newInstance(handleClass);
+		}
 	}
 }
