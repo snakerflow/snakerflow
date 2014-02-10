@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+	<bean class="org.snaker.engine.spring.SpringSnakerEngine"/>
+
+	<bean name="start" class="org.snaker.engine.parser.impl.StartParser"/>
+	<bean name="task" class="org.snaker.engine.parser.impl.TaskParser"/>
+	<bean name="custom" class="org.snaker.engine.parser.impl.CustomParser"/>
+	<bean name="decision" class="org.snaker.engine.parser.impl.DecisionParser"/>
+	<bean name="subprocess" class="org.snaker.engine.parser.impl.SubProcessParser"/>
+	<bean name="fork" class="org.snaker.engine.parser.impl.ForkParser"/>
+	<bean name="join" class="org.snaker.engine.parser.impl.JoinParser"/>
+	<bean name="end" class="org.snaker.engine.parser.impl.EndParser"/>
+	
+	<bean class="org.snaker.engine.core.TaskService"/>
+	<bean class="org.snaker.engine.core.OrderService"/>
+	<bean class="org.snaker.engine.core.ProcessService"/>
+	<bean class="org.snaker.engine.core.QueryService"/>
+</config>

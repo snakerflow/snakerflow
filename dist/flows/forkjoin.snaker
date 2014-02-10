@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="forkjoin流程" instanceUrl="/flow/forkjoin/all" name="forkjoin">
+<start displayName="start1" layout="44,177,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="764,177,-1,-1" name="end1"/>
+<task assignee="task1.operator" displayName="任务1" form="task1.jsp" layout="156,175,-1,-1" name="task1" performType="ANY">
+<transition g="" name="transition2" offset="0,0" to="fork1"/>
+</task>
+<fork displayName="fork1" layout="289,177,-1,-1" name="fork1">
+<transition g="" name="transition3" offset="0,0" to="task2"/>
+<transition g="" name="transition5" offset="0,0" to="task3"/>
+</fork>
+<join displayName="join1" layout="557,177,-1,-1" name="join1">
+<transition g="" name="transition7" offset="0,0" to="task4"/>
+</join>
+<task assignee="task2.operator" displayName="任务2" form="task2.jsp" layout="404,126,-1,-1" name="task2" performType="ANY">
+<transition g="" name="transition4" offset="0,0" to="join1"/>
+</task>
+<task assignee="task3.operator" displayName="任务3" form="task3.jsp" layout="404,226,-1,-1" name="task3" performType="ANY">
+<transition g="" name="transition6" offset="0,0" to="join1"/>
+</task>
+<task assignee="task4.operator" displayName="任务4" form="task4.jsp" layout="645,175,-1,-1" name="task4" performType="ANY">
+<transition g="" name="transition8" offset="0,0" to="end1"/>
+</task>
+</process>

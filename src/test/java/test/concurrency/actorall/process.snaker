@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="测试参与者会签" name="actorall">
+<start displayName="start1" layout="64,83,-1,-1" name="start1">
+<transition displayName="" g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<task assignee="task1.operator" displayName="task1" layout="213,80,-1,-1" name="task1" performType="ALL">
+<transition displayName="" g="" name="transition2" offset="0,0" to="end1"/>
+</task>
+<end displayName="end1" layout="454,82,-1,-1" name="end1"/>
+</process>

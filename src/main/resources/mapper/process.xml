@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Process">
+    <insert id="SAVE" parameterType="process">
+    	insert into wf_process (id,parent_Id,name,display_Name,type,instance_Url,query_Url,state,content,version) 
+    	values (#{id, jdbcType=VARCHAR},#{parentId, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{displayName, jdbcType=VARCHAR},#{type, jdbcType=NUMERIC},#{instanceUrl, jdbcType=VARCHAR},#{queryUrl, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC},#{bytes, jdbcType=BLOB},0)
+    </insert>
+    <update id="UPDATE" parameterType="process">
+    	update wf_process set 
+    	name=#{name, jdbcType=VARCHAR}, 
+    	display_Name=#{displayName, jdbcType=VARCHAR},
+    	state=#{state, jdbcType=NUMERIC},
+    	instance_Url=#{instanceUrl, jdbcType=VARCHAR},
+    	query_Url=#{queryUrl, jdbcType=VARCHAR},
+    	content=#{bytes, jdbcType=BLOB} , version = version + 1  
+    	where id=#{id, jdbcType=VARCHAR} and version=#{version, jdbcType=NUMERIC}
+    </update>
+    <select id="SELECTONE" parameterType="string" resultType="process">
+    	select 
+    		id,
+    		parent_Id as parentId,
+    		name,
+    		display_Name as displayName,
+    		type,
+    		instance_Url as instanceUrl,
+    		query_Url as queryUrl,
+    		state,
+    		content,
+    		version
+    	from wf_process 
+    	where id = #{id, jdbcType=VARCHAR} or name = #{id, jdbcType=VARCHAR}
+    </select>
+    <select id="SELECTLIST" resultType="process">
+    	select 
+    		id,
+    		parent_Id as parentId,
+    		name,
+    		display_Name as displayName,
+    		type,
+    		instance_Url as instanceUrl,
+    		query_Url as queryUrl,
+    		state,
+    		content as bytes,
+    		version
+    	from wf_process 
+        where state = 1
+    </select>
+    
+    <select id="getProcesss" resultType="process" parameterType="hashmap">
+    ${limitBefore}
+    	select 
+    		id,
+    		parent_Id as parentId,
+    		name,
+    		display_Name as displayName,
+    		type,
+    		instance_Url as instanceUrl,
+    		query_Url as queryUrl,
+    		state,
+    		content as bytes,
+    		version
+    	<include refid="selectProcesss"/>
+	${orderby}
+	${limitAfter}
+    </select>
+    
+    <select id="getProcesssCount" resultType="long" parameterType="hashmap">
+   		select count(id)
+    	<include refid="selectProcesss"/>
+    </select>
+    
+    <sql id="selectProcesss">
+		from wf_process
+		<where>
+      		<if test="name != null">
+        		name = #{name}
+      		</if>
+      		<if test="state != null">
+        		state = #{state}
+      		</if>
+      	</where>
+    </sql>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.snaker.engine.entity.WorkItem" table="wf_workitem" mutable="false">
+        <id name="taskId" type="java.lang.String">
+            <column name="task_Id"/>
+        </id>
+        <property name="processId" type="java.lang.String" column="process_Id" />
+        <property name="orderId" type="java.lang.String" column="order_Id" />
+        <property name="orderNo" type="java.lang.String" column="order_No" />
+		<property name="processName" type="java.lang.String" column="process_Name"/>
+		<property name="instanceUrl" type="java.lang.String" column="instance_Url"/>
+        <property name="parentId" type="java.lang.String" column="parent_Id"/>
+        <property name="creator" type="java.lang.String" column="creator" />
+        <property name="orderCreateTime" type="java.lang.String" column="order_Create_Time"/>
+        <property name="orderExpireTime" type="java.lang.String" column="order_Expire_Time"/>
+        <property name="orderVariable" type="java.lang.String" column="order_Variable"/>
+        
+        <property name="taskName" type="java.lang.String" column="task_Name"/>
+        <property name="operator" type="java.lang.String" column="operator" />
+        <property name="taskCreateTime" type="java.lang.String" column="task_Create_Time"/>
+        <property name="taskEndTime" type="java.lang.String" column="task_End_Time"/>
+        <property name="taskExpireTime" type="java.lang.String" column="task_Expire_Time"/>
+        <property name="actionUrl" type="java.lang.String" column="action_Url"/>
+		<property name="taskType" type="java.lang.Integer" column="task_Type"/>
+		<property name="performType" type="java.lang.Integer" column="perform_Type"/>
+		<property name="taskVariable" type="java.lang.String" column="task_Variable"/>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="会签测试" instanceUrl="/flow/actorall/all" name="actorall">
+<start displayName="start1" layout="60,152,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="553,152,-1,-1" name="end1"/>
+<task displayName="任务1" form="task1.jsp" layout="177,150,-1,-1" name="task1" performType="ANY">
+<transition g="" name="transition2" offset="0,0" to="task2"/>
+</task>
+<task assignee="task2.operator" displayName="任务2" form="task2.jsp" layout="363,150,-1,-1" name="task2" performType="ALL">
+<transition g="" name="transition3" offset="0,0" to="end1"/>
+</task>
+</process>

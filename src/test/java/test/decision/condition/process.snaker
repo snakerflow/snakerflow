@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="测试分支流程2" name="decision2">
+<start displayName="start1" layout="76,146,-1,-1" name="start1">
+<transition displayName="" g="" name="transition1" offset="0,0" to="decision1"/>
+</start>
+<decision displayName="decision1" layout="179,146,-1,-1" name="decision1">
+<transition displayName="to task2" expr="content == 200" g="" name="toTask2" offset="-4,-18" to="task2"/>
+<transition displayName="to task1" expr="content &gt; 200" g="202,86" name="toTask1" offset="-27,-23" to="task1"/>
+<transition displayName="to task3" expr="content &lt; 200" g="202,254" name="toTask3" offset="-26,14" to="task3"/>
+</decision>
+<task assignee="task1.operator" displayName="task1" layout="300,60,-1,-1" name="task1" performType="ANY">
+<transition displayName="" g="" name="transition5" offset="0,0" to="end1"/>
+</task>
+<task assignee="task2.operator" displayName="task2" layout="300,144,-1,-1" name="task2" performType="ANY">
+<transition displayName="" g="" name="transition6" offset="0,0" to="end1"/>
+</task>
+<task assignee="task3.operator" displayName="task3" layout="300,228,-1,-1" name="task3" performType="ANY">
+<transition displayName="" g="" name="transition7" offset="0,0" to="end1"/>
+</task>
+<end displayName="end1" layout="480,146,-1,-1" name="end1"/>
+</process>

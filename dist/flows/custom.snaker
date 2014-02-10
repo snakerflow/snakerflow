@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="自定义节点测试" name="custom">
+<start displayName="start1" layout="56,115,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="custom1"/>
+</start>
+<end displayName="end1" layout="426,115,-1,-1" name="end1"/>
+<custom args="msg" clazz="org.snaker.modules.flow.custom.CustomProcessor" displayName="custom1" layout="224,114,-1,-1" methodName="exec" name="custom1" var="result">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</custom>
+</process>

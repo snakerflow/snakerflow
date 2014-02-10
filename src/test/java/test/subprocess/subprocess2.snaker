@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="测试并行子流程" name="subprocess2">
+<start displayName="start1" layout="64,156,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="fork1"/>
+</start>
+<end displayName="end1" layout="561,156,-1,-1" name="end1"/>
+<subprocess displayName="subprocess1" layout="281,96,-1,-1" name="subprocess1" processName="child">
+<transition g="" name="transition3" offset="0,0" to="join1"/>
+</subprocess>
+<subprocess displayName="subprocess2" layout="281,203,-1,-1" name="subprocess2" processName="child">
+<transition g="" name="transition4" offset="0,0" to="join1"/>
+</subprocess>
+<fork displayName="fork1" layout="170,156,-1,-1" name="fork1">
+<transition g="" name="transition5" offset="0,0" to="subprocess2"/>
+<transition g="" name="transition6" offset="0,0" to="subprocess1"/>
+</fork>
+<join displayName="join1" layout="453,156,-1,-1" name="join1">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</join>
+</process>

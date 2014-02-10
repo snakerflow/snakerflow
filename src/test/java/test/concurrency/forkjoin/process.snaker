@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="测试ForkJoin" name="forkjoin">
+<start displayName="start1" layout="40,146,-1,-1" name="start1">
+<transition displayName="" g="" name="transition1" offset="0,0" to="fork1"/>
+</start>
+<end displayName="end1" layout="659,146,-1,-1" name="end1"/>
+<fork displayName="fork1" layout="142,146,-1,-1" name="fork1">
+<transition displayName="" g="165,66" name="transition3" offset="0,0" to="task1"/>
+<transition displayName="" g="" name="transition4" offset="0,0" to="task2"/>
+<transition displayName="" g="166,256" name="transition5" offset="0,0" to="task3"/>
+</fork>
+<join displayName="join1" layout="566,146,-1,-1" name="join1">
+<transition displayName="" g="" name="transition2" offset="1,-2" to="end1"/>
+</join>
+<task assignee="task1.operator" displayName="task1" layout="270,41,-1,-1" name="task1" performType="ANY">
+<transition displayName="" g="589,67" name="transition6" offset="0,0" to="join1"/>
+</task>
+<task assignee="task2.operator" displayName="task2" layout="270,144,-1,-1" name="task2" performType="ANY">
+<transition displayName="" g="434,169" name="transition7" offset="0,0" to="join2"/>
+</task>
+<task assignee="task3.operator" displayName="task3" layout="270,230,-1,-1" name="task3" performType="ANY">
+<transition displayName="" g="436,255" name="transition8" offset="0,0" to="join2"/>
+</task>
+<join displayName="join2" layout="411,195,-1,-1" name="join2">
+<transition displayName="" g="592,219" name="transition9" offset="0,0" to="join1"/>
+</join>
+</process>

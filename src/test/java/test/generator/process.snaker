@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="流程实例编号生成" instanceNoClass="test.generator.CustomNoGenerator" name="generator">
+<start displayName="start1" layout="86,143,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="463,143,-1,-1" name="end1"/>
+<task assignee="task1.operator" displayName="task1" layout="253,141,-1,-1" name="task1" performType="ANY">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</task>
+</process>

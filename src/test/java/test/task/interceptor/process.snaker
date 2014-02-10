@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="测试局部拦截器" name="interceptor">
+<start displayName="start1" layout="61,157,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="474,157,-1,-1" name="end1"/>
+<task displayName="task1" interceptors="test.task.interceptor.LocalTaskInterceptor" layout="244,155,-1,-1" name="task1" performType="ANY">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</task>
+</process>

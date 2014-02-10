@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+    	<package name="org.snaker.engine.entity"/>
+    </typeAliases>
+    <environments default="snaker">
+        <environment id="snaker">
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}" />
+                <property name="url" value="${jdbc.url}" />
+                <property name="username" value="${jdbc.username}" />
+                <property name="password" value="${jdbc.password}" />
+                <property name="poolMaximumActiveConnections" value="${jdbc.max.active}"/>
+                <property name="poolMaximumIdleConnections" value="${jdbc.max.idle}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+    	<mapper resource="mapper/process.xml"/>
+    	<mapper resource="mapper/order.xml"/>
+    	<mapper resource="mapper/task.xml"/>
+    	<mapper resource="mapper/task-actor.xml"/>
+    	<mapper resource="mapper/hist-order.xml"/>
+    	<mapper resource="mapper/hist-task.xml"/>
+    	<mapper resource="mapper/hist-task-actor.xml"/>
+    	<mapper resource="mapper/query.xml"/>
+    	<mapper resource="mapper/hist-query.xml"/>
+    </mappers>
+</configuration>

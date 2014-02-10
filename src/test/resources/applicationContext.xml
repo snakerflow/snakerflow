@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-lazy-init="true">
+
+	<description>Spring公共配置 </description>
+
+	<!-- 定义受环境影响易变的变量 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath*:/application.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 数据源配置,使用应用内的DBCP数据库连接池 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+
+		<property name="maxIdle" value="${jdbc.max.idle}" />
+		<property name="maxActive" value="${jdbc.max.active}" />
+		<property name="defaultAutoCommit" value="false" />
+		<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+	</bean>
+	
+	<!-- Hibernate配置 
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="namingStrategy">
+			<bean class="org.hibernate.cfg.ImprovedNamingStrategy" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>hbm/snaker.task.hbm.xml</value>
+				<value>hbm/snaker.order.hbm.xml</value>
+				<value>hbm/snaker.process.hbm.xml</value>
+				<value>hbm/snaker.taskactor.hbm.xml</value>
+				<value>hbm/snaker.workitem.hbm.xml</value>
+			</list>
+		</property> 
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean> 
+	
+	<bean id="dbAccess" class="org.snaker.engine.access.hibernate3.HibernateAccess">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	 -->
+
+	<!-- Mybatis -->
+  	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"/>
+  	</bean>
+  	
+ 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis.cfg.xml"></property>
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="org.snaker.engine.entity" />
+    </bean>
+	<bean id="mybatisAccess" class="org.snaker.engine.access.mybatis.MybatisAccess">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+ 	
+ 	<!-- Spring JDBC 
+	<bean id="dbAccess" class="org.snaker.engine.access.spring.SpringJdbcAccess">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="lobHandler" ref="lobHandler"/>
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+	-->
+	
+	<!-- SnakerEngine配置 -->
+	<bean id="snakerEngine" class="org.snaker.engine.spring.SnakerEngineFactoryBean"/> 
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="start*" propagation="REQUIRED"/>
+			<tx:method name="execute*" propagation="REQUIRED"/>
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="assign*" propagation="REQUIRED" /> 
+			<tx:method name="create*" propagation="REQUIRED" />
+			<tx:method name="complete*" propagation="REQUIRED" />
+			<tx:method name="finish*" propagation="REQUIRED" />
+			<tx:method name="take*" propagation="REQUIRED" />
+			<tx:method name="terminate*" propagation="REQUIRED" />
+			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="query*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.snaker.engine..*.*(..))"/>
+	</aop:config>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+</beans>

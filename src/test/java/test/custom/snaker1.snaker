@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="custom1" name="custom1">
+<custom clazz="test.custom.CustomHandler" displayName="CustomHandler" layout="197,118,113,52" name="CustomHandler" var="returnValue">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</custom>
+<start displayName="start1" layout="52,120,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="CustomHandler"/>
+</start>
+<end displayName="end1" layout="390,120,7,5" name="end1"/>
+</process>

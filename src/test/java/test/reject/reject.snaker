@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="驳回测试" name="reject">
+<start displayName="start1" layout="28,83,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="661,83,-1,-1" name="end1"/>
+<task displayName="task1" layout="122,81,-1,-1" name="task1" performType="ANY">
+<transition g="" name="transition2" offset="0,0" to="task2"/>
+</task>
+<task displayName="task2" layout="255,81,-1,-1" name="task2" performType="ANY">
+<transition g="" name="transition3" offset="0,0" to="decision1"/>
+</task>
+<decision displayName="decision1" layout="389,83,-1,-1" name="decision1">
+<transition expr="number == 1" g="" name="transition4" offset="0,0" to="task3"/>
+<transition expr="number == 2" g="" name="transition6" offset="0,0" to="task4"/>
+</decision>
+<task displayName="task3" layout="491,81,-1,-1" name="task3" performType="ANY">
+<transition g="" name="transition5" offset="0,0" to="end1"/>
+</task>
+<task displayName="task4" layout="491,188,-1,-1" name="task4" performType="ANY">
+<transition g="" name="transition7" offset="0,0" to="end1"/>
+</task>
+</process>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="1 hours">
+	<contextName>Snaker Logging</contextName>
+	
+	<property name="tip" value="日志信息:" />
+	<!--tomcat webapps路径-->
+	<property name="logback.logs.path" value="D:\\logs" />
+	<property name="logback.project.name" value="snaker" />
+	<timestamp key="byDay" datePattern="yyyyMMdd"/>
+	
+	<!--appender 模块-->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender" target="System.err">
+		<encoder charset="UTF-8">
+			<pattern>%n[%level] - %date - %logger#%line%n ${tip} %msg%n</pattern>
+		</encoder>
+		<target>System.err</target>
+	</appender>
+	
+	<appender name="file" class="ch.qos.logback.core.FileAppender">
+		<file>${logback.logs.path}\\${logback.project.name}\\log_${byDay}.log</file>
+		<encoder charset="UTF-8">
+			<pattern>%n[%level] - %date - %logger#%line%n ${tip} %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!--logger 模块-->
+	<logger name="org.snaker.engine" level="INFO">
+		<appender-ref ref="file" />
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="file" />
+	</root>
+</configuration>
+
+<!--
+<root level="OFF">
+${HOSTNAME}
+%contextName
+<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+-->
