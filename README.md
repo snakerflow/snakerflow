@@ -13,15 +13,15 @@ Features
 Contact
 -----
 * QQÈº£º293568574
-* yuqs: <tom08191984@163.com>
+* snakerflow: <snakerflow@163.com>
 
 Wiki
 ----
-* [snaker-²Î¿¼ÊÖ²á](http://pan.baidu.com/s/1xPxqA)
+* <http://snakerflow.github.io/>
 
 Example
 -----
-* snaker-demo: <http://git.oschina.net/yuqs/snaker-demo>
+* snaker-demo: <https://github.com/snakerflow/snaker-demo>
 
 License
 -----
