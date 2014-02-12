@@ -116,7 +116,6 @@ public class ProcessService extends AccessService implements IProcessService {
 
 	@Override
 	public void undeploy(String processId) {
-		ModelContainer.popEntity(processId);
 		Process process = access().getProcess(processId);
 		process.setState(STATE_FINISH);
 		process.setName(process.getName() + "." + processId);
