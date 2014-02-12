@@ -73,7 +73,7 @@ public class OrderService extends AccessService implements IOrderService {
 		history.setOrderState(STATE_TERMINATION);
 		history.setEndTime(DateHelper.getTime());
 		
-		access().saveHistory(history);
+		access().updateHistory(history);
 		access().deleteOrder(order);
 	}
 	
