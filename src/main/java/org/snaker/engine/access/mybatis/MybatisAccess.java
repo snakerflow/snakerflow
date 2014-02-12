@@ -30,6 +30,7 @@ import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.helper.StringHelper;
 
 /**
  * mybatis方式的数据库访问
@@ -202,6 +203,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("processId", processId);
 		buildPageParameter(session, page, params, "Query.getActiveOrdersCount");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by create_Time desc ");
+		}
 		List<Order> list = session.selectList("Query.getActiveOrders", params);
 		if(page != null) {
 			page.setResult(list);
@@ -215,7 +219,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("actorIds", actorIds);
 		buildPageParameter(session, page, params, "Query.getActiveTasksCount");
-		params.put("orderby", " order by create_Time desc ");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by create_Time desc ");
+		}
 		List<Task> list = session.selectList("Query.getActiveTasks", params);
 		if(page != null) {
 			page.setResult(list);
@@ -231,7 +237,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		params.put("actorIds", actorIds);
 		params.put("processId", processId);
 		buildPageParameter(session, page, params, "Query.getWorkItemsCount");
-		params.put("orderby", " order by t.create_Time desc ");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by t.create_Time desc ");
+		}
 		List<WorkItem> list = session.selectList("Query.getWorkItems", params);
 		if(page != null) {
 			page.setResult(list);
@@ -246,6 +254,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("processIds", processIds);
 		buildPageParameter(session, page, params, "HistoryQuery.getHistoryOrdersCount");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by create_Time desc ");
+		}
 		List<HistoryOrder> list = session.selectList("HistoryQuery.getHistoryOrders", params);
 		if(page != null) {
 			page.setResult(list);
@@ -274,7 +285,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("actorIds", actorIds);
 		buildPageParameter(session, page, params, "HistoryQuery.getHistoryTasksCount");
-		params.put("orderby", " order by create_Time desc ");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by create_Time desc ");
+		}
 		List<HistoryTask> list = session.selectList("HistoryQuery.getHistoryTasks", params);
 		if(page != null) {
 			page.setResult(list);
@@ -290,7 +303,9 @@ public class MybatisAccess extends AbstractDBAccess {
 		params.put("actorIds", actorIds);
 		params.put("processId", processId);
 		buildPageParameter(session, page, params, "HistoryQuery.getWorkItemsCount");
-		params.put("orderby", " order by t.create_Time desc ");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by t.create_Time desc ");
+		}
 		List<WorkItem> list = session.selectList("HistoryQuery.getWorkItems", params);
 		if(page != null) {
 			page.setResult(list);
@@ -302,8 +317,12 @@ public class MybatisAccess extends AbstractDBAccess {
 		if(page != null) {
 			params.put("limitBefore", getDialect().getPageBefore(page.getPageNo(), page.getPageSize()));
 			params.put("limitAfter", getDialect().getPageAfter(page.getPageNo(), page.getPageSize()));
-			Long count = getSession().selectOne(statement, params);
+			// modify by HuangS at 2014-01-28 变getSession取session为直接使用session
+			Long count = session.selectOne(statement, params);
 			page.setTotalCount(count);
+			if(page.isOrderBySetted()) {
+				params.put("orderby", StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy()));
+			}
 		}
 	}
 

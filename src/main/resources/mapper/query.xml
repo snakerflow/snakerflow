@@ -52,7 +52,7 @@
       		<if test="excludedTaskId != null">
         		and id != #{excludedTaskId}
       		</if>
-	        <if test="taskNames.length > 0">
+	        <if test="taskNames != null and taskNames.length > 0">
 	            and task_Name in
 				<foreach collection="taskNames" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
@@ -68,7 +68,7 @@
       		<if test="parentId != null">
         		parent_Id = #{parentId}
       		</if>
-        	<if test="excludedId.length > 0">
+        	<if test="excludedId != null and excludedId.length > 0">
          	    and id not in
 				<foreach collection="excludedId" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
@@ -88,7 +88,7 @@
     <sql id="fromActiveOrdersPart">
 		from wf_order
 		<where>
-	        <if test="processId.length > 0">
+	        <if test="processId != null and processId.length > 0">
 	         and process_Id in
 			<foreach collection="processId" index="index" item="item" open="(" separator="," close=")">
 				#{item, jdbcType=VARCHAR}
@@ -130,7 +130,7 @@
       		<if test="processId != null">
         		o.process_Id = #{processId}
       		</if>
-	        <if test="actorIds.length > 0">
+	        <if test="actorIds != null and actorIds.length > 0">
 	            and ta.actor_Id in
 				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
@@ -177,7 +177,7 @@
         from wf_task 
         left join wf_task_actor ta on ta.task_id = id 
         <where>
-	        <if test="actorIds.length > 0">
+	        <if test="actorIds != null and actorIds.length > 0">
 		        ta.actor_Id in
 				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}

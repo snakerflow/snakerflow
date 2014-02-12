@@ -45,7 +45,6 @@
     		content as bytes,
     		version
     	from wf_process 
-        where state = 1
     </select>
     
     <select id="getProcesss" resultType="process" parameterType="hashmap">
@@ -75,10 +74,10 @@
 		from wf_process
 		<where>
       		<if test="name != null">
-        		name = #{name}
+        		and name = #{name}
       		</if>
       		<if test="state != null">
-        		state = #{state}
+        		and state = #{state}
       		</if>
       	</where>
     </sql>

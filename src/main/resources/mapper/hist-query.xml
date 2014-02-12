@@ -95,7 +95,7 @@
       		<if test="processId != null">
         		o.process_Id = #{processId}
       		</if>
-	        <if test="actorIds.length > 0">
+	        <if test="actorIds != null and actorIds.length > 0">
 	            and t.operator in
 				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
@@ -108,7 +108,7 @@
     <sql id="fromHistoryOrdersPart">
 		from wf_hist_order 
 		<where>
-	        <if test="processIds.length > 0">
+	        <if test="processIds != null and processIds.length > 0">
 	         	process_Id in 
 				<foreach collection="processIds" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
@@ -121,7 +121,7 @@
         from wf_hist_task 
         left join wf_hist_task_actor ta on ta.task_id = id 
         <where>
-	        <if test="actorIds.length > 0">
+	        <if test="actorIds != null and actorIds.length > 0">
 	        and ta.actor_Id in
 			<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
 				#{item, jdbcType=VARCHAR}

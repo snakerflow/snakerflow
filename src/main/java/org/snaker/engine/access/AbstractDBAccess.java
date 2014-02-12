@@ -380,8 +380,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 
 	@Override
 	public List<Process> getAllProcess() {
-		String where = " where state = 1";
-		return queryList(Process.class, QUERY_PROCESS + where);
+		return queryList(Process.class, QUERY_PROCESS);
 	}
 
 	@Override
@@ -463,8 +462,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" order by create_Time desc ");
 			return queryList(Order.class, sql.toString(), paramList.toArray());
 		} else {
-			page.setOrder(Page.DESC);
-			page.setOrderBy("create_Time");
+			if(!page.isOrderBySetted()) {
+				page.setOrder(Page.DESC);
+				page.setOrderBy("create_Time");
+			}
 			return queryList(page, Order.class, sql.toString(), paramList.toArray());
 		}
 	}
@@ -522,8 +523,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and o.process_Id = ?");
 			paramList.add(processId);
 		}
-		page.setOrder(Page.DESC);
-		page.setOrderBy("t.create_Time");
+		if(!page.isOrderBySetted()) {
+			page.setOrder(Page.DESC);
+			page.setOrderBy("t.create_Time");
+		}
+
 		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 	
@@ -547,8 +551,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" order by create_Time desc ");
 			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
 		} else {
-			page.setOrder(Page.DESC);
-			page.setOrderBy("create_Time");
+			if(!page.isOrderBySetted()) {
+				page.setOrder(Page.DESC);
+				page.setOrderBy("create_Time");
+			}
 			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
 		}
 	}
@@ -617,8 +623,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and o.process_Id = ?");
 			paramList.add(processId);
 		}
-		page.setOrder(Page.DESC);
-		page.setOrderBy("t.create_Time");
+		if(!page.isOrderBySetted()) {
+			page.setOrder(Page.DESC);
+			page.setOrderBy("t.create_Time");
+		}
 		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 }
