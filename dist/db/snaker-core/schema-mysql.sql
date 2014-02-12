@@ -92,6 +92,8 @@ create table wf_hist_task_actor (
     actor_Id          VARCHAR(100) not null comment '参与者ID'
 )comment='历史任务参与者表';
 
+alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);

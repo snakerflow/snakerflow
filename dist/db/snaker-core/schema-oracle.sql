@@ -166,6 +166,8 @@ comment on table wf_hist_task_actor is '历史任务参与者表';
 comment on column wf_hist_task_actor.task_Id is '任务ID';
 comment on column wf_hist_task_actor.actor_Id is '参与者ID';
 
+alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+
 /**创建索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);
