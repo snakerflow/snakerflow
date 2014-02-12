@@ -83,7 +83,7 @@ public class ClassHelper {
         } catch (ClassNotFoundException e) {
             log.error("Class not found.", e);
         } catch (Exception ex) {
-        	log.error("exception is[" + ex.getMessage() + "]");
+        	log.error("类型实例化失败[class=" + clazzStr + "]\n" + ex.getMessage());
         }
         return null;
     }
@@ -95,13 +95,13 @@ public class ClassHelper {
      */
 	public static <T> T instantiate(Class<T> clazz) {
 		if (clazz.isInterface()) {
-			log.error("Specified class is an interface");
+			log.error("所传递的class类型参数为接口，无法实例化");
 			return null;
 		}
 		try {
 			return clazz.newInstance();
 		} catch (Exception ex) {
-			log.error("Is it an abstract class?", ex.getCause());
+			log.error("检查传递的class类型参数是否为抽象类?", ex.getCause());
 		}
 		return null;
 	}
