@@ -17,9 +17,11 @@ package org.snaker.engine.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.DecisionHandler;
+import org.snaker.engine.Expression;
+import org.snaker.engine.SnakerException;
 import org.snaker.engine.core.Execution;
+import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.helper.ClassHelper;
-import org.snaker.engine.helper.ExprHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
@@ -49,9 +51,12 @@ public class DecisionModel extends NodeModel {
 	@Override
 	public void exec(Execution execution) {
 		log.info(execution.getOrder().getId() + "->decision execution.getArgs():" + execution.getArgs());
+		Expression expression = ServiceContext.getContext().getExpression();
+		log.info("expression is " + expression);
+		if(expression == null) throw new SnakerException("表达式解析器为空，请检查配置.");
 		String next = null;
 		if(StringHelper.isNotEmpty(expr)) {
-			next = ExprHelper.evalString(execution.getArgs(), expr);
+			next = expression.eval(String.class, expr, execution.getArgs());
 		} else if(decide != null) {
 			next = decide.decide(execution);
 		}
@@ -60,7 +65,7 @@ public class DecisionModel extends NodeModel {
 		for(TransitionModel tm : getOutputs()) {
 			if(StringHelper.isEmpty(next)) {
 				String expr = tm.getExpr();
-				if(StringHelper.isNotEmpty(expr) && ExprHelper.evalBoolean(execution.getArgs(), expr)) {
+				if(StringHelper.isNotEmpty(expr) && expression.eval(Boolean.class, expr, execution.getArgs())) {
 					tm.setEnabled(true);
 					tm.execute(execution);
 					isfound = true;
@@ -73,7 +78,7 @@ public class DecisionModel extends NodeModel {
 				}
 			}
 		}
-		if(!isfound) log.warn(execution.getOrder().getId() + "->decision can't find next transition.");
+		if(!isfound) throw new SnakerException(execution.getOrder().getId() + "->decision节点无法确定下一步执行路线");
 	}
 	
 	public String getExpr() {

@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snaker.engine.Expression;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.access.dialect.Dialect;
@@ -87,8 +88,16 @@ public class ServiceContext {
 	 * 获取注册的任务拦截器列表
 	 * @return
 	 */
-	public List<SnakerInterceptor> findInterceptors() {
+	public List<SnakerInterceptor> getInterceptors() {
 		return findList(SnakerInterceptor.class);
+	}
+	
+	/**
+	 * 获取表达式解析器
+	 * @return
+	 */
+	public Expression getExpression() {
+		return find(Expression.class);
 	}
 
 	/**
