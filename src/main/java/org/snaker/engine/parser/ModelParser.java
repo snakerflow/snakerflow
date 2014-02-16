@@ -103,7 +103,7 @@ public class ModelParser {
 		Element element = (Element)node;
 		NodeParser nodeParser = null;
 		try {
-			nodeParser = ServiceContext.getContext().getNodeParser(nodeName);
+			nodeParser = ServiceContext.getContext().findByName(nodeName, NodeParser.class);
 			nodeParser.parse(element);
 			return nodeParser.getModel();
 		} catch (RuntimeException e) {

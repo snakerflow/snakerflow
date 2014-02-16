@@ -22,11 +22,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snaker.engine.Expression;
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.SnakerInterceptor;
-import org.snaker.engine.access.dialect.Dialect;
-import org.snaker.engine.parser.NodeParser;
 
 /**
  * 服务上下文（单实例），提供可配置的服务注册
@@ -43,7 +39,7 @@ public class ServiceContext {
 	/**
 	 * 上下文注册的配置对象
 	 */
-	private Map<String, Object> contextMap;
+	private Map<String, Object> contextMap = new HashMap<String, Object>();
 
 	/**
 	 * 单态实例的构造函数
@@ -68,52 +64,24 @@ public class ServiceContext {
 	}
 	
 	/**
-	 * 获取注册的数据库方言（用于无orm框架）
-	 * @return
-	 */
-	public Dialect getDialect() {
-		return find(Dialect.class);
-	}
-	
-	/**
-	 * 获取注册的节点解析器
-	 * @param nodeName
-	 * @return
-	 */
-	public NodeParser getNodeParser(String nodeName) {
-		return findByName(nodeName, NodeParser.class);
-	}
-	
-	/**
-	 * 获取注册的任务拦截器列表
-	 * @return
-	 */
-	public List<SnakerInterceptor> getInterceptors() {
-		return findList(SnakerInterceptor.class);
-	}
-	
-	/**
-	 * 获取表达式解析器
-	 * @return
-	 */
-	public Expression getExpression() {
-		return find(Expression.class);
-	}
-
-	/**
 	 * 对外部提供的put方法
 	 * @param name
 	 * @param object
 	 */
 	public void put(String name, Object object) {
-		if (contextMap == null) {
-			contextMap = new HashMap<String, Object>();
-		}
 		if(log.isInfoEnabled()) {
 			log.info("put new instance[name=" + name + "][object=" + object + "]");
 		}
-		
 		contextMap.put(name, object);
+	}
+	
+	/**
+	 * 根据服务名称查找对象
+	 * @param name
+	 * @return
+	 */
+	public boolean exist(String name) {
+		return contextMap.get(name) != null;
 	}
 
 	/**
@@ -121,12 +89,10 @@ public class ServiceContext {
 	 * @param clazz
 	 * @return
 	 */
-	<T> T find(Class<T> clazz) {
-		if ((contextMap != null) && (!contextMap.isEmpty())) {
-			for (Entry<String, Object> entry : contextMap.entrySet()) {
-				if (clazz.isInstance(entry.getValue())) {
-					return clazz.cast(entry.getValue());
-				}
+	public <T> T find(Class<T> clazz) {
+		for (Entry<String, Object> entry : contextMap.entrySet()) {
+			if (clazz.isInstance(entry.getValue())) {
+				return clazz.cast(entry.getValue());
 			}
 		}
 		return null;
@@ -137,13 +103,11 @@ public class ServiceContext {
 	 * @param clazz
 	 * @return
 	 */
-	<T> List<T> findList(Class<T> clazz) {
+	public <T> List<T> findList(Class<T> clazz) {
 		List<T> list = new ArrayList<T>();
-		if ((contextMap != null) && (!contextMap.isEmpty())) {
-			for (Entry<String, Object> entry : contextMap.entrySet()) {
-				if (clazz.isInstance(entry.getValue())) {
-					list.add(clazz.cast(entry.getValue()));
-				}
+		for (Entry<String, Object> entry : contextMap.entrySet()) {
+			if (clazz.isInstance(entry.getValue())) {
+				list.add(clazz.cast(entry.getValue()));
 			}
 		}
 		return list;
@@ -155,12 +119,10 @@ public class ServiceContext {
 	 * @param clazz
 	 * @return
 	 */
-	<T> T findByName(String name, Class<T> clazz) {
-		if ((contextMap != null) && (!contextMap.isEmpty())) {
-			for (Entry<String, Object> entry : contextMap.entrySet()) {
-				if (entry.getKey().equals(name) && clazz.isInstance(entry.getValue())) {
-					return clazz.cast(entry.getValue());
-				}
+	public <T> T findByName(String name, Class<T> clazz) {
+		for (Entry<String, Object> entry : contextMap.entrySet()) {
+			if (entry.getKey().equals(name) && clazz.isInstance(entry.getValue())) {
+				return clazz.cast(entry.getValue());
 			}
 		}
 		return null;

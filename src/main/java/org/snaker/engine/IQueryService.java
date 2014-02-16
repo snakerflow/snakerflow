@@ -54,7 +54,7 @@ public interface IQueryService {
 	 */
 	HistoryTask getHistTask(String taskId);
 	/**
-	 * 根据任务ID获取任务参与者数组
+	 * 根据任务ID获取活动任务参与者数组
 	 * @param taskId
 	 * @return
 	 */
@@ -89,7 +89,7 @@ public interface IQueryService {
 	List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames);
 	
 	/**
-	 * 分页查询活动任务
+	 * 根据参与者分页查询活动任务
 	 * @param page
 	 * @param actorIds
 	 * @return
@@ -98,7 +98,7 @@ public interface IQueryService {
 	
 	/**
 	 * 根据流程定义ID查询流程实例列表
-	 * @param processId
+	 * @param processIds
 	 * @return
 	 */
 	List<Order> getActiveOrders(String... processIds);
@@ -106,12 +106,13 @@ public interface IQueryService {
 	/**
 	 * 根据父流程实例ID，查询所有活动的子流程
 	 * @param parentId
+	 * @param excludedId
 	 * @return
 	 */
 	List<Order> getActiveOrdersByParentId(String parentId, String... excludedId);
 	
 	/**
-	 * 根据流程定义ID分页查询order
+	 * 根据流程定义ID分页查询活动流程实例
 	 * @param page
 	 * @param processIds
 	 * @return

@@ -55,7 +55,7 @@ public class CreateTaskHandler implements IHandler {
 		/**
 		 * 从服务上下文中查找任务拦截器列表，依次对task集合进行拦截处理
 		 */
-		List<SnakerInterceptor> interceptors = ServiceContext.getContext().getInterceptors();
+		List<SnakerInterceptor> interceptors = ServiceContext.getContext().findList(SnakerInterceptor.class);
 		try {
 			for(SnakerInterceptor interceptor : interceptors) {
 				interceptor.intercept(execution);

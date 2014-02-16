@@ -30,6 +30,7 @@ import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StreamHelper;
+import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.helper.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -114,18 +115,18 @@ public class Configuration {
 			log.debug("ServiceContext loading......");
 		}
 
-		if(getApplicationContext() == null) {
-			parser(DEFAULT_CONFIG_FILE);
-		} else {
-			parser(SPRING_CONFIG_FILE);
-		}
-		
 		//默认使用snaker.xml配置自定义的bean
 		String config = ConfigHelper.getProperty("config");
 		if (config == null || config.equals("")) {
 			config = USER_CONFIG_FILE;
 		}
 		parser(config);
+		
+		if(getApplicationContext() == null) {
+			parser(DEFAULT_CONFIG_FILE);
+		} else {
+			parser(SPRING_CONFIG_FILE);
+		}
 		
 		if(interceptor != null) {
 			for(Entry<String, Class<?>> entry : txClass.entrySet()) {
@@ -159,8 +160,12 @@ public class Configuration {
 						String name = element.getAttribute("name");
 						String className = element.getAttribute("class");
 						String proxy = element.getAttribute("proxy");
-						if(name == null || name.equals("")) {
+						if(StringHelper.isEmpty(name)) {
 							name = className;
+						}
+						if(context.exist(name)) {
+							log.warn("Duplicate name is:" + name);
+							continue;
 						}
 						Class<?> clazz = ClassHelper.loadClass(className);
 						if(TransactionInterceptor.class.isAssignableFrom(clazz)) {

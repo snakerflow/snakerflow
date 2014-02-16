@@ -51,7 +51,7 @@ public class DecisionModel extends NodeModel {
 	@Override
 	public void exec(Execution execution) {
 		log.info(execution.getOrder().getId() + "->decision execution.getArgs():" + execution.getArgs());
-		Expression expression = ServiceContext.getContext().getExpression();
+		Expression expression = ServiceContext.getContext().find(Expression.class);
 		log.info("expression is " + expression);
 		if(expression == null) throw new SnakerException("表达式解析器为空，请检查配置.");
 		String next = null;

@@ -33,14 +33,15 @@ public interface IProcessService {
 	void saveProcess(Process process);
 	
 	/**
-	 * 更新指定的流程定义ID
-	 * @param processId
+	 * 更新指定的流程定义对象
+	 * @param process 流程定义对象
+	 * @param input 流程定义输入流
 	 */
 	void update(Process process, InputStream input);
 	
 	/**
 	 * 根据主键ID、或name获取流程定义对象
-	 * @param id
+	 * @param idName
 	 * @return Process
 	 */
 	Process getProcess(String idName);

@@ -154,7 +154,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 * @return
 	 */
 	protected Dialect getDialect() {
-		return ServiceContext.getContext().getDialect();
+		return ServiceContext.getContext().find(Dialect.class);
 	}
 	
 	/**
