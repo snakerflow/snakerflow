@@ -16,6 +16,4 @@
 	<bean class="org.snaker.engine.core.OrderService"/>
 	<bean class="org.snaker.engine.core.ProcessService"/>
 	<bean class="org.snaker.engine.core.QueryService"/>
-	
-	<bean class="org.snaker.engine.spring.SpelExpression"/>
 </config>

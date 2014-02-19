@@ -54,7 +54,7 @@ public class SpringSnakerEngine extends SnakerEngineImpl {
 		 * 由于SnakerEngine非spring的bean，而DBAccess实现类在spring中配置
 		 * 所以需要手动设置DBAccess
 		 */
-		DBAccess access = applicationContext.getBean(DBAccess.class);
+		DBAccess access = (DBAccess)applicationContext.getBean("dbAccess");
 		super.setDBAccess(access);
 		return this;
 	}
