@@ -103,27 +103,30 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 		template.update(sql, args, type);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询单条数据=\n" + sql);
 		}
 		try {
-			return template.queryForObject(sql, args, new BeanPropertyRowMapper<T>(T));
+			return (T)template.queryForObject(sql, args, new BeanPropertyRowMapper(T));
 		} catch(Exception e) {
 			log.error("查询单条数据=\n" + e.getMessage());
 			return null;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询多条数据=\n" + sql);
 		}
-		return template.query(sql, args, new BeanPropertyRowMapper<T>(T));
+		return (List<T>)template.query(sql, args, new BeanPropertyRowMapper(T));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		String countSQL = "select count(1) from (" + sql + ") c ";
@@ -144,7 +147,7 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 		long count = 0L;
 		try {
 			count = template.queryForLong(countSQL, args);
-			tasks = template.query(querySQL, args, new BeanPropertyRowMapper<T>(T));
+			tasks = template.query(querySQL, args, new BeanPropertyRowMapper(T));
 			if(tasks == null) tasks = Collections.emptyList();
 			page.setResult(tasks);
 			page.setTotalCount(ClassHelper.castLong(count));
