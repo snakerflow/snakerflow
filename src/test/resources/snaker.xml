@@ -16,9 +16,9 @@
 	<bean class="org.snaker.engine.access.mybatis.MybatisAccess"/>
 	<bean class="org.snaker.engine.access.transaction.MybatisTransactionInterceptor"/>
 	-->
-	<bean class="org.snaker.engine.access.dialect.OracleDialect"/>
-	<!-- 数据库方言配置。如果使用orm框架已自带了方言的支持，这里不需要配置
 	<bean class="org.snaker.engine.access.dialect.MySqlDialect"/>
+	<!-- 数据库方言配置。如果使用orm框架已自带了方言的支持，这里不需要配置
+	<bean class="org.snaker.engine.access.dialect.OracleDialect"/>
 	<bean class="org.snaker.engine.access.dialect.SQLServerDialect"/>
 	 -->
 	
@@ -27,4 +27,7 @@
 	
 	<!-- 配置表达式引擎实现类 -->
 	<bean class="org.snaker.engine.impl.JuelExpression"/>
+	<!-- 
+	<bean class="org.snaker.engine.spring.SpelExpression"/>
+	 -->
 </config>

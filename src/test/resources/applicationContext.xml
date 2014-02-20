@@ -68,30 +68,34 @@
 	</bean>
 	 -->
 
-	<!-- Mybatis -->
+	
   	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     	<property name="dataSource" ref="dataSource"/>
   	</bean>
-  	
+  	<!-- Mybatis 
  	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="configLocation" value="classpath:mybatis.cfg.xml"></property>
         <property name="dataSource" ref="dataSource" />
         <property name="typeAliasesPackage" value="org.snaker.engine.entity" />
     </bean>
-	<bean id="mybatisAccess" class="org.snaker.engine.access.mybatis.MybatisAccess">
+	<bean id="dbAccess" class="org.snaker.engine.access.mybatis.MybatisAccess">
 		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
 	</bean>
- 	
- 	<!-- Spring JDBC 
+ 	-->
+ 	<!-- Spring JDBC -->
 	<bean id="dbAccess" class="org.snaker.engine.access.spring.SpringJdbcAccess">
 		<property name="dataSource" ref="dataSource"/>
 		<property name="lobHandler" ref="lobHandler"/>
 	</bean>
 	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
-	-->
 	
-	<!-- SnakerEngine配置 -->
+	
+	<!-- SnakerEngine配置 
 	<bean id="snakerEngine" class="org.snaker.engine.spring.SnakerEngineFactoryBean"/> 
+	-->
+	<bean id="springHelper" class="org.snaker.engine.spring.SpringHelper"/>
+	
+  	<bean id="snakerEngine" factory-bean="springHelper" factory-method="createProcessEngine" />
 	
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>

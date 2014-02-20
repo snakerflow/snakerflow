@@ -46,7 +46,7 @@ public class TestTake extends TestSnakerBase {
 		List<Task> tasks = queryService.getActiveTasks("1");
 		for(Task task : tasks) {
 			//engine.executeTask(task.getId(), "1");
-			engine.takeTask(task.getId(), "1");
+			engine.task().take(task.getId(), "1");
 		}
 	}
 }
