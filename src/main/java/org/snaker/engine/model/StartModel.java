@@ -33,12 +33,10 @@ public class StartModel extends NodeModel {
 	/**
 	 * 开始节点无输入变迁
 	 */
-	@Override
 	public List<TransitionModel> getInputs() {
 		return Collections.emptyList();
 	}
 
-	@Override
 	protected void exec(Execution execution) {
 		runOutTransition(execution);
 	}

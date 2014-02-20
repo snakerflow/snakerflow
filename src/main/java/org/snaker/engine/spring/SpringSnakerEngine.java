@@ -32,7 +32,6 @@ public class SpringSnakerEngine extends SnakerEngineImpl {
 	/**
 	 * 根据applicatinContext上下文，查找processService、orderService、taskService服务
 	 */
-	@Override
 	public SnakerEngine configure(Configuration config) {
 		/**
 		 * 通过Configuration获取applicationContext对象（通过SpringHelper添加到Configuration中）

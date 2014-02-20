@@ -28,7 +28,6 @@ public class DecisionParser extends AbstractNodeParser {
 	/**
 	 * 产生DecisionModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new DecisionModel();
 	}
@@ -36,7 +35,6 @@ public class DecisionParser extends AbstractNodeParser {
 	/**
 	 * 解析decisition节点的特有属性expr
 	 */
-	@Override
 	protected void parseNode(NodeModel node, Element element) {
 		DecisionModel decision = (DecisionModel)node;
 		decision.setExpr(element.getAttribute(ATTR_EXPR));

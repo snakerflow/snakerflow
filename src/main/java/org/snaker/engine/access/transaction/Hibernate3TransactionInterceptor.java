@@ -29,14 +29,14 @@ import org.snaker.engine.helper.AssertHelper;
 public class Hibernate3TransactionInterceptor extends TransactionInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(Hibernate3TransactionInterceptor.class);
 	private SessionFactory sessionFactory;
-	@Override
+	
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof SessionFactory) {
 			this.sessionFactory = (SessionFactory)accessObject;
 		}
 	}
-	@Override
+	
 	protected TransactionStatus getTransaction() {
 		try {
 			boolean isExistingTransaction = TransactionObjectHolder.isExistingTransaction();
@@ -56,7 +56,6 @@ public class Hibernate3TransactionInterceptor extends TransactionInterceptor {
 		}
 	}
 
-	@Override
 	protected void commit(TransactionStatus status) {
 		AssertHelper.isTrue(status.isNewTransaction());
 		Session session = (Session)status.getTransaction();
@@ -76,7 +75,6 @@ public class Hibernate3TransactionInterceptor extends TransactionInterceptor {
         }
 	}
 
-	@Override
 	protected void rollback(TransactionStatus status) {
 		Session session = (Session)status.getTransaction();
         if (session != null) {

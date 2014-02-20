@@ -57,7 +57,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 完成指定任务
 	 */
-	@Override
 	public Task complete(String taskId) {
 		return complete(taskId, null);
 	}
@@ -65,7 +64,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 完成指定任务
 	 */
-	@Override
 	public Task complete(String taskId, String operator) {
 		return complete(taskId, operator, null);
 	}
@@ -75,7 +73,6 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 该方法仅仅结束活动任务，并不能驱动流程继续执行
 	 * @see org.snaker.engine.core.SnakerEngineImpl#executeTask(String, String, Map)
 	 */
-	@Override
 	public Task complete(String taskId, String operator, Map<String, Object> args) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -103,7 +100,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 提取指定任务，设置完成时间及操作人，状态不改变
 	 */
-	@Override
 	public Task take(String taskId, String operator) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -120,7 +116,6 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 向指定任务添加参与者
 	 * 该方法根据TaskType类型判断是否需要创建新的活动任务
 	 */
-	@Override
 	public void addTaskActor(String taskId, String... actors) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -153,7 +148,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 向指定任务移除参与者
 	 */
-	@Override
 	public void removeTaskActor(String taskId, String... actors) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -165,7 +159,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 撤回指定的任务
 	 */
-	@Override
 	public Task withdrawTask(String taskId, String operator) {
 		HistoryTask hist = engine.query().getHistTask(taskId);
 		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
@@ -197,7 +190,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 驳回任务
 	 */
-	@Override
 	public Task rejectTask(ProcessModel model, Task currentTask) {
 		String parentTaskId = currentTask.getParentTaskId();
 		if(StringHelper.isEmpty(parentTaskId)) {
@@ -242,7 +234,6 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param execution 执行对象
 	 * @return List<Task>
 	 */
-	@Override
 	public List<Task> createTask(WorkModel workModel, Execution execution) {
 		List<Task> tasks = null;
 		if(workModel instanceof TaskModel) {
@@ -343,7 +334,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 由DBAccess实现类持久化task对象
 	 */
-	@Override
 	public void saveTask(Task task) {
 		access().saveTask(task);
 	}
@@ -401,7 +391,6 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 判断当前操作人operator是否允许执行taskId指定的任务
 	 */
-	@Override
 	public boolean isAllowed(Task task, String operator) {
 		if(StringHelper.isNotEmpty(operator)) {
 			if(SnakerEngine.ADMIN.equalsIgnoreCase(operator)) {

@@ -28,27 +28,23 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class SnakerEngineFactoryBean implements FactoryBean<SnakerEngine>, ApplicationContextAware {
 	protected ApplicationContext applicationContext;
-	@Override
+	
 	public SnakerEngine getObject() throws Exception {
 		return new Configuration()
 		.initSpringContext(applicationContext)
 		.buildSnakerEngine();
 	}
 
-	@Override
 	public Class<SnakerEngine> getObjectType() {
 		return SnakerEngine.class;
 	}
-
-	@Override
+	
 	public boolean isSingleton() {
 		return true;
 	}
 
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-
 }

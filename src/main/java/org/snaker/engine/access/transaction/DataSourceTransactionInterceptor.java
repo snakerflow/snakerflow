@@ -31,15 +31,14 @@ import org.snaker.engine.helper.AssertHelper;
 public class DataSourceTransactionInterceptor extends TransactionInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(DataSourceTransactionInterceptor.class);
 	private DataSource dataSource;
-
-	@Override
+	
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof DataSource) {
 			this.dataSource = (DataSource)accessObject;
 		}
 	}
-	@Override
+	
 	protected TransactionStatus getTransaction() {
 		try {
 			boolean isExistingTransaction = TransactionObjectHolder.isExistingTransaction();
@@ -59,7 +58,6 @@ public class DataSourceTransactionInterceptor extends TransactionInterceptor {
 		}
 	}
 
-	@Override
 	protected void commit(TransactionStatus status) {
 		AssertHelper.isTrue(status.isNewTransaction());
         Connection conn = (Connection)status.getTransaction();
@@ -78,7 +76,6 @@ public class DataSourceTransactionInterceptor extends TransactionInterceptor {
         }
 	}
 
-	@Override
 	protected void rollback(TransactionStatus status) {
 		Connection conn = (Connection)status.getTransaction();
         if (conn != null) {

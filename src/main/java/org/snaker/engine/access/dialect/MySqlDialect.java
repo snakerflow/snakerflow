@@ -23,7 +23,6 @@ public class MySqlDialect implements Dialect {
 	/**
 	 * mysql分页通过limit实现
 	 */
-	@Override
 	public String getPageSql(String sql, int pageNo, int pageSize) {
 		StringBuffer pageSql = new StringBuffer(sql.length() + 100);
 		pageSql.append(getPageBefore(pageNo, pageSize));
@@ -32,12 +31,11 @@ public class MySqlDialect implements Dialect {
 		return pageSql.toString();
 	}
 
-	@Override
+	
 	public String getPageBefore(int pageNo, int pageSize) {
 		return "";
 	}
 
-	@Override
 	public String getPageAfter(int pageNo, int pageSize) {
 		long start = (pageNo - 1) * pageSize;
 		StringBuffer sb = new StringBuffer();

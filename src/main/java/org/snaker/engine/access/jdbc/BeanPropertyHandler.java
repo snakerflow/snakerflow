@@ -59,7 +59,6 @@ public class BeanPropertyHandler<T> extends AbstractListHandler<T> {
 	/**
 	 * ResultSet结果集处理
 	 */
-	@Override
 	protected T handleRow(ResultSet rs) throws SQLException {
 		/**
 		 * 根据bean的class类型实例化为对象

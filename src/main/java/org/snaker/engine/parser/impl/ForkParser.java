@@ -27,7 +27,6 @@ public class ForkParser extends AbstractNodeParser {
 	/**
 	 * 产生ForkModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new ForkModel();
 	}

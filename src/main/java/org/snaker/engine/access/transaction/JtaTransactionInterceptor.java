@@ -29,12 +29,11 @@ import org.snaker.engine.SnakerException;
  */
 public class JtaTransactionInterceptor extends TransactionInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(JtaTransactionInterceptor.class);
-	@Override
+	
 	public void initialize(Object accessObject) {
 		//ignore
 	}
 
-	@Override
 	protected TransactionStatus getTransaction() {
 		UserTransaction userTransaction = JtaTransactionHelper
 				.lookupJeeUserTransaction();
@@ -72,7 +71,6 @@ public class JtaTransactionInterceptor extends TransactionInterceptor {
 		}
 	}
 
-	@Override
 	protected void commit(TransactionStatus status) {
     	if(log.isInfoEnabled()) {
     		log.info("commit transaction=");
@@ -80,7 +78,6 @@ public class JtaTransactionInterceptor extends TransactionInterceptor {
 		JtaTransactionHelper.commit();
 	}
 
-	@Override
 	protected void rollback(TransactionStatus status) {
 		UserTransaction userTransaction = JtaTransactionHelper
 				.lookupJeeUserTransaction();

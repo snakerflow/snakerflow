@@ -29,17 +29,15 @@ import org.apache.ibatis.transaction.TransactionFactory;
  * @version 1.0
  */
 public class MybatisTransactionFactory implements TransactionFactory {
-	@Override
+	
 	public void setProperties(Properties props) {
 		// not needed in this version
 	}
 
-	@Override
 	public Transaction newTransaction(Connection conn) {
 		throw new UnsupportedOperationException("New transactions require a DataSource");
 	}
 
-	@Override
 	public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
 		return new MybatisTransaction(dataSource);
 	}

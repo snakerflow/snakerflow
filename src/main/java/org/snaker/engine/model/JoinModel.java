@@ -23,13 +23,11 @@ import org.snaker.engine.handlers.impl.MergeBranchHandler;
  * @version 1.0
  */
 public class JoinModel extends NodeModel {
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5296621319088076775L;
 	
-	@Override
 	public void exec(Execution execution) {
 		fire(new MergeBranchHandler(this), execution);
 		if(execution.isMerged()) runOutTransition(execution);

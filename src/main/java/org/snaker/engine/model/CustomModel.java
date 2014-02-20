@@ -56,7 +56,6 @@ public class CustomModel extends WorkModel {
 	 */
 	private Object invokeObject;
 	
-	@Override
 	public void exec(Execution execution) {
 		if(invokeObject == null) {
 			invokeObject = ClassHelper.newInstance(clazz);

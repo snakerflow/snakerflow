@@ -32,7 +32,6 @@ import org.snaker.engine.model.TaskModel;
  * @version 1.0
  */
 public abstract class AbstractMergeHandler implements IHandler {
-	@Override
 	public void handle(Execution execution) {
 		/**
 		 * 查询当前流程实例的无法参与合并的task列表（包括同一事务中未提交的taskId）

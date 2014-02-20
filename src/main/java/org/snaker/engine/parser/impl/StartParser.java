@@ -27,7 +27,6 @@ public class StartParser extends AbstractNodeParser {
 	/**
 	 * 产生StartModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new StartModel();
 	}

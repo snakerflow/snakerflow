@@ -27,7 +27,6 @@ import org.snaker.engine.helper.AssertHelper;
 
 /**
  * mybatis事务对象，仅提供connection对象及事务操作 这里取消了对事务的commit、rooback操作
- * 
  * @author yuqs
  * @version 1.0
  */
@@ -42,7 +41,6 @@ public class MybatisTransaction implements Transaction {
 		this.dataSource = dataSource;
 	}
 
-	@Override
 	public Connection getConnection() throws SQLException {
 		this.connection = (Connection) TransactionObjectHolder.get();
 		if (this.connection == null) {
@@ -51,8 +49,7 @@ public class MybatisTransaction implements Transaction {
 		this.autoCommit = this.connection.getAutoCommit();
 		return this.connection;
 	}
-
-	@Override
+	
 	public void commit() throws SQLException {
 		if (this.connection != null && !this.autoCommit && !isConnectionTransactional()) {
 			if (log.isDebugEnabled()) {
@@ -61,8 +58,7 @@ public class MybatisTransaction implements Transaction {
 			this.connection.commit();
 		}
 	}
-
-	@Override
+	
 	public void rollback() throws SQLException {
 		if (this.connection != null && !this.autoCommit && !isConnectionTransactional()) {
 			if (log.isDebugEnabled()) {
@@ -77,7 +73,6 @@ public class MybatisTransaction implements Transaction {
 		return (holdCon == connection || holdCon.equals(connection));
 	}
 
-	@Override
 	public void close() throws SQLException {
 		// not needed in this version
 	}

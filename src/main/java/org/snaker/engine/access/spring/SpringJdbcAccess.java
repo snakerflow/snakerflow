@@ -49,12 +49,11 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	private LobHandler lobHandler;
 	private JdbcTemplate template;
 
-	@Override
 	public void saveProcess(final Process process) {
 		super.saveProcess(process);
 		if(process.getBytes() != null) {
 			template.execute(PROCESS_UPDATE_BLOB, new AbstractLobCreatingPreparedStatementCallback(lobHandler) {
-				@Override
+				
 				protected void setValues(PreparedStatement ps, LobCreator lobCreator)
 						throws SQLException, DataAccessException {
 					try {
@@ -67,13 +66,12 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 			});
 		}
 	}
-
-	@Override
+	
 	public void updateProcess(final Process process) {
 		super.updateProcess(process);
 		if(process.getBytes() != null) {
 			template.execute(PROCESS_UPDATE_BLOB, new AbstractLobCreatingPreparedStatementCallback(lobHandler) {
-				@Override
+				
 				protected void setValues(PreparedStatement ps, LobCreator lobCreator)
 						throws SQLException, DataAccessException {
 					try {
@@ -87,12 +85,10 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public boolean isORM() {
 		return false;
 	}
 
-	@Override
 	public void saveOrUpdate(Map<String, Object> map) {
 		String sql = (String)map.get(KEY_SQL);
 		Object[] args = (Object[])map.get(KEY_ARGS);
@@ -104,7 +100,6 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询单条数据=\n" + sql);
@@ -118,7 +113,6 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询多条数据=\n" + sql);
@@ -127,7 +121,6 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		String countSQL = "select count(1) from (" + sql + ") c ";
 		String querySQL = sql;

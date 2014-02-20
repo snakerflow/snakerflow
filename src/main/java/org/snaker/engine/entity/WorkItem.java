@@ -259,7 +259,7 @@ public class WorkItem implements Serializable {
 	public void setTaskVariable(String taskVariable) {
 		this.taskVariable = taskVariable;
 	}
-	@Override
+	
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

@@ -37,7 +37,6 @@ public class OrderService extends AccessService implements IOrderService {
 	 * 创建活动实例
 	 * @see org.snaker.engine.core.OrderService#createOrder(Process, String, Map, String, String)
 	 */
-	@Override
 	public Order createOrder(Process process, String operator, Map<String, Object> args) {
 		return createOrder(process, operator, args, null, null);
 	}
@@ -45,7 +44,6 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 创建活动实例
 	 */
-	@Override
 	public Order createOrder(Process process, String operator, Map<String, Object> args, 
 			String parentId, String parentNodeName) {
 		Order order = new Order();
@@ -73,7 +71,6 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 流程实例数据会保存至活动实例表、历史实例表
 	 */
-	@Override
 	public void saveOrder(Order order) {
 		HistoryOrder history = new HistoryOrder(order);
 		history.setOrderState(STATE_ACTIVE);
@@ -84,7 +81,6 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 更新活动实例的last_Updator、last_Update_Time、version
 	 */
-	@Override
 	public void updateOrder(Order order) {
 		access().updateOrder(order);
 	}
@@ -92,7 +88,6 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
 	 */
-	@Override
 	public void complete(String orderId) {
 		Order order = access().getOrder(orderId);
 		HistoryOrder history = new HistoryOrder(order);
@@ -107,7 +102,6 @@ public class OrderService extends AccessService implements IOrderService {
 	 * 强制中止流程实例
 	 * @see org.snaker.engine.core.OrderService#terminate(String, String)
 	 */
-	@Override
 	public void terminate(String orderId) {
 		terminate(orderId, null);
 	}
@@ -115,7 +109,6 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 强制中止活动实例,并强制完成活动任务
 	 */
-	@Override
 	public void terminate(String orderId, String operator) {
 		List<Task> tasks = engine.query().getActiveTasks(orderId);
 		for(Task task : tasks) {

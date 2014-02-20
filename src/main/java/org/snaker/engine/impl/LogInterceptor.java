@@ -30,7 +30,6 @@ public class LogInterceptor implements SnakerInterceptor {
 	/**
 	 * 拦截产生的任务对象，打印日志
 	 */
-	@Override
 	public void intercept(Execution execution) {
 		if(log.isInfoEnabled()) {
 			for(Task task : execution.getTasks()) {

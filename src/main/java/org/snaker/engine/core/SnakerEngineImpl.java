@@ -75,7 +75,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据serviceContext上下文，查找processService、orderService、taskService服务
 	 */
-	@Override
 	public SnakerEngine configure(Configuration config) {
 		this.configuration = config;
 		context = config.getContext();
@@ -134,7 +133,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 获取流程定义服务
 	 */
-	@Override
 	public IProcessService process() {
 		AssertHelper.notNull(processService);
 		return processService;
@@ -143,7 +141,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 获取查询服务
 	 */
-	@Override
 	public IQueryService query() {
 		AssertHelper.notNull(queryService);
 		return queryService;
@@ -153,7 +150,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 获取实例服务
 	 * @since 1.2.2
 	 */
-	@Override
 	public IOrderService order() {
 		AssertHelper.notNull(orderService);
 		return orderService;
@@ -163,7 +159,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 获取任务服务
 	 * @since 1.2.2
 	 */
-	@Override
 	public ITaskService task() {
 		AssertHelper.notNull(taskService);
 		return taskService;
@@ -172,7 +167,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据流程定义ID启动流程实例
 	 */
-	@Override
 	public Order startInstanceById(String id) {
 		return startInstanceById(id, null);
 	}
@@ -180,7 +174,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据流程定义ID，操作人ID启动流程实例
 	 */
-	@Override
 	public Order startInstanceById(String id, String operator) {
 		return startInstanceById(id, operator, null);
 	}
@@ -188,7 +181,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据流程定义ID，操作人ID，参数列表启动流程实例
 	 */
-	@Override
 	public Order startInstanceById(String id, String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
 		Process process = ModelContainer.getEntity(id);
@@ -207,7 +199,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据父执行对象启动子流程实例（用于启动子流程）
 	 */
-	@Override
 	public Order startInstanceByExecution(Execution execution) {
 		Process process = execution.getProcess();
 		StartModel start = process.getModel().getStart();
@@ -239,7 +230,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据任务主键ID执行任务
 	 */
-	@Override
 	public List<Task> executeTask(String taskId) {
 		return executeTask(taskId, null);
 	}
@@ -247,7 +237,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据任务主键ID，操作人ID执行任务
 	 */
-	@Override
 	public List<Task> executeTask(String taskId, String operator) {
 		return executeTask(taskId, operator, null);
 	}
@@ -255,7 +244,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据任务主键ID，操作人ID，参数列表执行任务
 	 */
-	@Override
 	public List<Task> executeTask(String taskId, String operator, Map<String, Object> args) {
 		//完成任务，并且构造执行对象
 		Execution execution = execute(taskId, operator, args);
@@ -273,7 +261,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 1、nodeName为null时，则驳回至上一步处理
 	 * 2、nodeName不为null时，则任意跳转，即动态创建转移
 	 */
-	@Override
 	public List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName) {
 		Execution execution = execute(taskId, operator, args);
 		ProcessModel model = execution.getProcess().getModel();
@@ -297,7 +284,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
 	 */
-	@Override
 	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, WorkModel model) {
 		Order order = query().getOrder(orderId);
 		AssertHelper.notNull(order, "指定的流程实例[id=" + orderId + "]已完成或不存在");

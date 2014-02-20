@@ -33,7 +33,6 @@ public class SpringHelper implements ApplicationContextAware {
 		.buildSnakerEngine();
 	}
 
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;

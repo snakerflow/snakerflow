@@ -64,7 +64,6 @@ public class TaskModel extends WorkModel {
 	 */
 	private AssignmentHandler assignmentHandler;
 
-	@Override
 	protected void exec(Execution execution) {
 		if(performType == null || performType.equalsIgnoreCase(TYPE_ANY)) {
 			/**

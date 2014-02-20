@@ -27,7 +27,6 @@ public class EndParser extends AbstractNodeParser {
 	/**
 	 * 产生EndModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new EndModel();
 	}

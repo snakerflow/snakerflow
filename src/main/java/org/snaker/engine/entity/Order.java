@@ -176,11 +176,6 @@ public class Order implements Serializable {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 
 	public Integer getVersion() {
 		return version;
@@ -188,5 +183,9 @@ public class Order implements Serializable {
 
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

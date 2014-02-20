@@ -59,7 +59,6 @@ public class TransitionModel extends BaseModel implements Action {
 	 */
 	private boolean enabled = false;
 	
-	@Override
 	public void execute(Execution execution) {
 		if(!enabled) return;
 		if(target instanceof TaskModel || target instanceof CustomModel) {

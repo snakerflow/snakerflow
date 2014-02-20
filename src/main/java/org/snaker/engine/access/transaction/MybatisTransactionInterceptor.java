@@ -32,14 +32,13 @@ public class MybatisTransactionInterceptor extends TransactionInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(MybatisTransactionInterceptor.class);
 	private SqlSessionFactory sqlSessionFactory;
 
-	@Override
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof SqlSessionFactory) {
 			this.sqlSessionFactory = (SqlSessionFactory)accessObject;
 		}
 	}
-	@Override
+	
 	protected TransactionStatus getTransaction() {
 		try {
 			boolean isExistingTransaction = TransactionObjectHolder.isExistingTransaction();
@@ -58,7 +57,6 @@ public class MybatisTransactionInterceptor extends TransactionInterceptor {
 		}
 	}
 
-	@Override
 	protected void commit(TransactionStatus status) {
 		AssertHelper.isTrue(status.isNewTransaction());
 		SqlSession session = (SqlSession)status.getTransaction();
@@ -77,8 +75,7 @@ public class MybatisTransactionInterceptor extends TransactionInterceptor {
             }
         }
 	}
-
-	@Override
+	
 	protected void rollback(TransactionStatus status) {
 		SqlSession session = (SqlSession)status.getTransaction();
         if (session != null) {

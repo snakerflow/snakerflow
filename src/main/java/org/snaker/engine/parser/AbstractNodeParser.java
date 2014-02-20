@@ -79,7 +79,6 @@ public abstract class AbstractNodeParser implements NodeParser {
 	/**
 	 * 返回模型对象
 	 */
-	@Override
 	public NodeModel getModel() {
 		return model;
 	}

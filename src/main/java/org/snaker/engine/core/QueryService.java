@@ -33,17 +33,14 @@ import org.snaker.engine.entity.WorkItem;
  * @version 1.0
  */
 public class QueryService extends AccessService implements IQueryService {
-	@Override
 	public Order getOrder(String orderId) {
 		return access().getOrder(orderId);
 	}
 	
-	@Override
 	public Task getTask(String taskId) {
 		return access().getTask(taskId);
 	}
 	
-	@Override
 	public String[] getTaskActorsByTaskId(String taskId) {
 		List<TaskActor> actors = access().getTaskActorsByTaskId(taskId);
 		if(actors == null || actors.isEmpty()) return null;
@@ -55,7 +52,6 @@ public class QueryService extends AccessService implements IQueryService {
 		return actorIds;
 	}
 	
-	@Override
 	public String[] getHistoryTaskActorsByTaskId(String taskId) {
 		List<HistoryTaskActor> actors = access().getHistTaskActorsByTaskId(taskId);
 		if(actors == null || actors.isEmpty()) return null;
@@ -67,80 +63,65 @@ public class QueryService extends AccessService implements IQueryService {
 		return actorIds;
 	}
 
-	@Override
 	public HistoryOrder getHistOrder(String orderId) {
 		return access().getHistOrder(orderId);
 	}
 
-	@Override
 	public HistoryTask getHistTask(String taskId) {
 		return access().getHistTask(taskId);
 	}
 	
-	@Override
 	public List<Task> getActiveTasksByActors(String... actorIds) {
 		return access().getActiveTasks(null, actorIds);
 	}
 	
-	@Override
 	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
 		if(actorIds == null || actorIds.length == 0) throw new SnakerException("查询任务列表，需要提供任务参与者ID");
 		return access().getActiveTasks(page, actorIds);
 	}
 	
-	@Override
 	public List<Task> getActiveTasks(String orderId,String... taskNames) {
 		return access().getActiveTasks(orderId, null, taskNames);
 	}
 
-	@Override
 	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
 		return access().getActiveTasks(orderId, excludedTaskId, taskNames);
 	}
 
-	@Override
 	public List<Order> getActiveOrders(String... processIds) {
 		return getActiveOrders(null, processIds);
 	}
 	
-	@Override
 	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
 		return access().getActiveOrdersByParentId(parentId, excludedId);
 	}
 
-	@Override
 	public List<Order> getActiveOrders(Page<Order> page, String... processIds) {
 		return access().getActiveOrders(page, processIds);
 	}
 	
-	@Override
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId, String... actorIds) {
 		return access().getWorkItems(page, processId, actorIds);
 	}
 
-	@Override
 	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
 			String... processIds) {
 		return access().getHistoryOrders(page, processIds);
 	}
 
-	@Override
 	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
 		return access().getHistoryOrdersByParentId(parentId);
 	}
 
-	@Override
 	public List<HistoryTask> getHistoryTasks(String orderId) {
 		return access().getHistoryTasks(orderId);
 	}
 
-	@Override
 	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
 			String... actorIds) {
 		return access().getHistoryTasks(page, actorIds);
 	}
 
-	@Override
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
 			String processId, String... actorIds) {
 		return access().getHistoryWorkItems(page, processId, actorIds);

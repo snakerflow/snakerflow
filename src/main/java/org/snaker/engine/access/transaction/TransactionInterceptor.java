@@ -74,7 +74,6 @@ public abstract class TransactionInterceptor implements MethodInterceptor {
 	 * 1、数据库访问类是DBTransaction的实现类
 	 * 2、方法名称匹配初始化的事务方法列表
 	 */
-	@Override
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		Object result = null;
 		TransactionStatus status = null;

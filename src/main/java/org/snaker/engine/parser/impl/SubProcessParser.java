@@ -30,7 +30,6 @@ public class SubProcessParser extends AbstractNodeParser {
 	/**
 	 * 产生SubProcessModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new SubProcessModel();
 	}
@@ -38,7 +37,6 @@ public class SubProcessParser extends AbstractNodeParser {
 	/**
 	 * 解析decisition节点的特有属性expr
 	 */
-	@Override
 	protected void parseNode(NodeModel node, Element element) {
 		SubProcessModel model = (SubProcessModel)node;
 		model.setProcessName(element.getAttribute(ATTR_PROCESSNAME));

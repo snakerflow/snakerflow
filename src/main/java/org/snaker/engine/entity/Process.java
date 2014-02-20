@@ -125,10 +125,7 @@ public class Process implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+	
 	public ProcessModel getModel() {
 		return model;
 	}
@@ -169,5 +166,8 @@ public class Process implements Serializable {
 	}
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

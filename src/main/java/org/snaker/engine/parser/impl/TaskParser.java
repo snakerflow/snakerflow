@@ -28,7 +28,6 @@ public class TaskParser extends AbstractNodeParser {
 	/**
 	 * 由于任务节点需要解析form、assignee属性，这里覆盖抽象类方法实现
 	 */
-	@Override
 	protected void parseNode(NodeModel node, Element element) {
 		TaskModel task = (TaskModel)node;
 		task.setUrl(element.getAttribute(ATTR_FORM));
@@ -41,7 +40,6 @@ public class TaskParser extends AbstractNodeParser {
 	/**
 	 * 产生TaskModel模型对象
 	 */
-	@Override
 	protected NodeModel newModel() {
 		return new TaskModel();
 	}

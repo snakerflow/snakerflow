@@ -185,7 +185,6 @@ public class HistoryOrder implements Serializable {
 		return process.getDisplayName();
 	}
 	
-	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

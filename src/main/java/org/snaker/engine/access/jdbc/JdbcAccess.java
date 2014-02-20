@@ -62,7 +62,6 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 		this.dataSource = dataSource;
 	}
     
-	@Override
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof DataSource) {
@@ -82,7 +81,6 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	/**
 	 * 使用原生JDBC操作BLOB字段
 	 */
-	@Override
 	public void saveProcess(Process process) {
 		super.saveProcess(process);
 		if(process.getBytes() != null) {
@@ -109,7 +107,6 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	/**
 	 * 使用原生JDBC操作BLOB字段
 	 */
-	@Override
 	public void updateProcess(Process process) {
 		super.updateProcess(process);
 		if(process.getBytes() != null) {
@@ -146,7 +143,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         	if(log.isDebugEnabled()) {
         		log.debug("查询单列数据=\n" + sql);
         	}
-            result = runner.query(getConnection(), sql, new ScalarHandler<Object>(column), params);
+            result = runner.query(getConnection(), sql, new ScalarHandler(column), params);
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
@@ -154,12 +151,10 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         return result;
     }
     
-	@Override
 	public boolean isORM() {
 		return false;
 	}
-
-	@Override
+	
 	public void saveOrUpdate(Map<String, Object> map) {
 		String sql = (String)map.get(KEY_SQL);
 		Object[] args = (Object[])map.get(KEY_ARGS);
@@ -174,7 +169,6 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         }
 	}
 
-	@Override
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
     	List<T> result = null;
         try {
@@ -188,8 +182,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
             return null;
         }
 	}
-
-	@Override
+	
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
         try {
         	if(log.isDebugEnabled()) {
@@ -202,7 +195,6 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         }
 	}
 	
-	@Override
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		String countSQL = "select count(1) from (" + sql + ") c ";
 		String querySQL = sql;

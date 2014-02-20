@@ -20,17 +20,14 @@ package org.snaker.engine.access.dialect;
  * @version 1.0
  */
 public class SQLServerDialect implements Dialect {
-	@Override
 	public String getPageSql(String sql, int pageNo, int pageSize) {
 		return getPageBefore(pageNo, pageSize) + sql + getPageAfter(pageNo, pageSize);
 	}
 
-	@Override
 	public String getPageBefore(int pageNo, int pageSize) {
 		return "select top " + pageSize + " * from (select row_number() over (order by id asc) row_number, * from (";
 	}
 
-	@Override
 	public String getPageAfter(int pageNo, int pageSize) {
 		long start = (pageNo - 1) * pageSize;
 		return ") aa ) a where row_number > " + start + " order by row_number";

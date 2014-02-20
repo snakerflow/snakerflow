@@ -23,7 +23,6 @@ public class OracleDialect implements Dialect {
 	/**
 	 * oracle分页通过rownum实现
 	 */
-	@Override
 	public String getPageSql(String sql, int pageNo, int pageSize) {
 		StringBuffer pageSql = new StringBuffer(sql.length() + 100);
 		pageSql.append(getPageBefore(pageNo, pageSize));
@@ -32,12 +31,10 @@ public class OracleDialect implements Dialect {
 		return pageSql.toString();
 	}
 
-	@Override
 	public String getPageBefore(int pageNo, int pageSize) {
 		return "select * from ( select row_.*, rownum rownum_ from ( ";
 	}
 
-	@Override
 	public String getPageAfter(int pageNo, int pageSize) {
 		long start = (pageNo - 1) * pageSize + 1;
 		StringBuffer after = new StringBuffer();

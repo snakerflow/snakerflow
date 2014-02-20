@@ -35,7 +35,6 @@ public class SubProcessModel extends WorkModel {
 	 */
 	private ProcessModel subProcess;
 
-	@Override
 	protected void exec(Execution execution) {
 		runOutTransition(execution);	
 	}

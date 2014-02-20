@@ -58,7 +58,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	@Override
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof SessionFactory) {
@@ -74,7 +73,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@Override
 	public void updateProcess(Process process) {
 		try {
 			if(process.getBytes() != null) {
@@ -88,7 +86,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override
 	public void saveProcess(Process process) {
 		try {
 			if(process.getBytes() != null) {
@@ -103,7 +100,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 		getSession().saveOrUpdate(process);
 	}
 	
-	@Override
 	public void deleteTask(Task task) {
 		List<TaskActor> actors = getTaskActorsByTaskId(task.getId());
 		for(TaskActor actor : actors) {
@@ -112,12 +108,10 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 		getSession().delete(task);
 	}
 
-	@Override
 	public void deleteOrder(Order order) {
 		getSession().delete(order);
 	}
 	
-	@Override
 	public void removeTaskActor(String taskId, String... actors) {
 		for(String actorId : actors) {
 			TaskActor ta = new TaskActor();
@@ -126,19 +120,16 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 			getSession().delete(ta);
 		}
 	}
-
-	@Override
+	
 	public boolean isORM() {
 		return true;
 	}
-
-	@Override
+	
 	public void saveOrUpdate(Map<String, Object> map) {
 		getSession().saveOrUpdate(map.get(KEY_ENTITY));
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.addEntity(T);
@@ -149,7 +140,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.addEntity(T);
@@ -160,7 +150,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		try {
 			String countSQL = "select count(1) from (" + sql + ") c ";

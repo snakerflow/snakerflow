@@ -240,11 +240,6 @@ public class HistoryTask implements Serializable {
 	public void setPerformType(Integer performType) {
 		this.performType = performType;
 	}
-	
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
 
 	public String[] getActorIds() {
 		return actorIds;
@@ -252,5 +247,9 @@ public class HistoryTask implements Serializable {
 
 	public void setActorIds(String[] actorIds) {
 		this.actorIds = actorIds;
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

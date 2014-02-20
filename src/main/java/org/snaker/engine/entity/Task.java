@@ -209,14 +209,9 @@ public class Task implements Serializable, Cloneable {
 		this.performType = performType;
 	}
 	
-	@Override
+	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
 	}
 
 	public Integer getVersion() {
@@ -225,5 +220,9 @@ public class Task implements Serializable, Cloneable {
 
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

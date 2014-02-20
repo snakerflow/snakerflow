@@ -50,7 +50,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 	
-	@Override
 	public void initialize(Object accessObject) {
 		if(accessObject == null) return;
 		if(accessObject instanceof SqlSessionFactory) {
@@ -62,12 +61,10 @@ public class MybatisAccess extends AbstractDBAccess {
 		return MybatisHelper.getSession(sqlSessionFactory);
 	}
 
-	@Override
 	public boolean isORM() {
 		return true;
 	}
 
-	@Override
 	public void saveOrUpdate(Map<String, Object> map) {
 		Object object = map.get(KEY_ENTITY);
 		String className = object.getClass().getSimpleName();
@@ -80,17 +77,14 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 	}
 
-	@Override
 	public void saveProcess(Process process) {
 		getSession().insert(process.getClass().getSimpleName() + "." + SAVE, process);
 	}
-
-	@Override
+	
 	public void updateProcess(Process process) {
 		getSession().update(process.getClass().getSimpleName() + "." + UPDATE, process);
 	}
 
-	@Override
 	public void deleteTask(Task task) {
 		List<TaskActor> actors = getTaskActorsByTaskId(task.getId());
 		for(TaskActor actor : actors) {
@@ -99,30 +93,25 @@ public class MybatisAccess extends AbstractDBAccess {
 		getSession().delete("Task.DELETE", task);
 	}
 
-	@Override
 	public void deleteOrder(Order order) {
 		getSession().update("Order.DELETE", order);
 	}
 	
-	@Override
 	public void removeTaskActor(String taskId, String... actors) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("taskId", taskId);
 		params.put("actorIds", actors);
 		getSession().delete("TaskActor.REDUCE", params);
 	}
-
-	@Override
+	
 	public Task getTask(String taskId) {
 		return getSession().selectOne("Task.SELECTONE", taskId);
 	}
 	
-	@Override
 	public List<Task> getNextActiveTasks(String parentTaskId) {
 		return getSession().selectList("Task.SELECTBYPARENT", parentTaskId);
 	}
 	
-	@Override
 	public List<Task> getNextActiveTasks(String orderId, String taskName, String parentTaskId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderId", orderId);
@@ -131,42 +120,34 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectList("Query.getNextActiveTasks", params);
 	}
 	
-	@Override
 	public HistoryTask getHistTask(String taskId) {
 		return getSession().selectOne("HistoryTask.SELECTONE", taskId);
 	}
 	
-	@Override
 	public HistoryOrder getHistOrder(String orderId) {
 		return getSession().selectOne("HistoryOrder.SELECTONE", orderId);
 	}
 
-	@Override
 	public List<TaskActor> getTaskActorsByTaskId(String taskId) {
 		return getSession().selectList("TaskActor.SELECTLIST", taskId);
 	}
 
-	@Override
 	public List<HistoryTaskActor> getHistTaskActorsByTaskId(String taskId) {
 		return getSession().selectList("HistoryTaskActor.SELECTLIST", taskId);
 	}
-
-	@Override
+	
 	public Order getOrder(String orderId) {
 		return getSession().selectOne("Order.SELECTONE", orderId);
 	}
 
-	@Override
 	public Process getProcess(String idName) {
 		return getSession().selectOne("Process.SELECTONE", idName);
 	}
-
-	@Override
+	
 	public List<Process> getAllProcess() {
 		return getSession().selectList("Process.SELECTLIST");
 	}
-
-	@Override
+	
 	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("parentId", parentId);
@@ -174,7 +155,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectList("Query.getActiveOrdersByParentId", params);
 	}
 
-	@Override
 	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderId", orderId);
@@ -183,7 +163,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectList("Query.getActiveTasksByTaskNames", params);
 	}
 
-	@Override
 	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -196,8 +175,7 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 		return list;
 	}
-
-	@Override
+	
 	public List<Order> getActiveOrders(Page<Order> page, String... processId) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -213,7 +191,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	@Override
 	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -229,7 +206,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	@Override
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId,
 			String... actorIds) {
 		SqlSession session = getSession();
@@ -246,8 +222,7 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 		return list;
 	}
-
-	@Override
+	
 	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
 			String... processIds) {
 		SqlSession session = getSession();
@@ -264,21 +239,18 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	@Override
 	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("parentId", parentId);
 		return getSession().selectList("HistoryQuery.getHistoryOrdersByParentId", params);
 	}
-
-	@Override
+	
 	public List<HistoryTask> getHistoryTasks(String orderId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("orderId", orderId);
 		return getSession().selectList("HistoryQuery.getHistoryTasksByOrderId", params);
 	}
 
-	@Override
 	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
 			String... actorIds) {
 		SqlSession session = getSession();
@@ -295,7 +267,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	@Override
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
 			String processId, String... actorIds) {
 		SqlSession session = getSession();
@@ -326,19 +297,16 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 	}
 
-	@Override
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
 		// not needed in this version
 		return null;
 	}
 
-	@Override
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
 		// not needed in this version
 		return null;
 	}
 
-	@Override
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql,
 			Object... args) {
 		// not needed in this version

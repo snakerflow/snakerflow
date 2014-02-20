@@ -36,12 +36,10 @@ public class ProcessService extends AccessService implements IProcessService {
 	/**
 	 * 由DBAccess实现类持久化order对象
 	 */
-	@Override
 	public void saveProcess(Process process) {
 		access().saveProcess(process);
 	}
-
-	@Override
+	
 	public void update(Process process, InputStream input) {
 		if(input != null) {
 			try {
@@ -66,7 +64,6 @@ public class ProcessService extends AccessService implements IProcessService {
 	/**
 	 * 由DBAccess实现类根据id或name获取process对象
 	 */
-	@Override
 	public Process getProcess(String idName) {
 		return access().getProcess(idName);
 	}
@@ -102,19 +99,16 @@ public class ProcessService extends AccessService implements IProcessService {
 			throw new SnakerException(e.getMessage(), e.getCause());
 		}
 	}
-
-	@Override
+	
 	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
 		if(page == null) throw new SnakerException("分页对象不能为空.");
 		return access().getProcesss(page, name, state);
 	}
 
-	@Override
 	public List<Process> getAllProcess() {
 		return access().getAllProcess();
 	}
 
-	@Override
 	public void undeploy(String processId) {
 		Process process = access().getProcess(processId);
 		process.setState(STATE_FINISH);

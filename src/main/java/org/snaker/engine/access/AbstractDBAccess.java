@@ -117,7 +117,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 */
 	public abstract <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args);
 	
-	@Override
 	public void initialize(Object accessObject) {
 		
 	}
@@ -185,8 +184,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	
-	@Override
 	public void saveTask(Task task) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, SAVE));
@@ -200,8 +197,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(TASK_INSERT, args, type));
 		}
 	}
-
-	@Override
+	
 	public void saveOrder(Order order) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, SAVE));
@@ -214,7 +210,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void saveTaskActor(TaskActor taskActor) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(taskActor, SAVE));
@@ -224,7 +219,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void updateTask(Task task) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, UPDATE));
@@ -235,7 +229,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void updateOrder(Order order) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
@@ -245,8 +238,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(ORDER_UPDATE, args, type));
 		}
 	}
-
-	@Override
+	
 	public void deleteTask(Task task) {
 		if(!isORM()) {
 			Object[] args = new Object[]{task.getId()};
@@ -256,7 +248,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void deleteOrder(Order order) {
 		if(!isORM()) {
 			int[] type = new int[]{Types.VARCHAR};
@@ -264,7 +255,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 	
-	@Override
 	public void removeTaskActor(String taskId, String... actors) {
 		if(!isORM()) {
 			for(String actorId : actors) {
@@ -273,8 +263,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 			}
 		}
 	}
-
-	@Override
+	
 	public void saveHistory(HistoryOrder order) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, SAVE));
@@ -287,7 +276,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void updateHistory(HistoryOrder order) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
@@ -298,7 +286,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public void saveHistory(HistoryTask task) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, SAVE));
@@ -321,19 +308,16 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public Task getTask(String taskId) {
 		String where = " where id = ?";
 		return queryObject(Task.class, QUERY_TASK + where, taskId);
 	}
 	
-	@Override
 	public List<Task> getNextActiveTasks(String parentTaskId) {
 		String where = " where parent_Task_Id = ?";
 		return queryList(Task.class, QUERY_TASK + where, parentTaskId);
 	}
 	
-	@Override
 	public List<Task> getNextActiveTasks(String orderId, String taskName, String parentTaskId) {
 		StringBuffer sql = new StringBuffer(QUERY_TASK);
 		sql.append(" where parent_task_id in ( ");
@@ -342,48 +326,40 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(Task.class, sql.toString(), orderId, taskName, parentTaskId);
 	}
 	
-	@Override
 	public HistoryTask getHistTask(String taskId) {
 		String where = " where id = ?";
 		return queryObject(HistoryTask.class, QUERY_HIST_TASK + where, taskId);
 	}
 	
-	@Override
 	public HistoryOrder getHistOrder(String orderId) {
 		String where = " where id = ?";
 		return queryObject(HistoryOrder.class, QUERY_HIST_ORDER + where, orderId);
 	}
 
-	@Override
 	public List<TaskActor> getTaskActorsByTaskId(String taskId) {
 		String where = " where task_Id = ?";
 		return queryList(TaskActor.class, QUERY_TASK_ACTOR + where, taskId);
 	}
 	
-	@Override
 	public List<HistoryTaskActor> getHistTaskActorsByTaskId(String taskId) {
 		String where = " where task_Id = ?";
 		return queryList(HistoryTaskActor.class, QUERY_HIST_TASK_ACTOR + where, taskId);
 	}
 
-	@Override
 	public Order getOrder(String orderId) {
 		String where = " where id = ?";
 		return queryObject(Order.class, QUERY_ORDER + where, orderId);
 	}
 
-	@Override
 	public Process getProcess(String idName) {
 		String where = " where id = ? or name = ?";
 		return queryObject(Process.class, QUERY_PROCESS + where, idName, idName);
 	}
-
-	@Override
+	
 	public List<Process> getAllProcess() {
 		return queryList(Process.class, QUERY_PROCESS);
 	}
 
-	@Override
 	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
 		StringBuffer sql = new StringBuffer(QUERY_ORDER);
 		sql.append(" where parent_Id = ? ");
@@ -401,7 +377,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(Order.class, sql.toString(), paramList.toArray());
 	}
 
-	@Override
 	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
 		StringBuffer sql = new StringBuffer(QUERY_TASK);
 		sql.append(" where 1=1 ");
@@ -427,7 +402,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(Task.class, sql.toString(), paramList.toArray());
 	}
 
-	@Override
 	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
 		StringBuffer sql = new StringBuffer(QUERY_PROCESS);
 		sql.append(" where 1=1 ");
@@ -443,7 +417,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(page, Process.class, sql.toString(), paramList.toArray());
 	}
 
-	@Override
 	public List<Order> getActiveOrders(Page<Order> page, String... processId) {
 		StringBuffer sql = new StringBuffer(QUERY_ORDER);
 		sql.append(" where 1=1 ");
@@ -470,7 +443,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
 		StringBuffer sql = new StringBuffer(QUERY_TASK);
 		sql.append(" left join wf_task_actor ta on ta.task_id = id ");
@@ -492,7 +464,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	@Override
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId, String... actorIds) {
 		StringBuffer sql = new StringBuffer();
 		sql.append(" select o.process_Id, t.order_Id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
@@ -531,7 +502,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 	
-	@Override
 	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
 			String... processIds) {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
@@ -558,19 +528,19 @@ public abstract class AbstractDBAccess implements DBAccess {
 			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
 		}
 	}
-	@Override
+	
 	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
 		sql.append(" where parent_Id = ? ");
 		return queryList(HistoryOrder.class, sql.toString(), new Object[]{parentId });
 	}
-	@Override
+	
 	public List<HistoryTask> getHistoryTasks(String orderId) {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_TASK);
 		sql.append(" where order_Id = ? order by create_Time desc ");
 		return queryList(HistoryTask.class, sql.toString(), new Object[]{orderId });
 	}
-	@Override
+	
 	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
 			String... actorIds) {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_TASK);
@@ -592,7 +562,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 			return queryList(page, HistoryTask.class, sql.toString(), paramList.toArray());
 		}
 	}
-	@Override
+	
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
 			String processId, String... actorIds) {
 		StringBuffer sql = new StringBuffer();
