@@ -29,8 +29,8 @@ public interface IOrderService {
 	 * 根据流程、操作人员、父流程实例ID创建流程实例
 	 * @param process 流程定义对象
 	 * @param operator 操作人员ID
-	 * @param expireTime 期望完成时间
-	 * @return
+	 * @param args 参数列表
+	 * @return Order 活动流程实例对象
 	 */
 	Order createOrder(Process process, String operator, Map<String, Object> args);
 	
@@ -38,12 +38,18 @@ public interface IOrderService {
 	 * 根据流程、操作人员、父流程实例ID创建流程实例
 	 * @param process 流程定义对象
 	 * @param operator 操作人员ID
-	 * @param expireTime 期望完成时间
+	 * @param args 参数列表
 	 * @param parentId 父流程实例ID
 	 * @param parentNodeName 父流程节点模型
-	 * @return
+	 * @return 活动流程实例对象
 	 */
 	Order createOrder(Process process, String operator, Map<String, Object> args, String parentId, String parentNodeName);
+	
+	/**
+	 * 流程实例正常完成
+	 * @param orderId 流程实例id
+	 */
+	void complete(String orderId);
 	
 	/**
 	 * 保存流程实例
@@ -52,21 +58,21 @@ public interface IOrderService {
 	void saveOrder(Order order);
 	
 	/**
-	 * 根据流程实例ID获取对象
-	 * @param id
-	 * @return Order
+	 * 流程实例强制终止
+	 * @param orderId 流程实例id
 	 */
-	Order getOrder(String id);
-	
-	/**
-	 * 流程实例正常完成
-	 * @param order
-	 */
-	void finish(Order order);
+	void terminate(String orderId);
 	
 	/**
 	 * 流程实例强制终止
-	 * @param order
+	 * @param orderId 流程实例id
+	 * @param operator 处理人员
 	 */
 	void terminate(String orderId, String operator);
+	
+	/**
+	 * 更新流程实例
+	 * @param order 流程实例对象
+	 */
+	void updateOrder(Order order);
 }

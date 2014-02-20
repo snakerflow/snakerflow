@@ -40,7 +40,7 @@ public class EndProcessHandler implements IHandler {
 		/**
 		 * 结束当前流程实例
 		 */
-		engine.finishInstanceById(order.getId());
+		engine.order().complete(order.getId());
 		
 		/**
 		 * 如果存在父流程，则重新构造Execution执行对象，交给父流程的SubProcessModel模型execute

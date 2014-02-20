@@ -15,6 +15,7 @@
 package org.snaker.engine.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,13 @@ import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.entity.HistoryTask;
+import org.snaker.engine.entity.Order;
+import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
+import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
+import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.BaseModel;
 import org.snaker.engine.model.CustomModel;
@@ -33,6 +38,7 @@ import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TaskModel.PerformType;
+import org.snaker.engine.model.WorkModel;
 
 /**
  * 任务执行业务类
@@ -47,24 +53,42 @@ public class TaskService extends AccessService implements ITaskService {
 	public enum TaskType {
 		Task, Custom;
 	}
+
 	/**
-	 * 由DBAccess实现类更新task对象为完成状态
+	 * 完成指定任务
 	 */
 	@Override
-	public Task completeTask(Task task) {
-		return completeTask(task, null);
+	public Task complete(String taskId) {
+		return complete(taskId, null);
 	}
+
 	/**
-	 * 由DBAccess实现类更新task对象为完成状态
+	 * 完成指定任务
 	 */
 	@Override
-	public Task completeTask(Task task, String operator) {
+	public Task complete(String taskId, String operator) {
+		return complete(taskId, operator, null);
+	}
+	
+	/**
+	 * 完成指定任务
+	 * 该方法仅仅结束活动任务，并不能驱动流程继续执行
+	 * @see org.snaker.engine.core.SnakerEngineImpl#executeTask(String, String, Map)
+	 */
+	@Override
+	public Task complete(String taskId, String operator, Map<String, Object> args) {
+		Task task = access().getTask(taskId);
+		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+		task.setVariable(JsonHelper.toJson(args));
+		if(!isAllowed(task, operator)) {
+			throw new SnakerException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
+		}
 		HistoryTask history = new HistoryTask(task);
 		history.setFinishTime(DateHelper.getTime());
 		history.setTaskState(STATE_FINISH);
 		history.setOperator(operator);
 		if(history.getActorIds() == null) {
-			List<TaskActor> actors = getTaskActorsByTaskId(task.getId());
+			List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 			String[] actorIds = new String[actors.size()];
 			for(int i = 0; i < actors.size(); i++) {
 				actorIds[i] = actors.get(i).getActorId();
@@ -75,51 +99,80 @@ public class TaskService extends AccessService implements ITaskService {
 		access().deleteTask(task);
 		return task;
 	}
+	
 	/**
-	 * 由DBAccess实现类更新task对象为完成状态
+	 * 提取指定任务，设置完成时间及操作人，状态不改变
 	 */
 	@Override
-	public Task takeTask(Task task, String operator) {
+	public Task take(String taskId, String operator) {
+		Task task = access().getTask(taskId);
+		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+		if(!isAllowed(task, operator)) {
+			throw new SnakerException("当前参与者[" + operator + "]不允许提取任务[taskId=" + taskId + "]");
+		}
 		task.setOperator(operator);
 		task.setFinishTime(DateHelper.getTime());
 		access().updateTask(task);
 		return task;
 	}
 	
+	/**
+	 * 向指定任务添加参与者
+	 * 该方法根据TaskType类型判断是否需要创建新的活动任务
+	 */
 	@Override
-	public void addTaskActor(Task task, String... actors) {
-		int performType = task.getPerformType() == null ? -1 : task.getPerformType().intValue();
-		switch(performType) {
-		case -1:
-			break;
-		case 0:
-			assignTask(task.getId(), actors);
-			break;
-		case 1:
-			try {
-				for(String actor : actors) {
-					Task newTask = (Task)task.clone();
-					newTask.setId(StringHelper.getPrimaryKey());
-					newTask.setCreateTime(DateHelper.getTime());
-					newTask.setOperator(actor);
-					saveTask(newTask);
-					assignTask(newTask.getId(), actor);
+	public void addTaskActor(String taskId, String... actors) {
+		Task task = access().getTask(taskId);
+		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+		if(task.getTaskType().intValue() == TaskType.Task.ordinal()) {
+			int performType = task.getPerformType() == null ? -1 : task.getPerformType().intValue();
+			switch(performType) {
+			case -1:
+				break;
+			case 0:
+				assignTask(task.getId(), actors);
+				break;
+			case 1:
+				try {
+					for(String actor : actors) {
+						Task newTask = (Task)task.clone();
+						newTask.setId(StringHelper.getPrimaryKey());
+						newTask.setCreateTime(DateHelper.getTime());
+						newTask.setOperator(actor);
+						saveTask(newTask);
+						assignTask(newTask.getId(), actor);
+					}
+				} catch(CloneNotSupportedException ex) {
+					throw new SnakerException("任务对象不支持复制", ex.getCause());
 				}
-			} catch(CloneNotSupportedException ex) {
-				throw new SnakerException("任务对象不支持复制", ex.getCause());
+				break;
 			}
-			break;
 		}
 	}
 	
+	/**
+	 * 向指定任务移除参与者
+	 */
 	@Override
-	public void removeTaskActor(Task task, String... actors) {
-		access().removeTaskActor(task.getId(), actors);
+	public void removeTaskActor(String taskId, String... actors) {
+		Task task = access().getTask(taskId);
+		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+		if(task.getTaskType().intValue() == TaskType.Task.ordinal()) {
+			access().removeTaskActor(task.getId(), actors);
+		}
 	}
 	
+	/**
+	 * 撤回指定的任务
+	 */
 	@Override
-	public Task withdrawTask(ProcessModel model, HistoryTask hist, String operator) {
-		TaskModel histModel = (TaskModel)model.getNode(hist.getTaskName());
+	public Task withdrawTask(String taskId, String operator) {
+		HistoryTask hist = engine.query().getHistTask(taskId);
+		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
+		Order order = engine.query().getOrder(hist.getOrderId());
+		AssertHelper.notNull(order, "指定的流程实例[id=" + hist.getOrderId() + "]已完成或不存在");
+		Process process = ModelContainer.getEntity(order.getProcessId());
+		TaskModel histModel = (TaskModel)process.getModel().getNode(hist.getTaskName());
 		List<Task> tasks = null;
 		if(TaskModel.TYPE_ANY.equalsIgnoreCase(histModel.getPerformType())) {
 			tasks = access().getNextActiveTasks(hist.getId());
@@ -141,6 +194,9 @@ public class TaskService extends AccessService implements ITaskService {
 		return task;
 	}
 	
+	/**
+	 * 驳回任务
+	 */
 	@Override
 	public Task rejectTask(ProcessModel model, Task currentTask) {
 		String parentTaskId = currentTask.getParentTaskId();
@@ -148,7 +204,7 @@ public class TaskService extends AccessService implements ITaskService {
 			throw new SnakerException("上一步任务ID为空，无法驳回至上一步处理");
 		}
 		NodeModel current = model.getNode(currentTask.getTaskName());
-		HistoryTask history = getHistoryTask(parentTaskId);
+		HistoryTask history = access().getHistTask(parentTaskId);
 		NodeModel parent = model.getNode(history.getTaskName());
 		if(!current.canRejected(parent)) {
 			throw new SnakerException("无法驳回至上一步处理，请确认上一步骤并非fork、join、suprocess以及会签任务");
@@ -164,10 +220,11 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 
 	/**
-	 * 由DBAccess实现类分派task的参与者。关联taskActor对象
+	 * 对指定的任务分配参与者。参与者可以为用户、部门、角色
+	 * @param taskId 任务id
+	 * @param actorIds 参与者id集合
 	 */
-	@Override
-	public void assignTask(String taskId, String... actorIds) {
+	private void assignTask(String taskId, String... actorIds) {
 		if(actorIds == null || actorIds.length == 0) return;
 		for(String actorId : actorIds) {
 			//修复当actorId为null的bug
@@ -180,19 +237,22 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 
 	/**
-	 * 由DBAccess实现类根据taskId获取task对象
+	 * 根据任务模型、执行对象创建新的任务
+	 * @param workModel 工作模型
+	 * @param execution 执行对象
+	 * @return List<Task>
 	 */
 	@Override
-	public Task getTask(String taskId) {
-		return access().getTask(taskId);
-	}
-	
-	/**
-	 * 由DBAccess实现类根据taskId获取historytask对象
-	 */
-	@Override
-	public HistoryTask getHistoryTask(String taskId) {
-		return access().getHistTask(taskId);
+	public List<Task> createTask(WorkModel workModel, Execution execution) {
+		List<Task> tasks = null;
+		if(workModel instanceof TaskModel) {
+			tasks = createTask((TaskModel)workModel, execution);
+		} else if(workModel instanceof CustomModel) {
+			tasks = createTask((CustomModel)workModel, execution);
+		} else {
+			tasks = Collections.emptyList();
+		}
+		return tasks;
 	}
 	
 	/**
@@ -202,8 +262,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param args 执行参数
 	 * @return List<Task> 任务列表
 	 */
-	@Override
-	public List<Task> createTask(TaskModel taskModel, Execution execution) {
+	private List<Task> createTask(TaskModel taskModel, Execution execution) {
 		List<Task> tasks = new ArrayList<Task>();
 		
 		Map<String, Object> args = execution.getArgs();
@@ -234,8 +293,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param order
 	 * @return
 	 */
-	@Override
-	public List<Task> createTask(CustomModel customModel, Execution execution) {
+	private List<Task> createTask(CustomModel customModel, Execution execution) {
 		List<Task> tasks = new ArrayList<Task>();
 		Task task = createTask(customModel, execution, TaskType.Custom.ordinal());
 		saveTask(task);
@@ -272,7 +330,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @return
 	 */
 	private Task createTask(BaseModel model, Execution execution, int taskType) {
-		Task task = newTask();
+		Task task = new Task(StringHelper.getPrimaryKey());
 		task.setOrderId(execution.getOrder().getId());
 		task.setTaskName(model.getName());
 		task.setDisplayName(model.getDisplayName());
@@ -290,16 +348,6 @@ public class TaskService extends AccessService implements ITaskService {
 		access().saveTask(task);
 	}
 
-	/**
-	 * 新建task对象，并设置初始化状态、类型
-	 */
-	@Override
-	public Task newTask() {
-		Task task = new Task();
-		task.setId(StringHelper.getPrimaryKey());//uuid
-		return task;
-	}
-	
 	/**
 	 * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
 	 * @param assignee
@@ -351,14 +399,6 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 
 	/**
-	 * 根据taskId返回所有的任务参与对象集合
-	 */
-	@Override
-	public List<TaskActor> getTaskActorsByTaskId(String taskId) {
-		return access().getTaskActorsByTaskId(taskId);
-	}
-
-	/**
 	 * 判断当前操作人operator是否允许执行taskId指定的任务
 	 */
 	@Override
@@ -371,7 +411,7 @@ public class TaskService extends AccessService implements ITaskService {
 				return operator.equals(task.getOperator());
 			}
 		}
-		List<TaskActor> actors = getTaskActorsByTaskId(task.getId());
+		List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 		if(actors == null || actors.isEmpty()) return true;
 		if(StringHelper.isEmpty(operator)) return false;
 		boolean isAllowed = false;

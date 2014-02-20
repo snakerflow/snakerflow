@@ -14,7 +14,6 @@
  */
 package org.snaker.engine.core;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,23 +26,17 @@ import org.snaker.engine.IProcessService;
 import org.snaker.engine.IQueryService;
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.transaction.TransactionInterceptor;
 import org.snaker.engine.cfg.Configuration;
-import org.snaker.engine.core.TaskService.TaskType;
-import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
-import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
-import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.StartModel;
-import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TransitionModel;
 import org.snaker.engine.model.WorkModel;
 
@@ -118,6 +111,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		List<AccessService> services = context.findList(AccessService.class);
 		for(AccessService service : services) {
 			service.setAccess(access);
+			service.setEngine(this);
 		}
 		initializeProcess();
 	}
@@ -126,7 +120,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 初始化流程定义
 	 */
 	private void initializeProcess() {
-		List<Process> list = processService.getAllProcess();
+		List<Process> list = process().getAllProcess();
 		if(list == null || list.isEmpty()) {
 			log.warn("当前没有任何流程定义,请部署流程");
 			return;
@@ -142,7 +136,8 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	@Override
 	public IProcessService process() {
-		return this.processService;
+		AssertHelper.notNull(processService);
+		return processService;
 	}
 
 	/**
@@ -150,22 +145,27 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	@Override
 	public IQueryService query() {
+		AssertHelper.notNull(queryService);
 		return queryService;
 	}
 	
 	/**
 	 * 获取实例服务
+	 * @since 1.2.2
 	 */
 	@Override
 	public IOrderService order() {
+		AssertHelper.notNull(orderService);
 		return orderService;
 	}
 
 	/**
 	 * 获取任务服务
+	 * @since 1.2.2
 	 */
 	@Override
 	public ITaskService task() {
+		AssertHelper.notNull(taskService);
 		return taskService;
 	}
 	
@@ -228,8 +228,9 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * @param parentNodeName 启动子流程的父流程节点名称
 	 * @return Execution
 	 */
-	private Execution execute(Process process, String operator, Map<String, Object> args, String parentId, String parentNodeName) {
-		Order order = orderService.createOrder(process, operator, args, parentId, parentNodeName);
+	private Execution execute(Process process, String operator, Map<String, Object> args, 
+			String parentId, String parentNodeName) {
+		Order order = order().createOrder(process, operator, args, parentId, parentNodeName);
 		Execution current = new Execution(this, process, order, args);
 		current.setOperator(operator);
 		return current;
@@ -256,16 +257,12 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	@Override
 	public List<Task> executeTask(String taskId, String operator, Map<String, Object> args) {
-		/*
-		 * 完成任务，并且构造执行对象
-		 */
+		//完成任务，并且构造执行对象
 		Execution execution = execute(taskId, operator, args);
 		ProcessModel model = execution.getProcess().getModel();
 		if(model != null) {
 			NodeModel nodeModel = model.getNode(execution.getTask().getTaskName());
-			/*
-			 * 将执行对象交给该任务对应的节点模型执行
-			 */
+			//将执行对象交给该任务对应的节点模型执行
 			nodeModel.execute(execution);
 		}
 		return execution.getTasks();
@@ -282,7 +279,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		ProcessModel model = execution.getProcess().getModel();
 		AssertHelper.notNull(model, "当前任务未找到流程定义模型");
 		if(StringHelper.isEmpty(nodeName)) {
-			Task newTask = taskService.rejectTask(model, execution.getTask());
+			Task newTask = task().rejectTask(model, execution.getTask());
 			execution.addTask(newTask);
 		} else {
 			NodeModel nodeModel = model.getNode(nodeName);
@@ -302,14 +299,14 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	@Override
 	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, WorkModel model) {
-		Order order = orderService.getOrder(orderId);
+		Order order = query().getOrder(orderId);
 		AssertHelper.notNull(order, "指定的流程实例[id=" + orderId + "]已完成或不存在");
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
 		Process process = ModelContainer.getEntity(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
-		return createTask(model, execution);
+		return task().createTask(model, execution);
 	}
 	
 	/**
@@ -321,98 +318,16 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	private Execution execute(String taskId, String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
-		Task task = finishTask(taskId, operator, args);
-		Order order = orderService.getOrder(task.getOrderId());
+		Task task = task().complete(taskId, operator, args);
+		Order order = query().getOrder(task.getOrderId());
 		AssertHelper.notNull(order, "指定的流程实例[id=" + task.getOrderId() + "]已完成或不存在");
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
+		order().updateOrder(order);
 		Process process = ModelContainer.getEntity(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
 		execution.setTask(task);
 		return execution;
-	}
-	
-	/**
-	 * 根据任务主键ID，操作人ID完成任务
-	 */
-	@Override
-	public Task finishTask(String taskId, String operator, Map<String, Object> args) {
-		Task task = taskService.getTask(taskId);
-		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		task.setVariable(JsonHelper.toJson(args));
-		if(!taskService.isAllowed(task, operator)) {
-			throw new SnakerException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
-		}
-		taskService.completeTask(task, operator);
-		return task;
-	}
-	
-	@Override
-	public Task withdrawTask(String taskId, String operator) {
-		HistoryTask hist = taskService.getHistoryTask(taskId);
-		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-		Order order = orderService.getOrder(hist.getOrderId());
-		AssertHelper.notNull(order, "指定的流程实例[id=" + hist.getOrderId() + "]已完成或不存在");
-		Process process = ModelContainer.getEntity(order.getProcessId());
-		return taskService.withdrawTask(process.getModel(), hist, operator);
-	}
-
-	@Override
-	public void takeTask(String taskId, String operator) {
-		Task task = taskService.getTask(taskId);
-		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		if(!taskService.isAllowed(task, operator)) {
-			throw new SnakerException("当前参与者[" + operator + "]不允许提取任务[taskId=" + taskId + "]");
-		}
-		taskService.takeTask(task, operator);
-	}
-	
-	@Override
-	public void terminateById(String orderId) {
-		terminateById(orderId, null);
-	}
-	
-	@Override
-	public void terminateById(String orderId, String operator) {
-		List<Task> tasks = queryService.getActiveTasks(orderId);
-		for(Task task : tasks) {
-			taskService.completeTask(task, operator);
-		}
-		orderService.terminate(orderId, operator);
-	}
-	
-	@Override
-	public void finishInstanceById(String orderId) {
-		Order order = orderService.getOrder(orderId);
-		orderService.finish(order);
-	}
-
-	@Override
-	public List<Task> createTask(WorkModel model, Execution execution) {
-		if(model instanceof TaskModel) {
-			return taskService.createTask((TaskModel)model, execution);
-		} else if(model instanceof CustomModel) {
-			return taskService.createTask((CustomModel)model, execution);
-		}
-		return Collections.emptyList();
-	}
-	
-	@Override
-	public void addTaskActor(String taskId, String... actors) {
-		Task task = taskService.getTask(taskId);
-		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		if(task.getTaskType().intValue() == TaskType.Task.ordinal()) {
-			taskService.addTaskActor(task, actors);
-		}
-	}
-
-	@Override
-	public void removeTaskActor(String taskId, String... actors) {
-		Task task = taskService.getTask(taskId);
-		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		if(task.getTaskType().intValue() == TaskType.Task.ordinal()) {
-			taskService.removeTaskActor(task, actors);
-		}
 	}
 }

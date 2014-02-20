@@ -15,14 +15,12 @@
 package org.snaker.engine;
 
 import java.util.List;
+import java.util.Map;
 
 import org.snaker.engine.core.Execution;
-import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Task;
-import org.snaker.engine.entity.TaskActor;
-import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.ProcessModel;
-import org.snaker.engine.model.TaskModel;
+import org.snaker.engine.model.WorkModel;
 
 /**
  * 任务业务类，包括以下服务：
@@ -39,118 +37,85 @@ import org.snaker.engine.model.TaskModel;
 public interface ITaskService {
 	/**
 	 * 完成指定的任务，删除活动任务记录，创建历史任务
-	 * @param task 任务对象
-	 * @return Task
+	 * @param taskId 任务id
+	 * @return Task 任务对象
 	 */
-	Task completeTask(Task task);
+	Task complete(String taskId);
 	/**
 	 * 完成指定的任务，删除活动任务记录，创建历史任务
-	 * @param task 任务对象
+	 * @param taskId 任务id
 	 * @param operator 操作人
-	 * @return Task
+	 * @return Task 任务对象
 	 */
-	Task completeTask(Task task, String operator);
+	Task complete(String taskId, String operator);
 	
 	/**
-	 * 提取指定的任务，只更新操作人字段标识参与者
-	 * @param task 任务对象
-	 * @param operator 操作人
-	 * @return Task
+	 * 根据任务主键ID，操作人ID完成任务
+	 * @param taskId 任务id
+	 * @param operator 操作人id
+	 * @param args 参数集合
+	 * @return Task 任务对象
 	 */
-	Task takeTask(Task task, String operator);
+	Task complete(String taskId, String operator, Map<String, Object> args);
+	
+	/**
+	 * 根据任务主键ID，操作人ID提取任务
+	 * 提取任务相当于预受理操作，仅仅标识此任务只能由此操作人处理
+	 * @param taskId 任务id
+	 * @param operator 操作人id
+	 * @return Task 任务对象
+	 */
+	Task take(String taskId, String operator);
 	
 	/**
 	 * 向指定的任务id添加参与者
 	 * @param taskId 任务id
 	 * @param actors 参与者
 	 */
-	void addTaskActor(Task task, String... actors);
+	void addTaskActor(String taskId, String... actors);
 	
 	/**
 	 * 对指定的任务id删除参与者
 	 * @param taskId 任务id
 	 * @param actors 参与者
 	 */
-	void removeTaskActor(Task task, String... actors);
+	void removeTaskActor(String taskId, String... actors);
 	
 	/**
 	 * 根据任务主键id、操作人撤回任务
-	 * @param model 流程定义模型
-	 * @param hist 历史任务对象
+	 * @param taskId 任务id
 	 * @param operator 操作人
-	 * @return Task
+	 * @return Task 任务对象
 	 */
-	Task withdrawTask(ProcessModel model, HistoryTask hist, String operator);
+	Task withdrawTask(String taskId, String operator);
 	
 	/**
 	 * 根据当前任务对象驳回至上一步处理
 	 * @param model 流程定义模型，用以获取上一步模型对象
 	 * @param currentTask 当前任务对象
-	 * @return Task
+	 * @return Task 任务对象
 	 */
 	Task rejectTask(ProcessModel model, Task currentTask);
 	
 	/**
-	 * 根据taskId获取所有该任务的参与者集合
-	 * @param taskId 任务id
-	 * @return List<TaskActor>
-	 */
-	List<TaskActor> getTaskActorsByTaskId(String taskId);
-	
-	/**
 	 * 根据taskId、operator，判断操作人operator是否允许执行任务
-	 * @param taskId 任务id
+	 * @param task 任务对象
 	 * @param operator 操作人
-	 * @return boolean
+	 * @return boolean 是否允许操作
 	 */
 	boolean isAllowed(Task task, String operator);
-
-	/**
-	 * 对指定的任务分配参与者。参与者可以为用户、部门、角色
-	 * @param taskId 任务id
-	 * @param actorIds 参与者id集合
-	 */
-	void assignTask(String taskId, String... actorIds);
-	
-	/**
-	 * 根据任务编号获取任务实例
-	 * @param taskId 任务id
-	 * @return Task
-	 */
-	Task getTask(String taskId);
-	
-	/**
-	 * 根据任务编号获取历史任务实例
-	 * @param taskId 任务id
-	 * @return HistoryTask
-	 */
-	HistoryTask getHistoryTask(String taskId);
 	
 	/**
 	 * 根据任务模型、执行对象创建新的任务
-	 * @param taskModel 任务模型
+	 * @param workModel 工作模型
 	 * @param execution 执行对象
-	 * @return List<Task>
+	 * @return List<Task> 创建任务集合
 	 */
-	List<Task> createTask(TaskModel taskModel, Execution execution);
-	
-	/**
-	 * 根据自定义模型、执行对象创建新的任务 
-	 * @param customModel 自定义模型
-	 * @param execution 执行对象
-	 * @return List<Task>
-	 */
-	List<Task> createTask(CustomModel customModel, Execution execution);
+	List<Task> createTask(WorkModel workModel, Execution execution);
 	
 	/**
 	 * 保存任务对象
 	 * @param task 任务对象
 	 */
 	void saveTask(Task task);
-	
-	/**
-	 * 创建新的任务对象
-	 * @return Task
-	 */
-	Task newTask();
 }

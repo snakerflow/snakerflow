@@ -25,7 +25,7 @@ public interface DecisionHandler {
 	/**
 	 * 定义决策方法，实现类需要根据执行对象做处理，并返回后置流转的name
 	 * @param execution
-	 * @return
+	 * @return String 后置流转的name
 	 */
 	String decide(Execution execution);
 }

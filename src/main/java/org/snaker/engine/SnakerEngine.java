@@ -32,30 +32,32 @@ public interface SnakerEngine {
 	public static final String ADMIN = "snaker.admin";
 	/**
 	 * 根据Configuration对象配置实现类
-	 * @param context
+	 * @param config 全局配置对象
+	 * @return SnakerEngine 流程引擎
 	 */
 	public SnakerEngine configure(Configuration config);
 	
 	/**
 	 * 获取process服务
-	 * @return
+	 * @return IProcessService 流程定义服务
 	 */
 	public IProcessService process();
 	
 	/**
 	 * 获取查询服务
+	 * @return IQueryService 常用查询服务
 	 */
 	public IQueryService query();
 	
 	/**
 	 * 获取实例服务
-	 * @return
+	 * @return IQueryService 流程实例服务
 	 */
 	public IOrderService order();
 	
 	/**
 	 * 获取任务服务
-	 * @return
+	 * @return ITaskService 任务服务
 	 */
 	public ITaskService task();
 	
@@ -63,6 +65,7 @@ public interface SnakerEngine {
 	 * 根据流程定义ID启动流程实例
 	 * @param id 流程定义ID
 	 * @return Order 流程实例
+	 * @see #startInstanceById(String, String, Map)
 	 */
 	public Order startInstanceById(String id);
 	
@@ -71,6 +74,7 @@ public interface SnakerEngine {
 	 * @param id 流程定义ID
 	 * @param operator 操作人ID
 	 * @return Order 流程实例
+	 * @see #startInstanceById(String, String, Map)
 	 */
 	public Order startInstanceById(String id, String operator);
 	
@@ -85,8 +89,8 @@ public interface SnakerEngine {
 	
 	/**
 	 * 根据父执行对象启动子流程实例
-	 * @param execution
-	 * @return
+	 * @param execution 执行对象
+	 * @return Order 流程实例
 	 */
 	public Order startInstanceByExecution(Execution execution);
 	
@@ -94,6 +98,7 @@ public interface SnakerEngine {
 	 * 根据任务主键ID执行任务
 	 * @param taskId 任务主键ID
 	 * @return List<Task> 任务集合
+	 * @see #executeTask(String, String, Map)
 	 */
 	public List<Task> executeTask(String taskId);
 	
@@ -102,6 +107,7 @@ public interface SnakerEngine {
 	 * @param taskId 任务主键ID
 	 * @param operator 操作人主键ID
 	 * @return List<Task> 任务集合
+	 * @see #executeTask(String, String, Map)
 	 */
 	public List<Task> executeTask(String taskId, String operator);
 	
@@ -127,78 +133,12 @@ public interface SnakerEngine {
 	public List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName);
 	
 	/**
-	 * 创建新的任务
-	 * @param model 节点模型
-	 * @param execution 执行对象
-	 * @return List<Task> 任务集合
-	 */
-	public List<Task> createTask(WorkModel model, Execution execution);
-	
-	/**
-	 * 根据任务主键ID，操作人ID完成任务
-	 * @param taskId 任务id
-	 * @param operator 操作人id
-	 * @param args 参数集合
-	 * @return
-	 */
-	public Task finishTask(String taskId, String operator, Map<String, Object> args);
-	
-	/**
 	 * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
 	 * @param orderId 流程实例id
 	 * @param operator 操作人id
 	 * @param args 参数列表
 	 * @param model 节点模型
-	 * @return
+	 * @return List<Task> 任务集合
 	 */
 	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, WorkModel model);
-	
-	/**
-	 * 根据任务主键ID，操作人ID提取任务
-	 * 提取任务相当于预受理操作，仅仅标识此任务只能由此操作人处理
-	 * @param taskId 任务主键ID
-	 * @param operator 操作人主键ID
-	 */
-	public void takeTask(String taskId, String operator);
-	
-	/**
-	 * 终止指定ID的流程实例
-	 * @param orderId 流程实例ID
-	 */
-	public void terminateById(String orderId);
-	
-	/**
-	 * 终止指定ID的流程实例
-	 * @param orderId 流程实例ID
-	 * @param operator 操作人主键ID
-	 */
-	public void terminateById(String orderId, String operator);
-	
-	/**
-	 * 根据任务主键id、处理人撤回任务
-	 * @param taskId 任务主键ID
-	 * @param operator 操作人主键ID
-	 * @return Task
-	 */
-	public Task withdrawTask(String taskId, String operator);
-	
-	/**
-	 * 完成指定id的流程实例
-	 * @param orderId 执行对象
-	 */
-	public void finishInstanceById(String orderId);
-	
-	/**
-	 * 向指定的任务id，添加参与者
-	 * @param taskId 任务主键id
-	 * @param actors 参与者
-	 */
-	public void addTaskActor(String taskId, String... actors);
-	
-	/**
-	 * 对指定的任务id，删除参与者
-	 * @param taskId
-	 * @param actors
-	 */
-	public void removeTaskActor(String taskId, String... actors);
 }

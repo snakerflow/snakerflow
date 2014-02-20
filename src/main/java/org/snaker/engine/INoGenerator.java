@@ -26,7 +26,7 @@ public interface INoGenerator {
 	/**
 	 * 生成器方法
 	 * @param model
-	 * @return
+	 * @return String 编号
 	 */
 	String generate(ProcessModel model);
 }

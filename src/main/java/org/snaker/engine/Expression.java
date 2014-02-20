@@ -19,7 +19,8 @@ import java.util.Map;
 /**
  * 表达式解析接口
  * @author yuqs
- * @version 1.2
+ * @version 1.0
+ * @since 1.2.1
  */
 public interface Expression {
 	/**
@@ -27,7 +28,7 @@ public interface Expression {
 	 * @param T 返回类型
 	 * @param expr 表达式串
 	 * @param args 参数列表
-	 * @return
+	 * @return T 返回对象
 	 */
 	public <T> T eval(Class<T> T, String expr, Map<String, Object> args);
 }

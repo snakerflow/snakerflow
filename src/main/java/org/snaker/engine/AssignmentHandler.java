@@ -19,12 +19,14 @@ import org.snaker.engine.core.Execution;
 /**
  * 分配参与者的处理接口
  * @author yuqs
- * @version 1.2
+ * @version 1.0
+ * @since 1.2.1
  */
 public interface AssignmentHandler {
 	/**
 	 * 分配参与者方法，可获取到当前的执行对象
-	 * @param execution
+	 * @param execution 执行对象
+	 * @return Object 参与者对象
 	 */
 	Object assign(Execution execution);
 }

@@ -28,7 +28,7 @@ import org.snaker.engine.entity.Process;
 public interface IProcessService {
 	/**
 	 * 保存流程定义
-	 * @param process
+	 * @param process 流程定义对象
 	 */
 	void saveProcess(Process process);
 	
@@ -41,34 +41,36 @@ public interface IProcessService {
 	
 	/**
 	 * 根据主键ID、或name获取流程定义对象
-	 * @param idName
-	 * @return Process
+	 * @param idName 流程定义id或name
+	 * @return Process 流程定义对象
 	 */
 	Process getProcess(String idName);
 	
 	/**
 	 * 根据给定的参数列表args分页查询process
-	 * @param page
-	 * @param args
-	 * @return Page<Process>
+	 * @param page 分页对象
+	 * @param name 流程定义name
+	 * @param state 流程定义状态
+	 * @return List<Process> 流程定义对象集合
 	 */
 	List<Process> getProcesss(Page<Process> page, String name, Integer state);
 	
 	/**
 	 * 获取所有的流程定义集合
-	 * @return List<Process>
+	 * @return List<Process> 流程定义对象集合
 	 */
 	List<Process> getAllProcess();
 	
 	/**
-	 * 根據InputStream輸入流，部署流程定義
-	 * @param input
+	 * 根據InputStream輸入流，部署流程定义
+	 * @param input 流程定义输入流
+	 * @return String 流程定义id
 	 */
 	String deploy(InputStream input);
 	
 	/**
 	 * 卸载指定的流程定义
-	 * @param processId
+	 * @param processId 流程定义id
 	 */
 	void undeploy(String processId);
 }
