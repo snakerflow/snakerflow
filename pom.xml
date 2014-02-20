@@ -17,11 +17,11 @@
     <developer>
       <name>yuqs</name>
       <url>http://www.snakerflow.com</url>
-      <email>tom08191984@163.com</email>
+      <email>snakerflow@163.com</email>
       <timezone>8</timezone>
     </developer>
   </developers>
-
+  
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
