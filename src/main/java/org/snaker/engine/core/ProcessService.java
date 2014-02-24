@@ -14,7 +14,6 @@
  */
 package org.snaker.engine.core;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -40,27 +39,6 @@ public class ProcessService extends AccessService implements IProcessService {
 		access().saveProcess(process);
 	}
 	
-	public void update(Process process, InputStream input) {
-		if(input != null) {
-			try {
-				byte[] bytes = StreamHelper.readBytes(input);
-				ProcessModel model = ModelParser.parse(bytes);
-				if(model.isExistSub()) {
-					ModelContainer.cascadeReference(model);
-				}
-				process.setName(model.getName());
-				process.setDisplayName(model.getDisplayName());
-				process.setInstanceUrl(model.getInstanceUrl());
-				process.setModel(model);
-				process.setBytes(bytes);
-				ModelContainer.pushEntity(process.getId(), process);
-			} catch (IOException e) {
-				throw new SnakerException(e.getMessage(), e.getCause());
-			}
-		}
-		access().updateProcess(process);
-	}
-	
 	/**
 	 * 由DBAccess实现类根据id或name获取process对象
 	 */
@@ -77,22 +55,24 @@ public class ProcessService extends AccessService implements IProcessService {
 			Process process = new Process();
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
-			Process dbEntity = getProcess(model.getName());
-			if(dbEntity != null) {
-				return dbEntity.getId();
-			}
 			if(model.isExistSub()) {
 				ModelContainer.cascadeReference(model);
 			}
-			process.setId(StringHelper.getPrimaryKey());
 			process.setName(model.getName());
 			process.setDisplayName(model.getDisplayName());
 			process.setState(STATE_ACTIVE);
 			process.setInstanceUrl(model.getInstanceUrl());
 			process.setModel(model);
 			process.setBytes(bytes);
+			Process dbEntity = getProcess(model.getName());
+			if(dbEntity != null) {
+				process.setId(dbEntity.getId());
+				access().updateProcess(process);
+			} else {
+				process.setId(StringHelper.getPrimaryKey());
+				saveProcess(process);
+			}
 			ModelContainer.pushEntity(process.getId(), process);
-			saveProcess(process);
 			return process.getId();
 		} catch(Exception e) {
 			e.printStackTrace();
