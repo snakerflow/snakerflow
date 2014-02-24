@@ -55,7 +55,7 @@ public class StreamHelper {
 	
 	public static InputStream getStreamFromString(String text) {
 		try {
-			byte[] bytes = text.getBytes("UTF-8");
+			byte[] bytes = text.getBytes("GBK");
 			return new ByteArrayInputStream(bytes);
 		} catch (UnsupportedEncodingException e) {
 			throw new AssertionError(e);
