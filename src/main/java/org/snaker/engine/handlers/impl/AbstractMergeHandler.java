@@ -34,30 +34,31 @@ import org.snaker.engine.model.TaskModel;
 public abstract class AbstractMergeHandler implements IHandler {
 	public void handle(Execution execution) {
 		/**
-		 * 查询当前流程实例的无法参与合并的task列表（包括同一事务中未提交的taskId）
-		 * 若所有中间task都完成，则设置为已合并状态，告诉model可继续执行join的输出变迁
+		 * 查询当前流程实例的无法参与合并的node列表
+		 * 若所有中间node都完成，则设置为已合并状态，告诉model可继续执行join的输出变迁
 		 */
 		IQueryService queryService = execution.getEngine().query();
 		Order order = execution.getOrder();
 		ProcessModel model = execution.getModel();
 		String[] activeNodes = findActiveNodes();
-		boolean isMerged = false;
+		boolean isSubProcessMerged = false;
+		boolean isTaskMerged = false;
 		
 		if(model.containsNodeNames(SubProcessModel.class, activeNodes)) {
 			List<Order> orders = queryService.getActiveOrdersByParentId(order.getId(), execution.getChildOrderId());
 			//如果所有子流程都已完成，则表示可合并
 			if(orders == null || orders.isEmpty()) {
-				isMerged = true;
+				isSubProcessMerged = true;
 			}
 		}
-		if(!isMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
+		if(isSubProcessMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
 			List<Task> tasks = queryService.getActiveTasks(order.getId(), execution.getTask().getId(), activeNodes);
 			if(tasks == null || tasks.isEmpty()) {
 				//如果所有task都已完成，则表示可合并
-				isMerged = true;
+				isTaskMerged = true;
 			}
 		}
-		execution.setMerged(isMerged);
+		execution.setMerged(isSubProcessMerged && isTaskMerged);
 	}
 
 	/**
