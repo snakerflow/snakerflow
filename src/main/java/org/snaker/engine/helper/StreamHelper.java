@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 
@@ -57,7 +56,7 @@ public class StreamHelper {
 		try {
 			byte[] bytes = text.getBytes("GBK");
 			return new ByteArrayInputStream(bytes);
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			throw new AssertionError(e);
 		}
 	}

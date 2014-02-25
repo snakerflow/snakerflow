@@ -52,11 +52,16 @@ public class ProcessService extends AccessService implements IProcessService {
 	 */
 	public String deploy(InputStream input) {
 		try {
-			Process process = new Process();
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
 			if(model.isExistSub()) {
 				ModelContainer.cascadeReference(model);
+			}
+			Process process = getProcess(model.getName());
+			boolean isNew = (process == null);
+			if(process == null) {
+				process = new Process();
+				process.setId(StringHelper.getPrimaryKey());
 			}
 			process.setName(model.getName());
 			process.setDisplayName(model.getDisplayName());
@@ -64,13 +69,10 @@ public class ProcessService extends AccessService implements IProcessService {
 			process.setInstanceUrl(model.getInstanceUrl());
 			process.setModel(model);
 			process.setBytes(bytes);
-			Process dbEntity = getProcess(model.getName());
-			if(dbEntity != null) {
-				process.setId(dbEntity.getId());
-				access().updateProcess(process);
-			} else {
-				process.setId(StringHelper.getPrimaryKey());
+			if(isNew) {
 				saveProcess(process);
+			} else {
+				access().updateProcess(process);
 			}
 			ModelContainer.pushEntity(process.getId(), process);
 			return process.getId();
