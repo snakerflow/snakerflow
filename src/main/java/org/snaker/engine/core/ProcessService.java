@@ -27,7 +27,6 @@ import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
 import org.snaker.engine.cache.memory.MemoryCacheManager;
 import org.snaker.engine.entity.Process;
-import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.ProcessModel;
@@ -44,22 +43,29 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * cache manager
 	 */
 	private CacheManager cacheManager;
+	/**
+	 * 实体cache(key=name,value=entity对象)
+	 */
 	private Cache<String, Process> entityCache;
+	/**
+	 * 名称cache(key=id,value=name对象)
+	 */
 	private Cache<String, String> nameCache;
 	/**
-	 * 由DBAccess实现类持久化order对象
+	 * 保存process实体对象
 	 */
 	public void saveProcess(Process process) {
 		access().saveProcess(process);
 	}
 	
 	/**
-	 * 由DBAccess实现类根据id或name获取process对象
+	 * 根据id或name获取process对象
+	 * 先通过cache获取，如果返回空，就从数据库读取并put
 	 */
 	public Process getProcess(String idName) {
 		Process entity = null;
-		Cache<String, String> nameCache = getAvailableNameCache();
-		Cache<String, Process> entityCache = getAvailableEntityCache();
+		Cache<String, String> nameCache = ensureAvailableNameCache();
+		Cache<String, Process> entityCache = ensureAvailableEntityCache();
 		if(entityCache != null) {
 			entity = entityCache.get(idName);
 		}
@@ -70,13 +76,21 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			}
 		}
 		if(entity == null) {
-			entity = access().getProcess(idName);
-			AssertHelper.notNull(entity);
-			if(entity.getModel() == null && entity.getDBContent() != null) {
-				entity.setModel(ModelParser.parse(entity.getDBContent()));
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process from database.");
 			}
-			getAvailableEntityCache().put(entity.getName(), entity);
-			getAvailableNameCache().put(entity.getId(), entity.getName());
+			entity = access().getProcess(idName);
+			if(entity != null) {
+				if(entity.getDBContent() != null) {
+					entity.setModel(ModelParser.parse(entity.getDBContent()));
+				}
+				ensureAvailableEntityCache().put(entity.getName(), entity);
+				ensureAvailableNameCache().put(entity.getId(), entity.getName());
+			}
+		} else {
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process from cache.");
+			}
 		}
 		return entity;
 	}
@@ -106,10 +120,11 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			} else {
 				access().updateProcess(process);
 			}
-			getAvailableEntityCache().put(process.getName(), process);
-			getAvailableNameCache().put(process.getId(), process.getName());
+			ensureAvailableEntityCache().put(process.getName(), process);
+			ensureAvailableNameCache().put(process.getId(), process.getName());
 			return process.getId();
 		} catch(Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 			throw new SnakerException(e.getMessage(), e.getCause());
 		}
@@ -124,6 +139,9 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		return access().getAllProcess();
 	}
 
+	/**
+	 * 根据processId卸载流程
+	 */
 	public void undeploy(String processId) {
 		Process process = access().getProcess(processId);
 		process.setState(STATE_FINISH);
@@ -139,23 +157,23 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		}
 	}
 	
-    private Cache<String, Process> getAvailableEntityCache() {
-        Cache<String, Process> entityCache = getEntityCache();
+    private Cache<String, Process> ensureAvailableEntityCache() {
+        Cache<String, Process> entityCache = ensureEntityCache();
 		if(entityCache == null && this.cacheManager != null) {
 			entityCache = this.cacheManager.getCache(getClass().getName() + ".entity");
 		}
         return entityCache;
     }
     
-    private Cache<String, String> getAvailableNameCache() {
-        Cache<String, String> nameCache = getNameCache();
+    private Cache<String, String> ensureAvailableNameCache() {
+        Cache<String, String> nameCache = ensureNameCache();
 		if(nameCache == null && this.cacheManager != null) {
 			nameCache = this.cacheManager.getCache(getClass().getName() + ".name");
 		}
         return nameCache;
     }
 
-	public Cache<String, Process> getEntityCache() {
+	public Cache<String, Process> ensureEntityCache() {
 		return entityCache;
 	}
 
@@ -163,7 +181,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		this.entityCache = entityCache;
 	}
 
-	public Cache<String, String> getNameCache() {
+	public Cache<String, String> ensureNameCache() {
 		return nameCache;
 	}
 

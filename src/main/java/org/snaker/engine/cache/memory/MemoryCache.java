@@ -21,16 +21,24 @@ import org.snaker.engine.cache.CacheException;
 import org.snaker.engine.helper.AssertHelper;
 
 /**
- * 基于当前虚拟机的内存管理cache
+ * 基于内存管理cache
  * @author yuqs
  * @since 1.3
  */
 public class MemoryCache<K, V> implements Cache<K, V> {
+	/**
+	 * map cache
+	 */
 	private final Map<K, V> map;
+	/**
+	 * 通过Map实现类构造MemoryCache
+	 * @param backingMap
+	 */
 	public MemoryCache(Map<K, V> backingMap) {
 		AssertHelper.notNull(backingMap);
 		this.map = backingMap;
 	}
+	
 	public V get(K key) throws CacheException {
 		return map.get(key);
 	}
