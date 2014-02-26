@@ -164,7 +164,7 @@ public class TaskService extends AccessService implements ITaskService {
 		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
 		Order order = engine.query().getOrder(hist.getOrderId());
 		AssertHelper.notNull(order, "指定的流程实例[id=" + hist.getOrderId() + "]已完成或不存在");
-		Process process = ModelContainer.getEntity(order.getProcessId());
+		Process process = getEngine().process().getProcess(order.getProcessId());
 		TaskModel histModel = (TaskModel)process.getModel().getNode(hist.getTaskName());
 		List<Task> tasks = null;
 		if(TaskModel.TYPE_ANY.equalsIgnoreCase(histModel.getPerformType())) {

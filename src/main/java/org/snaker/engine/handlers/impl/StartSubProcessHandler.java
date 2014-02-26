@@ -23,11 +23,9 @@ import java.util.concurrent.Future;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.core.Execution;
-import org.snaker.engine.core.ModelContainer;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.handlers.IHandler;
-import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.SubProcessModel;
 
 /**
@@ -54,11 +52,9 @@ public class StartSubProcessHandler implements IHandler {
 	 * 子流程执行的处理
 	 */
 	public void handle(Execution execution) {
-		//获取子流程模型对象
-		ProcessModel pm = model.getSubProcess();
 		//根据子流程模型名称获取子流程定义对象
-		Process process = ModelContainer.getEntity(pm.getName());
 		SnakerEngine engine = execution.getEngine();
+		Process process = engine.process().getProcess(model.getProcessName());
 		
 		Execution child = execution.createSubExecution(execution, process, model.getName());
 		Order order = null;

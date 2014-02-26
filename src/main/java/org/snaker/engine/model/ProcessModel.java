@@ -41,10 +41,6 @@ public class ProcessModel extends BaseModel {
 	 */
 	private String instanceUrl;
 	/**
-	 * 是否存在子流程
-	 */
-	private boolean isExistSub = false;
-	/**
 	 * 期望完成时间
 	 */
 	private String expireTime;
@@ -115,13 +111,6 @@ public class ProcessModel extends BaseModel {
 			}
 		}
 		return false;
-	}
-	
-	public boolean isExistSub() {
-		return isExistSub;
-	}
-	public void setExistSub(boolean isExistSub) {
-		this.isExistSub = isExistSub;
 	}
 	
 	public List<NodeModel> getNodes() {

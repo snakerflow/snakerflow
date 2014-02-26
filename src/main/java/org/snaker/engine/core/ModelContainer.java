@@ -29,6 +29,7 @@ import org.snaker.engine.parser.ModelParser;
  * 流程定义模型容器类
  * @author yuqs
  * @version 1.0
+ * @deprecated 1.3
  */
 public class ModelContainer {
 	private static final Logger log = LoggerFactory.getLogger(ModelContainer.class);
@@ -95,7 +96,7 @@ public class ModelContainer {
 	 * @param model
 	 */
 	public static void cascadeReference(ProcessModel model) {
-		if(model != null && model.isExistSub()) {
+		if(model != null) {
 			for(NodeModel node : model.getNodes()) {
 				if(node instanceof SubProcessModel) {
 					SubProcessModel spm = (SubProcessModel)node;

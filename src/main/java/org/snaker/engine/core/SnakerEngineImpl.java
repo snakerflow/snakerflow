@@ -27,6 +27,9 @@ import org.snaker.engine.IQueryService;
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.transaction.TransactionInterceptor;
+import org.snaker.engine.cache.CacheManager;
+import org.snaker.engine.cache.CacheManagerAware;
+import org.snaker.engine.cache.memory.MemoryCacheManager;
 import org.snaker.engine.cfg.Configuration;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
@@ -99,6 +102,12 @@ public class SnakerEngineImpl implements SnakerEngine {
 			}
 			setDBAccess(access);
 		}
+		CacheManager cacheManager = context.find(CacheManager.class);
+		if(cacheManager == null) cacheManager = new MemoryCacheManager();
+		List<CacheManagerAware> cacheServices = context.findList(CacheManagerAware.class);
+		for(CacheManagerAware cacheService : cacheServices) {
+			cacheService.setCacheManager(cacheManager);
+		}
 		return this;
 	}
 	
@@ -112,7 +121,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 			service.setAccess(access);
 			service.setEngine(this);
 		}
-		initializeProcess();
+		//initializeProcess();
 	}
 	
 	/**
@@ -183,7 +192,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	public Order startInstanceById(String id, String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
-		Process process = ModelContainer.getEntity(id);
+		Process process = process().getProcess(id);
 		AssertHelper.notNull(process, "指定的流程定义[id=" + id + "]不存在");
 		Execution execution = execute(process, operator, args, null, null);
 		
@@ -289,7 +298,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		AssertHelper.notNull(order, "指定的流程实例[id=" + orderId + "]已完成或不存在");
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
-		Process process = ModelContainer.getEntity(order.getProcessId());
+		Process process = process().getProcess(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
 		return task().createTask(model, execution);
@@ -310,7 +319,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
 		order().updateOrder(order);
-		Process process = ModelContainer.getEntity(order.getProcessId());
+		Process process = process().getProcess(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
 		execution.setTask(task);

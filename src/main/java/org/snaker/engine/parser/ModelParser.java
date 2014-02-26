@@ -24,7 +24,6 @@ import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.helper.XmlHelper;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
-import org.snaker.engine.model.SubProcessModel;
 import org.snaker.engine.model.TransitionModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,10 +60,6 @@ public class ModelParser {
 					Node node = nodeList.item(i);
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
 						NodeModel model = parseModel(node);
-						//判断是否存在子流程
-						if(model instanceof SubProcessModel) {
-							process.setExistSub(true);
-						}
 						process.getNodes().add(model);
 					}
 				}
