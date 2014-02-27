@@ -3,32 +3,6 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Query">
-	<select id="getWorkItems" resultType="workitem" parameterType="hashmap">
-		${limitBefore}
-	 	<include refid="selectWorkItemsPart"/>
-		<include refid="fromWorkItemsPart"/>
-      	${orderby}
-      	${limitAfter}
-	</select>
-	
-	<select id="getWorkItemsCount" resultType="long" parameterType="hashmap">
-   		select count(*)
-    	<include refid="fromWorkItemsPart"/>
-	</select>
-	
-    <select id="getActiveTasks" resultType="task" parameterType="hashmap">
-    	${limitBefore}
-        <include refid="selectActiveTasksPart"/>
-		<include refid="fromActiveTasksPart"/>
-		${orderby}
-		${limitAfter}
-    </select>
-    
-    <select id="getActiveTasksCount" resultType="long" parameterType="hashmap">
-   		select count(*)
-    	<include refid="fromActiveTasksPart"/>
-    </select>
-    
     <select id="getActiveOrders" resultType="order" parameterType="hashmap">
     	${limitBefore}
     	<include refid="selectActiveOrdersPart"/>
@@ -42,39 +16,17 @@
     	<include refid="fromActiveOrdersPart"/>
     </select>
     
-    <select id="getActiveTasksByTaskNames" resultType="task" parameterType="hashmap">
+	<select id="getActiveTasks" resultType="task" parameterType="hashmap">
+    	${limitBefore}
         <include refid="selectActiveTasksPart"/>
-        from wf_task 
-		<where>
-      		<if test="orderId != null">
-        		and order_Id = #{orderId}
-      		</if>
-      		<if test="excludedTaskId != null">
-        		and id != #{excludedTaskId}
-      		</if>
-	        <if test="taskNames != null and taskNames.length > 0">
-	            and task_Name in
-				<foreach collection="taskNames" index="index" item="item" open="(" separator="," close=")">
-					#{item, jdbcType=VARCHAR}
-				</foreach>
-			</if>
-      	</where>
+		<include refid="fromActiveTasksPart"/>
+		${orderby}
+		${limitAfter}
     </select>
     
-    <select id="getActiveOrdersByParentId" resultType="order" parameterType="hashmap">
-    	<include refid="selectActiveOrdersPart"/>
-		from wf_order 
-		<where>
-      		<if test="parentId != null">
-        		parent_Id = #{parentId}
-      		</if>
-        	<if test="excludedId != null and excludedId.length > 0">
-         	    and id not in
-				<foreach collection="excludedId" index="index" item="item" open="(" separator="," close=")">
-					#{item, jdbcType=VARCHAR}
-				</foreach>
-			</if>
-		</where>
+    <select id="getActiveTasksCount" resultType="long" parameterType="hashmap">
+   		select count(*)
+    	<include refid="fromActiveTasksPart"/>
     </select>
     
     <select id="getNextActiveTasks" resultType="task" parameterType="hashmap">
@@ -85,15 +37,111 @@
     	)
     </select>
     
+	<select id="getWorkItems" resultType="workitem" parameterType="hashmap">
+		${limitBefore}
+	 	<include refid="selectWorkItemsPart"/>
+		<include refid="fromWorkItemsPart"/>
+      	${orderby}
+      	${limitAfter}
+	</select>
+	
+	<select id="getWorkItemsCount" resultType="long" parameterType="hashmap">
+   		select count(*)
+    	<include refid="fromWorkItemsPart"/>
+	</select>
+    
+    <sql id="selectActiveOrdersPart">
+    	select 
+    		id,
+    		process_Id as processId,
+    		creator,
+    		create_Time as createTime,
+    		parent_Id as parentId,
+    		parent_Node_Name as parentNodeName,
+    		expire_Time as expireTime,
+    		last_Update_Time as lastUpdateTime,
+    		last_Updator as lastUpdator,
+    		order_No as orderNo,
+    		variable,
+    		version
+    </sql>
+    
     <sql id="fromActiveOrdersPart">
 		from wf_order
 		<where>
-	        <if test="processId != null and processId.length > 0">
-	         and process_Id in
-			<foreach collection="processId" index="index" item="item" open="(" separator="," close=")">
-				#{item, jdbcType=VARCHAR}
-			</foreach>
+      		<if test="processId != null">
+        		and process_Id = #{processId}
+      		</if>
+      		<if test="parentId != null">
+        		and parent_Id = #{parentId}
+      		</if>
+        	<if test="excludedIds != null and excludedIds.length > 0">
+         	    and id not in
+				<foreach collection="excludedIds" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
 			</if>
+      		<if test="orderNo != null">
+        		and order_No = #{orderNo}
+      		</if>
+      		<if test="createTimeStart != null">
+        		and create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and create_Time &lt;= #{createTimeEnd}
+      		</if>
+		</where>
+    </sql>
+    
+    <sql id="selectActiveTasksPart">
+        select 
+            id,
+            order_Id as orderId,
+            task_Name as taskName,
+            display_Name as displayName,
+            task_Type as taskType,
+            perform_Type as performType,
+            operator,
+            create_Time as createTime,
+            finish_Time as finishTime,
+            expire_Time as expireTime,
+            action_Url as actionUrl,
+            parent_Task_Id as parentTaskId,
+            variable,
+            version
+    </sql>
+    
+    <sql id="fromActiveTasksPart">
+        from wf_task 
+        left join wf_task_actor ta on ta.task_id = id 
+        <where>
+	        <if test="actorIds != null and actorIds.length > 0">
+		        and ta.actor_Id in
+				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+	        <if test="taskNames != null and taskNames.length > 0">
+		        and task_Name in
+				<foreach collection="taskNames" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+	        <if test="excludedIds != null and excludedIds.length > 0">
+		        and id not in
+				<foreach collection="excludedIds" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+      		<if test="orderId != null">
+        		and order_Id = #{orderId}
+      		</if>
+      		<if test="createTimeStart != null">
+        		and create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and create_Time &lt;= #{createTimeEnd}
+      		</if>
 		</where>
     </sql>
     
@@ -128,7 +176,7 @@
 	    left join wf_process p on p.id = o.process_id 
 		<where>
       		<if test="processId != null">
-        		o.process_Id = #{processId}
+        		and o.process_Id = #{processId}
       		</if>
 	        <if test="actorIds != null and actorIds.length > 0">
 	            and ta.actor_Id in
@@ -136,53 +184,21 @@
 					#{item, jdbcType=VARCHAR}
 				</foreach>
 			</if>
+      		<if test="createTimeStart != null">
+        		and t.create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and t.create_Time &lt;= #{createTimeEnd}
+      		</if>
+      		<if test="parentId != null">
+        		and o.parent_Id = #{parentId}
+      		</if>
+      		<if test="taskType != null">
+        		and t.task_Type = #{taskType}
+      		</if>
+      		<if test="performType != null">
+        		and t.perform_Type = #{performType}
+      		</if>
       	</where>
-    </sql>
-    
-    <sql id="selectActiveOrdersPart">
-    	select 
-    		id,
-    		process_Id as processId,
-    		creator,
-    		create_Time as createTime,
-    		parent_Id as parentId,
-    		parent_Node_Name as parentNodeName,
-    		expire_Time as expireTime,
-    		last_Update_Time as lastUpdateTime,
-    		last_Updator as lastUpdator,
-    		order_No as orderNo,
-    		variable,
-    		version
-    </sql>
-    
-    <sql id="selectActiveTasksPart">
-        select 
-            id,
-            order_Id as orderId,
-            task_Name as taskName,
-            display_Name as displayName,
-            task_Type as taskType,
-            perform_Type as performType,
-            operator,
-            create_Time as createTime,
-            finish_Time as finishTime,
-            expire_Time as expireTime,
-            action_Url as actionUrl,
-            parent_Task_Id as parentTaskId,
-            variable,
-            version
-    </sql>
-    
-    <sql id="fromActiveTasksPart">
-        from wf_task 
-        left join wf_task_actor ta on ta.task_id = id 
-        <where>
-	        <if test="actorIds != null and actorIds.length > 0">
-		        ta.actor_Id in
-				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
-					#{item, jdbcType=VARCHAR}
-				</foreach>
-			</if>
-		</where>
     </sql>
 </mapper>

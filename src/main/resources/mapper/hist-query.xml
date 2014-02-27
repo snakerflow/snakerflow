@@ -3,19 +3,6 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="HistoryQuery">
-	<select id="getWorkItems" parameterType="hashmap" resultType="workitem">
-		${limitBefore}
-	 	<include refid="selectWorkItemsPart"/>
-		<include refid="fromWorkItemsPart"/>
-      	${orderby}
-      	${limitAfter}
-	</select>
-	
-	<select id="getWorkItemsCount" resultType="long" parameterType="hashmap">
-   		select count(*)
-    	<include refid="fromWorkItemsPart"/>
-	</select>
-	
     <select id="getHistoryOrders" resultType="historyorder" parameterType="hashmap">
     	${limitBefore}
     	<include refid="selectHistoryOrdersPart"/>
@@ -27,16 +14,6 @@
     <select id="getHistoryOrdersCount" resultType="long" parameterType="hashmap">
    		select count(*)
     	<include refid="fromHistoryOrdersPart"/>
-    </select>
-    
-    <select id="getHistoryOrdersByParentId" resultType="historyorder" parameterType="hashmap">
-    	<include refid="selectHistoryOrdersPart"/>
-		from wf_hist_order 
-		<where>
-      		<if test="parentId != null">
-        		parent_Id = #{parentId}
-      		</if>
-		</where>
     </select>
     
     <select id="getHistoryTasks" resultType="historytask" parameterType="hashmap">
@@ -52,16 +29,99 @@
     	<include refid="fromHistoryTasksPart"/>
     </select>
     
-    <select id="getHistoryTasksByOrderId" resultType="historytask" parameterType="hashmap">
-		<include refid="selectHistoryTasksPart"/>
-        from wf_hist_task 
+	<select id="getWorkItems" parameterType="hashmap" resultType="workitem">
+		${limitBefore}
+	 	<include refid="selectWorkItemsPart"/>
+		<include refid="fromWorkItemsPart"/>
+      	${orderby}
+      	${limitAfter}
+	</select>
+	
+	<select id="getWorkItemsCount" resultType="long" parameterType="hashmap">
+   		select count(*)
+    	<include refid="fromWorkItemsPart"/>
+	</select>
+    
+    <sql id="selectHistoryOrdersPart">
+    	select 
+    		id,
+    		process_Id as processId,
+    		order_State as orderState,
+    		creator,
+    		create_Time as createTime,
+    		parent_Id as parentId,
+    		expire_Time as expireTime,
+    		end_Time as endTime,
+    		order_No as orderNo,
+    		variable
+    </sql>
+	
+    <sql id="fromHistoryOrdersPart">
+		from wf_hist_order 
 		<where>
-      		<if test="orderId != null">
-        		order_Id = #{orderId}
+      		<if test="processId != null">
+        		and process_Id = #{processId}
       		</if>
-      	</where>
-      	order by create_Time desc 
-    </select>
+      		<if test="parentId != null">
+        		and parent_Id = #{parentId}
+      		</if>
+      		<if test="orderNo != null">
+        		and order_No = #{orderNo}
+      		</if>
+      		<if test="createTimeStart != null">
+        		and create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and create_Time &lt;= #{createTimeEnd}
+      		</if>
+		</where>
+    </sql>
+    
+    <sql id="selectHistoryTasksPart">
+        select 
+            id,
+            order_Id as orderId,
+            task_Name as taskName,
+            display_Name as displayName,
+            task_Type as taskType,
+            perform_Type as performType,
+            task_State as taskState,
+            operator,
+            create_Time as createTime,
+            finish_Time as finishTime,
+            expire_Time as expireTime,
+            action_Url as actionUrl,
+            parent_Task_Id as parentTaskId,
+            variable
+    </sql>
+    
+    <sql id="fromHistoryTasksPart">
+        from wf_hist_task 
+        left join wf_hist_task_actor ta on ta.task_id = id 
+        <where>
+	        <if test="actorIds != null and actorIds.length > 0">
+		        and ta.actor_Id in
+				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+	        <if test="taskNames != null and taskNames.length > 0">
+		        and task_Name in
+				<foreach collection="taskNames" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+      		<if test="orderId != null">
+        		and order_Id = #{orderId}
+      		</if>
+      		<if test="createTimeStart != null">
+        		and create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and create_Time &lt;= #{createTimeEnd}
+      		</if>
+		</where>
+    </sql>
     
     <sql id="selectWorkItemsPart">
 	 	select 
@@ -90,75 +150,33 @@
     <sql id="fromWorkItemsPart">
 	    from wf_hist_task t 
 	    left join wf_hist_order o on t.order_id = o.id 
+	    left join wf_task_actor ta on ta.task_id=t.id 
 	    left join wf_process p on p.id = o.process_id 
 		<where>
       		<if test="processId != null">
-        		o.process_Id = #{processId}
+        		and o.process_Id = #{processId}
       		</if>
 	        <if test="actorIds != null and actorIds.length > 0">
-	            and t.operator in
+	            and ta.actor_Id in
 				<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
 					#{item, jdbcType=VARCHAR}
 				</foreach>
 			</if>
+      		<if test="createTimeStart != null">
+        		and t.create_Time &gt;= #{createTimeStart}
+      		</if>
+      		<if test="createTimeEnd != null">
+        		and t.create_Time &lt;= #{createTimeEnd}
+      		</if>
+      		<if test="parentId != null">
+        		and o.parent_Id = #{parentId}
+      		</if>
+      		<if test="taskType != null">
+        		and t.task_Type = #{taskType}
+      		</if>
+      		<if test="performType != null">
+        		and t.perform_Type = #{performType}
+      		</if>
       	</where>
-    </sql>
-    
-    
-    <sql id="fromHistoryOrdersPart">
-		from wf_hist_order 
-		<where>
-	        <if test="processIds != null and processIds.length > 0">
-	         	process_Id in 
-				<foreach collection="processIds" index="index" item="item" open="(" separator="," close=")">
-					#{item, jdbcType=VARCHAR}
-				</foreach>
-			</if>
-		</where>
-    </sql>
-    
-    <sql id="fromHistoryTasksPart">
-        from wf_hist_task 
-        left join wf_hist_task_actor ta on ta.task_id = id 
-        <where>
-	        <if test="actorIds != null and actorIds.length > 0">
-	        and ta.actor_Id in
-			<foreach collection="actorIds" index="index" item="item" open="(" separator="," close=")">
-				#{item, jdbcType=VARCHAR}
-			</foreach>
-			</if>
-		</where>
-    </sql>
-    
-    <sql id="selectHistoryOrdersPart">
-    	select 
-    		id,
-    		process_Id as processId,
-    		order_State as orderState,
-    		creator,
-    		create_Time as createTime,
-    		parent_Id as parentId,
-    		expire_Time as expireTime,
-    		end_Time as endTime,
-    		order_No as orderNo,
-    		variable
-    </sql>
-    
-    <sql id="selectHistoryTasksPart">
-        select 
-            id,
-            order_Id as orderId,
-            task_Name as taskName,
-            display_Name as displayName,
-            task_Type as taskType,
-            perform_Type as performType,
-            task_State as taskState,
-            operator,
-            create_Time as createTime,
-            finish_Time as finishTime,
-            expire_Time as expireTime,
-            action_Url as actionUrl,
-            parent_Task_Id as parentTaskId,
-            variable
     </sql>
 </mapper>
