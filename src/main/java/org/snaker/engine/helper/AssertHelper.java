@@ -76,4 +76,23 @@ public abstract class AssertHelper {
 	public static void notNull(Object object) {
 		notNull(object, "[Assertion failed] - this argument is required; it must not be null");
 	}
+	
+	/**
+	 * 断言给定的字符串为非空
+	 * @param str
+	 */
+	public static void notEmpty(String str) {
+		notEmpty(str, "[Assertion failed] - this argument is required; it must not be null or empty");
+	}
+	
+	/**
+	 * 断言给定的字符串为非空
+	 * @param str
+	 * @param message
+	 */
+	public static void notEmpty(String str, String message) {
+		if (str == null || str.length() == 0) {
+			throw new IllegalArgumentException(message);
+		}
+	}
 }
