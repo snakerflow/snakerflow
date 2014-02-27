@@ -16,7 +16,6 @@ package org.snaker.engine.handlers.impl;
 
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.Execution;
-import org.snaker.engine.core.ModelContainer;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.handlers.IHandler;
@@ -47,7 +46,7 @@ public class EndProcessHandler implements IHandler {
 		if(StringHelper.isNotEmpty(order.getParentId())) {
 			Order parentOrder = engine.query().getOrder(order.getParentId());
 			if(parentOrder == null) return;
-			Process process = ModelContainer.getEntity(parentOrder.getProcessId());
+			Process process = engine.process().getProcess(parentOrder.getProcessId());
 			ProcessModel pm = process.getModel();
 			if(pm ==null) return;
 			SubProcessModel spm = (SubProcessModel)pm.getNode(order.getParentNodeName());
