@@ -17,8 +17,8 @@ package org.snaker.engine.core;
 import java.util.List;
 
 import org.snaker.engine.IQueryService;
-import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.Page;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
@@ -26,6 +26,7 @@ import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.helper.AssertHelper;
 
 /**
  * 查询服务实现类
@@ -71,59 +72,53 @@ public class QueryService extends AccessService implements IQueryService {
 		return access().getHistTask(taskId);
 	}
 	
-	public List<Task> getActiveTasksByActors(String... actorIds) {
-		return access().getActiveTasks(null, actorIds);
+	public List<Task> getActiveTasks(QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getActiveTasks(null, filter);
 	}
 	
-	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
-		if(actorIds == null || actorIds.length == 0) throw new SnakerException("查询任务列表，需要提供任务参与者ID");
-		return access().getActiveTasks(page, actorIds);
+	public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getActiveTasks(page, filter);
 	}
 	
-	public List<Task> getActiveTasks(String orderId,String... taskNames) {
-		return access().getActiveTasks(orderId, null, taskNames);
-	}
-
-	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
-		return access().getActiveTasks(orderId, excludedTaskId, taskNames);
-	}
-
-	public List<Order> getActiveOrders(String... processIds) {
-		return getActiveOrders(null, processIds);
+	public List<Order> getActiveOrders(QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getActiveOrders(null, filter);
 	}
 	
-	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
-		return access().getActiveOrdersByParentId(parentId, excludedId);
-	}
-
-	public List<Order> getActiveOrders(Page<Order> page, String... processIds) {
-		return access().getActiveOrders(page, processIds);
+	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getActiveOrders(page, filter);
 	}
 	
-	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId, String... actorIds) {
-		return access().getWorkItems(page, processId, actorIds);
+	public List<HistoryOrder> getHistoryOrders(QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getHistoryOrders(null, filter);
 	}
 
-	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
-			String... processIds) {
-		return access().getHistoryOrders(page, processIds);
+	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getHistoryOrders(page, filter);
 	}
 
-	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
-		return access().getHistoryOrdersByParentId(parentId);
+	public List<HistoryTask> getHistoryTasks(QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getHistoryTasks(null, filter);
 	}
 
-	public List<HistoryTask> getHistoryTasks(String orderId) {
-		return access().getHistoryTasks(orderId);
+	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getHistoryTasks(page, filter);
+	}
+	
+	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getWorkItems(page, filter);
 	}
 
-	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
-			String... actorIds) {
-		return access().getHistoryTasks(page, actorIds);
-	}
-
-	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
-			String processId, String... actorIds) {
-		return access().getHistoryWorkItems(page, processId, actorIds);
+	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getHistoryWorkItems(page, filter);
 	}
 }

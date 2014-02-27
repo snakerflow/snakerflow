@@ -17,6 +17,7 @@ package org.snaker.engine;
 import java.util.List;
 
 import org.snaker.engine.access.Page;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
@@ -200,81 +201,48 @@ public interface DBAccess {
 	/**
 	 * 分页查询流程实例
 	 * @param page 分页对象
-	 * @param processId 流程定义id集合
+	 * @param filter 查询过滤器
 	 * @return List<Order> 活动流程实例集合
 	 */
-	public List<Order> getActiveOrders(Page<Order> page, String... processId);
-	
-	/**
-	 * 根据父流程实例ID，查询所有活动的子流程
-	 * @param parentId 父流程实例id
-	 * @param excludedId 过滤流程实例id集合
-	 * @return List<Order> 活动流程实例集合
-	 */
-	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId);
+	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter);
 	
 	/**
 	 * 分页查询活动任务列表
-	 * @param page
-	 * @param actorIds
-	 * @return List<Task> 活动任务集合
-	 */
-	public List<Task> getActiveTasks(Page<Task> page, String... actorIds);
-	
-	/**
-	 * 获取指定流程实例ID的任务列表
-	 * @param orderId 流程实例id
-	 * @param excludedTaskId 过滤的任务id
-	 * @param taskNames 任务名称集合
-	 * @return List<Task> 活动任务集合
-	 */
-	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames);
-	
-	/**
-	 * 根据查询的参数，分页对象，返回分页后的查询结果
 	 * @param page 分页对象
-	 * @param processId 流程定义id
-	 * @param actorIds 参与者集合
-	 * @return List<WorkItem> 活动工作项
+	 * @param filter 查询过滤器
+	 * @return List<Task> 活动任务集合
 	 */
-	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId, String... actorIds);
+	public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter);
 	
 	/**
 	 * 分页查询历史流程实例
 	 * @param page 分页对象
-	 * @param processIds 流程定义id集合
+	 * @param filter 查询过滤器
 	 * @return List<HistoryOrder> 历史流程实例集合
 	 */
-	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, String... processIds);
-	
-	/**
-	 * 根据父流程ID查询子流程实例集合
-	 * @param parentId 父流程实例id
-	 * @return List<HistoryOrder> 历史流程实例集合
-	 */
-	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId);
-	
-	/**
-	 * 根据流程实例ID查询所有已完成的任务
-	 * @param orderId 流程实例id
-	 * @return List<HistoryTask> 历史任务集合
-	 */
-	public List<HistoryTask> getHistoryTasks(String orderId);
+	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, QueryFilter filter);
 	
 	/**
 	 * 根据参与者分页查询已完成的历史任务
 	 * @param page 分页对象
-	 * @param actorIds 参与者id集合
+	 * @param filter 查询过滤器
 	 * @return List<HistoryTask> 历史任务集合
 	 */
-	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, String... actorIds);
+	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter);
+	
+	/**
+	 * 根据查询的参数，分页对象，返回分页后的查询结果
+	 * @param page 分页对象
+	 * @param filter 查询过滤器
+	 * @return List<WorkItem> 活动工作项
+	 */
+	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter);
 	
 	/**
 	 * 根据流程定义ID、参与者分页查询已完成的历史任务项
 	 * @param page 分页对象
-	 * @param processId 流程定义id
-	 * @param actorIds 参与者id集合
+	 * @param filter 查询过滤器
 	 * @return List<WorkItem> 历史工作项
 	 */
-	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, String processId, String... actorIds);
+	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter);
 }

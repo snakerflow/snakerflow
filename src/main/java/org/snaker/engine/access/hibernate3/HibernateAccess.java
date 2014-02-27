@@ -157,6 +157,7 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 			if(page.isOrderBySetted()) {
 				querySQL = querySQL + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());
 			}
+			System.out.println("querySQL=" + querySQL);
 			SQLQuery countQuery = getSession().createSQLQuery(countSQL);
 			SQLQuery pageQuery = getSession().createSQLQuery(querySQL);
 			pageQuery.addEntity(T);

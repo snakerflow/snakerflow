@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.snaker.engine.IOrderService;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
@@ -110,7 +111,7 @@ public class OrderService extends AccessService implements IOrderService {
 	 * 强制中止活动实例,并强制完成活动任务
 	 */
 	public void terminate(String orderId, String operator) {
-		List<Task> tasks = engine.query().getActiveTasks(orderId);
+		List<Task> tasks = engine.query().getActiveTasks(new QueryFilter().setOrderId(orderId));
 		for(Task task : tasks) {
 			engine.task().complete(task.getId(), operator);
 		}

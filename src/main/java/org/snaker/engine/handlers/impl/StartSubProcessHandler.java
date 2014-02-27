@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ModelContainer;
 import org.snaker.engine.entity.Order;
@@ -80,7 +81,7 @@ public class StartSubProcessHandler implements IHandler {
 		}
 		if(order == null) throw new SnakerException("子流程创建失败");
 
-		execution.addTasks(engine.query().getActiveTasks(order.getId()));
+		execution.addTasks(engine.query().getActiveTasks(new QueryFilter().setOrderId(order.getId())));
 	}
 
 	/**

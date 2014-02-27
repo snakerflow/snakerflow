@@ -22,6 +22,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.snaker.engine.access.AbstractDBAccess;
 import org.snaker.engine.access.Page;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
@@ -148,21 +149,6 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectList("Process.SELECTLIST");
 	}
 	
-	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("parentId", parentId);
-		params.put("excludedId", excludedId);
-		return getSession().selectList("Query.getActiveOrdersByParentId", params);
-	}
-
-	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("orderId", orderId);
-		params.put("excludedTaskId", excludedTaskId);
-		params.put("taskNames", taskNames);
-		return getSession().selectList("Query.getActiveTasksByTaskNames", params);
-	}
-
 	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -176,10 +162,15 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 	
-	public List<Order> getActiveOrders(Page<Order> page, String... processId) {
+	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("processId", processId);
+		params.put("parentId", filter.getParentId());
+		params.put("excludedIds", filter.getExcludedIds());
+		params.put("processId", filter.getProcessId());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
+		params.put("orderNo", filter.getOrderNo());
 		buildPageParameter(session, page, params, "Query.getActiveOrdersCount");
 		if(page != null && !page.isOrderBySetted()) {
 			params.put("orderby", " order by create_Time desc ");
@@ -190,11 +181,16 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 		return list;
 	}
-
-	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
+	
+	public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("actorIds", actorIds);
+		params.put("actorIds", filter.getOperators());
+		params.put("excludedIds", filter.getExcludedIds());
+		params.put("orderId", filter.getOrderId());
+		params.put("taskNames", filter.getNames());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
 		buildPageParameter(session, page, params, "Query.getActiveTasksCount");
 		if(page != null && !page.isOrderBySetted()) {
 			params.put("orderby", " order by create_Time desc ");
@@ -205,29 +201,15 @@ public class MybatisAccess extends AbstractDBAccess {
 		}
 		return list;
 	}
-
-	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId,
-			String... actorIds) {
-		SqlSession session = getSession();
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("actorIds", actorIds);
-		params.put("processId", processId);
-		buildPageParameter(session, page, params, "Query.getWorkItemsCount");
-		if(page != null && !page.isOrderBySetted()) {
-			params.put("orderby", " order by t.create_Time desc ");
-		}
-		List<WorkItem> list = session.selectList("Query.getWorkItems", params);
-		if(page != null) {
-			page.setResult(list);
-		}
-		return list;
-	}
 	
-	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
-			String... processIds) {
+	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("processIds", processIds);
+		params.put("processId", filter.getProcessId());
+		params.put("parentId", filter.getParentId());
+		params.put("orderNo", filter.getOrderNo());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
 		buildPageParameter(session, page, params, "HistoryQuery.getHistoryOrdersCount");
 		if(page != null && !page.isOrderBySetted()) {
 			params.put("orderby", " order by create_Time desc ");
@@ -239,23 +221,14 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("parentId", parentId);
-		return getSession().selectList("HistoryQuery.getHistoryOrdersByParentId", params);
-	}
-	
-	public List<HistoryTask> getHistoryTasks(String orderId) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("orderId", orderId);
-		return getSession().selectList("HistoryQuery.getHistoryTasksByOrderId", params);
-	}
-
-	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
-			String... actorIds) {
+	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("actorIds", actorIds);
+		params.put("actorIds", filter.getOperators());
+		params.put("orderId", filter.getOrderId());
+		params.put("taskNames", filter.getNames());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
 		buildPageParameter(session, page, params, "HistoryQuery.getHistoryTasksCount");
 		if(page != null && !page.isOrderBySetted()) {
 			params.put("orderby", " order by create_Time desc ");
@@ -267,12 +240,38 @@ public class MybatisAccess extends AbstractDBAccess {
 		return list;
 	}
 
-	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
-			String processId, String... actorIds) {
+	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("actorIds", actorIds);
-		params.put("processId", processId);
+		
+		params.put("actorIds", filter.getOperators());
+		params.put("processId", filter.getProcessId());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
+		params.put("parentId", filter.getParentId());
+		params.put("taskType", filter.getTaskType());
+		params.put("performType", filter.getPerformType());
+		buildPageParameter(session, page, params, "Query.getWorkItemsCount");
+		if(page != null && !page.isOrderBySetted()) {
+			params.put("orderby", " order by t.create_Time desc ");
+		}
+		List<WorkItem> list = session.selectList("Query.getWorkItems", params);
+		if(page != null) {
+			page.setResult(list);
+		}
+		return list;
+	}
+
+	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
+		SqlSession session = getSession();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("actorIds", filter.getOperators());
+		params.put("processId", filter.getProcessId());
+		params.put("createTimeStart", filter.getCreateTimeStart());
+		params.put("createTimeEnd", filter.getCreateTimeEnd());
+		params.put("parentId", filter.getParentId());
+		params.put("taskType", filter.getTaskType());
+		params.put("performType", filter.getPerformType());
 		buildPageParameter(session, page, params, "HistoryQuery.getWorkItemsCount");
 		if(page != null && !page.isOrderBySetted()) {
 			params.put("orderby", " order by t.create_Time desc ");

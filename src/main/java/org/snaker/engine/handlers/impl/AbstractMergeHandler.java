@@ -17,6 +17,7 @@ package org.snaker.engine.handlers.impl;
 import java.util.List;
 
 import org.snaker.engine.IQueryService;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
@@ -45,14 +46,20 @@ public abstract class AbstractMergeHandler implements IHandler {
 		boolean isTaskMerged = false;
 		
 		if(model.containsNodeNames(SubProcessModel.class, activeNodes)) {
-			List<Order> orders = queryService.getActiveOrdersByParentId(order.getId(), execution.getChildOrderId());
+			QueryFilter filter = new QueryFilter().setParentId(order.getId())
+					.setExcludedIds(new String[]{execution.getChildOrderId()});
+			List<Order> orders = queryService.getActiveOrders(filter);
 			//如果所有子流程都已完成，则表示可合并
 			if(orders == null || orders.isEmpty()) {
 				isSubProcessMerged = true;
 			}
 		}
 		if(isSubProcessMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
-			List<Task> tasks = queryService.getActiveTasks(order.getId(), execution.getTask().getId(), activeNodes);
+			QueryFilter filter = new QueryFilter().
+					setOrderId(order.getId()).
+					setExcludedIds(new String[]{execution.getTask().getId() }).
+					setNames(activeNodes);
+			List<Task> tasks = queryService.getActiveTasks(filter);
 			if(tasks == null || tasks.isEmpty()) {
 				//如果所有task都已完成，则表示可合并
 				isTaskMerged = true;

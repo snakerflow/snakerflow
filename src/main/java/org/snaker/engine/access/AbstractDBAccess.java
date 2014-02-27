@@ -360,48 +360,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(Process.class, QUERY_PROCESS);
 	}
 
-	public List<Order> getActiveOrdersByParentId(String parentId, String... excludedId) {
-		StringBuffer sql = new StringBuffer(QUERY_ORDER);
-		sql.append(" where parent_Id = ? ");
-		List<Object> paramList = new ArrayList<Object>();
-		paramList.add(parentId);
-		if(excludedId.length > 0 && excludedId[0] != null) {
-			sql.append(" and id not in(");
-			for(int i = 0; i < excludedId.length; i++) {
-				sql.append("?,");
-				paramList.add(excludedId[i]);
-			}
-			sql.deleteCharAt(sql.length() - 1);
-			sql.append(") ");
-		}
-		return queryList(Order.class, sql.toString(), paramList.toArray());
-	}
-
-	public List<Task> getActiveTasks(String orderId, String excludedTaskId, String... taskNames) {
-		StringBuffer sql = new StringBuffer(QUERY_TASK);
-		sql.append(" where 1=1 ");
-		List<Object> paramList = new ArrayList<Object>();
-		if(StringHelper.isNotEmpty(orderId)) {
-			sql.append(" and order_Id = ? ");
-			paramList.add(orderId);
-		}
-		if(StringHelper.isNotEmpty(excludedTaskId)) {
-			sql.append(" and id != ? ");
-			paramList.add(excludedTaskId);
-		}
-		
-		if(taskNames.length > 0) {
-			sql.append(" and task_Name in (");
-			for(int i = 0; i < taskNames.length; i++) {
-				sql.append("?,");
-				paramList.add(taskNames[i]);
-			}
-			sql.deleteCharAt(sql.length() - 1);
-			sql.append(") ");
-		}
-		return queryList(Task.class, sql.toString(), paramList.toArray());
-	}
-
 	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
 		StringBuffer sql = new StringBuffer(QUERY_PROCESS);
 		sql.append(" where 1=1 ");
@@ -417,18 +375,37 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(page, Process.class, sql.toString(), paramList.toArray());
 	}
 
-	public List<Order> getActiveOrders(Page<Order> page, String... processId) {
+	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer(QUERY_ORDER);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
-		if(processId.length > 0) {
-			sql.append(" and process_Id in (");
-			for(int i = 0; i < processId.length; i++) {
+		if(StringHelper.isNotEmpty(filter.getParentId())) {
+			sql.append(" and parent_Id = ? ");
+		}
+		if(StringHelper.isNotEmpty(filter.getProcessId())) {
+			sql.append(" and process_Id = ? ");
+			paramList.add(filter.getProcessId());
+		}
+		if(filter.getExcludedIds() != null && filter.getExcludedIds().length > 0) {
+			sql.append(" and id not in(");
+			for(int i = 0; i < filter.getExcludedIds().length; i++) {
 				sql.append("?,");
-				paramList.add(processId[i]);
+				paramList.add(filter.getExcludedIds()[i]);
 			}
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
+		}
+		if(StringHelper.isNotEmpty(filter.getOrderNo())) {
+			sql.append(" and order_No = ? ");
+			paramList.add(filter.getOrderNo());
 		}
 		
 		if(page == null) {
@@ -443,28 +420,147 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
-	public List<Task> getActiveTasks(Page<Task> page, String... actorIds) {
+	public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer(QUERY_TASK);
-		sql.append(" left join wf_task_actor ta on ta.task_id = id ");
+		boolean isFetchActor = filter.getOperators() != null && filter.getOperators().length > 0;
+		if(isFetchActor) {
+			sql.append(" left join wf_task_actor ta on ta.task_id = id ");
+		}
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
-		if(actorIds.length > 0) {
-			sql.append(" and ta.actor_Id in (");
-			for(int i = 0; i < actorIds.length; i++) {
+		if(StringHelper.isNotEmpty(filter.getOrderId())) {
+			sql.append(" and order_Id = ? ");
+			paramList.add(filter.getOrderId());
+		}
+		if(filter.getExcludedIds() != null && filter.getExcludedIds().length > 0) {
+			sql.append(" and id not in(");
+			for(int i = 0; i < filter.getExcludedIds().length; i++) {
 				sql.append("?,");
-				paramList.add(actorIds[i]);
+				paramList.add(filter.getExcludedIds()[i]);
 			}
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
 		}
+		if(isFetchActor) {
+			sql.append(" and ta.actor_Id in (");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(filter.getNames() != null && filter.getNames().length > 0) {
+			sql.append(" and task_Name in (");
+			for(int i = 0; i < filter.getNames().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getNames()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
+		}
 		if(page == null) {
+			sql.append(" order by create_Time desc ");
 			return queryList(Task.class, sql.toString(), paramList.toArray());
 		} else {
+			if(!page.isOrderBySetted()) {
+				page.setOrder(Page.DESC);
+				page.setOrderBy("create_Time");
+			}
 			return queryList(page, Task.class, sql.toString(), paramList.toArray());
 		}
 	}
 
-	public List<WorkItem> getWorkItems(Page<WorkItem> page, String processId, String... actorIds) {
+	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, QueryFilter filter) {
+		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
+		sql.append(" where 1=1 ");
+		List<Object> paramList = new ArrayList<Object>();
+		if(StringHelper.isNotEmpty(filter.getProcessId())) {
+			sql.append(" and process_Id = ? ");
+			paramList.add(filter.getProcessId());
+		}
+		if(StringHelper.isNotEmpty(filter.getParentId())) {
+			sql.append(" and parent_Id = ? ");
+			paramList.add(filter.getParentId());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
+		}
+		if(StringHelper.isNotEmpty(filter.getOrderNo())) {
+			sql.append(" and order_No = ? ");
+			paramList.add(filter.getOrderNo());
+		}
+		if(page == null) {
+			sql.append(" order by create_Time desc ");
+			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
+		} else {
+			if(!page.isOrderBySetted()) {
+				page.setOrder(Page.DESC);
+				page.setOrderBy("create_Time");
+			}
+			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
+		}
+	}
+	
+	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter) {
+		StringBuffer sql = new StringBuffer(QUERY_HIST_TASK);
+		boolean isFetchActor = filter.getOperators() != null && filter.getOperators().length > 0;
+		if(isFetchActor) {
+			sql.append(" left join wf_hist_task_actor ta on ta.task_id = id ");
+		}
+		sql.append(" where 1=1 ");
+		List<Object> paramList = new ArrayList<Object>();
+		if(StringHelper.isNotEmpty(filter.getOrderId())) {
+			sql.append(" and order_Id = ? ");
+			paramList.add(filter.getOrderId());
+		}
+		if(isFetchActor) {
+			sql.append(" and ta.actor_Id in (");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(filter.getNames() != null && filter.getNames().length > 0) {
+			sql.append(" and task_Name in (");
+			for(int i = 0; i < filter.getNames().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getNames()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
+		}
+		if(page == null) {
+			return queryList(HistoryTask.class, sql.toString(), paramList.toArray());
+		} else {
+			return queryList(page, HistoryTask.class, sql.toString(), paramList.toArray());
+		}
+	}
+	
+	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
 		sql.append(" select o.process_Id, t.order_Id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
@@ -480,9 +576,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 		 * 查询条件构造sql的where条件
 		 */
 		List<Object> paramList = new ArrayList<Object>();
-		if(actorIds.length > 0) {
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
 			sql.append(" and ta.actor_Id in (");
-			for(String actor : actorIds) {
+			for(String actor : filter.getOperators()) {
 				sql.append("?,");
 				paramList.add(actor);
 			}
@@ -490,9 +586,29 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(") ");
 		}
 		
-		if(StringHelper.isNotEmpty(processId)) {
+		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and o.process_Id = ?");
-			paramList.add(processId);
+			paramList.add(filter.getProcessId());
+		}
+		if(StringHelper.isNotEmpty(filter.getParentId())) {
+			sql.append(" and o.parent_Id = ? ");
+			paramList.add(filter.getParentId());
+		}
+		if(filter.getTaskType() != null) {
+			sql.append(" and t.task_Type = ? ");
+			paramList.add(filter.getTaskType());
+		}
+		if(filter.getPerformType() != null) {
+			sql.append(" and t.perform_Type = ? ");
+			paramList.add(filter.getPerformType());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and t.create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and t.create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
 		}
 		if(!page.isOrderBySetted()) {
 			page.setOrder(Page.DESC);
@@ -502,69 +618,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 	
-	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page,
-			String... processIds) {
-		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
-		sql.append(" where 1=1 ");
-		List<Object> paramList = new ArrayList<Object>();
-		if(processIds.length > 0) {
-			sql.append(" and process_Id in (");
-			for(int i = 0; i < processIds.length; i++) {
-				sql.append("?,");
-				paramList.add(processIds[i]);
-			}
-			sql.deleteCharAt(sql.length() - 1);
-			sql.append(") ");
-		}
-		
-		if(page == null) {
-			sql.append(" order by create_Time desc ");
-			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
-		} else {
-			if(!page.isOrderBySetted()) {
-				page.setOrder(Page.DESC);
-				page.setOrderBy("create_Time");
-			}
-			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
-		}
-	}
-	
-	public List<HistoryOrder> getHistoryOrdersByParentId(String parentId) {
-		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
-		sql.append(" where parent_Id = ? ");
-		return queryList(HistoryOrder.class, sql.toString(), new Object[]{parentId });
-	}
-	
-	public List<HistoryTask> getHistoryTasks(String orderId) {
-		StringBuffer sql = new StringBuffer(QUERY_HIST_TASK);
-		sql.append(" where order_Id = ? order by create_Time desc ");
-		return queryList(HistoryTask.class, sql.toString(), new Object[]{orderId });
-	}
-	
-	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page,
-			String... actorIds) {
-		StringBuffer sql = new StringBuffer(QUERY_HIST_TASK);
-		sql.append(" left join wf_hist_task_actor ta on ta.task_id = id ");
-		sql.append(" where 1=1 ");
-		List<Object> paramList = new ArrayList<Object>();
-		if(actorIds.length > 0) {
-			sql.append(" and ta.actor_Id in (");
-			for(int i = 0; i < actorIds.length; i++) {
-				sql.append("?,");
-				paramList.add(actorIds[i]);
-			}
-			sql.deleteCharAt(sql.length() - 1);
-			sql.append(") ");
-		}
-		if(page == null) {
-			return queryList(HistoryTask.class, sql.toString(), paramList.toArray());
-		} else {
-			return queryList(page, HistoryTask.class, sql.toString(), paramList.toArray());
-		}
-	}
-	
-	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page,
-			String processId, String... actorIds) {
+	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
 		sql.append(" select o.process_Id, t.order_Id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
@@ -574,14 +628,13 @@ public abstract class AbstractDBAccess implements DBAccess {
 		sql.append(" left join wf_hist_order o on t.order_id = o.id ");
 		sql.append(" left join wf_process p on p.id = o.process_id ");
 		sql.append(" where 1=1 ");
-		
 		/**
 		 * 查询条件构造sql的where条件
 		 */
 		List<Object> paramList = new ArrayList<Object>();
-		if(actorIds.length > 0) {
-			sql.append(" and t.operator in (");
-			for(String actor : actorIds) {
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and ta.actor_Id in (");
+			for(String actor : filter.getOperators()) {
 				sql.append("?,");
 				paramList.add(actor);
 			}
@@ -589,10 +642,31 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(") ");
 		}
 		
-		if(StringHelper.isNotEmpty(processId)) {
+		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and o.process_Id = ?");
-			paramList.add(processId);
+			paramList.add(filter.getProcessId());
 		}
+		if(StringHelper.isNotEmpty(filter.getParentId())) {
+			sql.append(" and o.parent_Id = ? ");
+			paramList.add(filter.getParentId());
+		}
+		if(filter.getTaskType() != null) {
+			sql.append(" and t.task_Type = ? ");
+			paramList.add(filter.getTaskType());
+		}
+		if(filter.getPerformType() != null) {
+			sql.append(" and t.perform_Type = ? ");
+			paramList.add(filter.getPerformType());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
+			sql.append(" and t.create_Time >= ? ");
+			paramList.add(filter.getCreateTimeStart());
+		}
+		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
+			sql.append(" and t.create_Time <= ? ");
+			paramList.add(filter.getCreateTimeEnd());
+		}
+		
 		if(!page.isOrderBySetted()) {
 			page.setOrder(Page.DESC);
 			page.setOrderBy("t.create_Time");
