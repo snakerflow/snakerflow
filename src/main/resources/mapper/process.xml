@@ -73,11 +73,17 @@
     <sql id="selectProcesss">
 		from wf_process
 		<where>
-      		<if test="name != null">
-        		and name = #{name}
+	        <if test="names != null and names.length > 0">
+		        and name in
+				<foreach collection="names" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+      		<if test="displayName != null">
+        		and display_Name = #{displayName, jdbcType=VARCHAR}
       		</if>
       		<if test="state != null">
-        		and state = #{state}
+        		and state = #{state, jdbcType=NUMERIC}
       		</if>
       	</where>
     </sql>

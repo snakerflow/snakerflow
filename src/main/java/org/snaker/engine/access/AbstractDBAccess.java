@@ -330,23 +330,32 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryObject(Process.class, QUERY_PROCESS + where, idName, idName);
 	}
 	
-	public List<Process> getAllProcess() {
-		return queryList(Process.class, QUERY_PROCESS);
-	}
-
-	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
+	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer(QUERY_PROCESS);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
-		if(StringHelper.isNotEmpty(name)) {
-			sql.append(" and name = ? ");
-			paramList.add(name);
+		if(filter.getNames() != null && filter.getNames().length > 0) {
+			sql.append(" and name in(");
+			for(int i = 0; i < filter.getNames().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getNames()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
 		}
-		if(state != null) {
+		if(filter.getState() != null) {
 			sql.append(" and state = ? ");
-			paramList.add(state);
+			paramList.add(filter.getState());
 		}
-		return queryList(page, Process.class, sql.toString(), paramList.toArray());
+		if(StringHelper.isNotEmpty(filter.getDisplayName())) {
+			sql.append(" and displayName = ? ");
+			paramList.add(filter.getDisplayName());
+		}
+		if(page == null) {
+			return queryList(Process.class, sql.toString(), paramList.toArray());
+		} else {
+			return queryList(page, Process.class, sql.toString(), paramList.toArray());
+		}
 	}
 
 	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter) {

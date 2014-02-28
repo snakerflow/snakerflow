@@ -186,17 +186,10 @@ public interface DBAccess {
 	/**
 	 * 根据查询的参数，分页对象，返回分页后的查询结果
 	 * @param page 分页对象
-	 * @param name 流程定义id、name
-	 * @param state 流程定义状态
+	 * @param filter 查询过滤器
 	 * @return List<Process> 流程定义集合
 	 */
-	public List<Process> getProcesss(Page<Process> page, String name, Integer state);
-	
-	/**
-	 * 获取所有的流程定义集合
-	 * @return List<Process> 流程定义集合
-	 */
-	public List<Process> getAllProcess();
+	public List<Process> getProcesss(Page<Process> page, QueryFilter filter);
 	
 	/**
 	 * 分页查询流程实例

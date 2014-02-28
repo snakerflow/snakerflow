@@ -145,15 +145,12 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectOne("Process.SELECTONE", idName);
 	}
 	
-	public List<Process> getAllProcess() {
-		return getSession().selectList("Process.SELECTLIST");
-	}
-	
-	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
+	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("name", name);
-		params.put("state", state);
+		params.put("names", filter.getNames());
+		params.put("displayName", filter.getDisplayName());
+		params.put("state", filter.getState());
 		buildPageParameter(session, page, params, "Process.getProcesssCount");
 		List<Process> list = session.selectList("Process.getProcesss", params);
 		if(page != null) {

@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.snaker.engine.access.Page;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.Process;
 
 /**
@@ -42,17 +43,10 @@ public interface IProcessService {
 	/**
 	 * 根据给定的参数列表args分页查询process
 	 * @param page 分页对象
-	 * @param name 流程定义name
-	 * @param state 流程定义状态
+	 * @param filter 查询过滤器
 	 * @return List<Process> 流程定义对象集合
 	 */
-	List<Process> getProcesss(Page<Process> page, String name, Integer state);
-	
-	/**
-	 * 获取所有的流程定义集合
-	 * @return List<Process> 流程定义对象集合
-	 */
-	List<Process> getAllProcess();
+	List<Process> getProcesss(Page<Process> page, QueryFilter filter);
 	
 	/**
 	 * 根據InputStream輸入流，部署流程定义

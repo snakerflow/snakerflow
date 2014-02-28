@@ -22,11 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.snaker.engine.IProcessService;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.Page;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.cache.Cache;
 import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
 import org.snaker.engine.cache.memory.MemoryCacheManager;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.ProcessModel;
@@ -130,13 +132,9 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		}
 	}
 	
-	public List<Process> getProcesss(Page<Process> page, String name, Integer state) {
-		if(page == null) throw new SnakerException("分页对象不能为空.");
-		return access().getProcesss(page, name, state);
-	}
-
-	public List<Process> getAllProcess() {
-		return access().getAllProcess();
+	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getProcesss(page, filter);
 	}
 
 	/**
