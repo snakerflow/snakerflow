@@ -60,19 +60,19 @@
 		from wf_hist_order 
 		<where>
       		<if test="processId != null">
-        		and process_Id = #{processId}
+        		and process_Id = #{processId, jdbcType=VARCHAR}
       		</if>
       		<if test="parentId != null">
-        		and parent_Id = #{parentId}
+        		and parent_Id = #{parentId, jdbcType=VARCHAR}
       		</if>
       		<if test="orderNo != null">
-        		and order_No = #{orderNo}
+        		and order_No = #{orderNo, jdbcType=VARCHAR}
       		</if>
       		<if test="createTimeStart != null">
-        		and create_Time &gt;= #{createTimeStart}
+        		and create_Time &gt;= #{createTimeStart, jdbcType=VARCHAR}
       		</if>
       		<if test="createTimeEnd != null">
-        		and create_Time &lt;= #{createTimeEnd}
+        		and create_Time &lt;= #{createTimeEnd, jdbcType=VARCHAR}
       		</if>
 		</where>
     </sql>
@@ -112,13 +112,13 @@
 				</foreach>
 			</if>
       		<if test="orderId != null">
-        		and order_Id = #{orderId}
+        		and order_Id = #{orderId, jdbcType=VARCHAR}
       		</if>
       		<if test="createTimeStart != null">
-        		and create_Time &gt;= #{createTimeStart}
+        		and create_Time &gt;= #{createTimeStart, jdbcType=VARCHAR}
       		</if>
       		<if test="createTimeEnd != null">
-        		and create_Time &lt;= #{createTimeEnd}
+        		and create_Time &lt;= #{createTimeEnd, jdbcType=VARCHAR}
       		</if>
 		</where>
     </sql>
@@ -154,7 +154,7 @@
 	    left join wf_process p on p.id = o.process_id 
 		<where>
       		<if test="processId != null">
-        		and o.process_Id = #{processId}
+        		and o.process_Id = #{processId, jdbcType=VARCHAR}
       		</if>
 	        <if test="actorIds != null and actorIds.length > 0">
 	            and ta.actor_Id in
@@ -163,19 +163,19 @@
 				</foreach>
 			</if>
       		<if test="createTimeStart != null">
-        		and t.create_Time &gt;= #{createTimeStart}
+        		and t.create_Time &gt;= #{createTimeStart, jdbcType=VARCHAR}
       		</if>
       		<if test="createTimeEnd != null">
-        		and t.create_Time &lt;= #{createTimeEnd}
+        		and t.create_Time &lt;= #{createTimeEnd, jdbcType=VARCHAR}
       		</if>
       		<if test="parentId != null">
-        		and o.parent_Id = #{parentId}
+        		and o.parent_Id = #{parentId, jdbcType=VARCHAR}
       		</if>
       		<if test="taskType != null">
-        		and t.task_Type = #{taskType}
+        		and t.task_Type = #{taskType, jdbcType=NUMERIC}
       		</if>
       		<if test="performType != null">
-        		and t.perform_Type = #{performType}
+        		and t.perform_Type = #{performType, jdbcType=NUMERIC}
       		</if>
       	</where>
     </sql>
