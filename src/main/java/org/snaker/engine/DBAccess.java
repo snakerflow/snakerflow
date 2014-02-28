@@ -245,4 +245,30 @@ public interface DBAccess {
 	 * @return List<WorkItem> 历史工作项
 	 */
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter);
+	/**
+	 * 根据类型T、Sql语句、参数查询单个对象
+	 * @param T 类型
+	 * @param sql sql语句
+	 * @param args 参数列表
+	 * @return
+	 */
+	public <T> T queryObject(Class<T> T, String sql, Object... args);
+	/**
+	 * 根据类型T、Sql语句、参数查询列表对象
+	 * @param T 类型
+	 * @param sql sql语句
+	 * @param args 参数列表
+	 * @return
+	 */
+	public <T> List<T> queryList(Class<T> T, String sql, Object... args);
+	
+	/**
+	 * 根据类型T、Sql语句、参数分页查询列表对象
+	 * @param page 分页对象
+	 * @param T 类型
+	 * @param sql sql语句
+	 * @param args 参数列表
+	 * @return
+	 */
+	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args);
 }

@@ -121,4 +121,23 @@ public class QueryService extends AccessService implements IQueryService {
 		AssertHelper.notNull(filter);
 		return access().getHistoryWorkItems(page, filter);
 	}
+
+	public <T> T nativeQueryObject(Class<T> T, String sql, Object... args) {
+		AssertHelper.notEmpty(sql);
+		AssertHelper.notNull(T);
+		return access().queryObject(T, sql, args);
+	}
+
+	public <T> List<T> nativeQueryList(Class<T> T, String sql, Object... args) {
+		AssertHelper.notEmpty(sql);
+		AssertHelper.notNull(T);
+		return access().queryList(T, sql, args);
+	}
+
+	public <T> List<T> nativeQueryList(Page<T> page, Class<T> T, String sql,
+			Object... args) {
+		AssertHelper.notEmpty(sql);
+		AssertHelper.notNull(T);
+		return access().queryList(page, T, sql, args);
+	}
 }

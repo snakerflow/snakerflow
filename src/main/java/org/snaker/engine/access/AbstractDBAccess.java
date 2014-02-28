@@ -90,32 +90,6 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 * @param map
 	 */
 	public abstract void saveOrUpdate(Map<String, Object> map);
-	/**
-	 * 根据类型T、Sql语句、参数查询单个对象
-	 * @param T
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public abstract <T> T queryObject(Class<T> T, String sql, Object... args);
-	/**
-	 * 根据类型T、Sql语句、参数查询列表对象
-	 * @param T
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public abstract <T> List<T> queryList(Class<T> T, String sql, Object... args);
-	
-	/**
-	 * 根据类型T、Sql语句、参数分页查询列表对象
-	 * @param page
-	 * @param T
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public abstract <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args);
 	
 	public void initialize(Object accessObject) {
 		
