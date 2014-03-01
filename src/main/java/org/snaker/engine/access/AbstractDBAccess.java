@@ -50,7 +50,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String UPDATE = "UPDATE";
 	
 	protected static final String PROCESS_INSERT = "insert into wf_process (id,parent_Id,name,display_Name,type,instance_Url,query_Url,state,version) values (?,?,?,?,?,?,?,?,0)";
-	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,query_Url=? where id=?";
+	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,query_Url=?, version = version + 1 where id=? and version = ?";
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
@@ -152,8 +152,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(process, UPDATE));
 		} else {
 			Object[] args = new Object[]{process.getName(), process.getDisplayName(), process.getState(), 
-					process.getInstanceUrl(), process.getQueryUrl(), process.getId()};
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					process.getInstanceUrl(), process.getQueryUrl(), process.getId(), process.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, 
+					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
 		}
 	}
