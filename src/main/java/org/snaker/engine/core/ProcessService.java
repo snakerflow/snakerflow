@@ -41,6 +41,8 @@ import org.snaker.engine.parser.ModelParser;
  */
 public class ProcessService extends AccessService implements IProcessService, CacheManagerAware {
 	private static final Logger log = LoggerFactory.getLogger(ProcessService.class);
+	private static final String CACHE_ENTITY = "snaker.process.entity";
+	private static final String CACHE_NAME = "snaker.process.name";
 	/**
 	 * cache manager
 	 */
@@ -158,7 +160,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     private Cache<String, Process> ensureAvailableEntityCache() {
         Cache<String, Process> entityCache = ensureEntityCache();
 		if(entityCache == null && this.cacheManager != null) {
-			entityCache = this.cacheManager.getCache(getClass().getName() + ".entity");
+			entityCache = this.cacheManager.getCache(CACHE_ENTITY);
 		}
         return entityCache;
     }
@@ -166,7 +168,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     private Cache<String, String> ensureAvailableNameCache() {
         Cache<String, String> nameCache = ensureNameCache();
 		if(nameCache == null && this.cacheManager != null) {
-			nameCache = this.cacheManager.getCache(getClass().getName() + ".name");
+			nameCache = this.cacheManager.getCache(CACHE_NAME);
 		}
         return nameCache;
     }
