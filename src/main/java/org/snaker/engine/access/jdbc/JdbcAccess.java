@@ -186,7 +186,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
         try {
         	if(log.isDebugEnabled()) {
-        		log.debug("查询单条记录=\n" + sql);
+        		log.debug("查询多条记录=\n" + sql);
         	}
         	return runner.query(getConnection(), sql, new BeanPropertyHandler<T>(T), args);
         } catch (SQLException e) {
@@ -206,8 +206,11 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 			querySQL = getDialect().getPageSql(querySQL, page.getPageNo(), page.getPageSize());
 		}
 		try {
+        	if(log.isDebugEnabled()) {
+        		log.debug("分页查询多条数据=\n" + querySQL);
+        	}
 			Object count = query(1, countSQL, args);
-			List<T> list = runner.query(getConnection(), sql, new BeanPropertyHandler<T>(T), args);
+			List<T> list = runner.query(getConnection(), querySQL, new BeanPropertyHandler<T>(T), args);
 			if(list == null) list = Collections.emptyList();
 			page.setResult(list);
 			page.setTotalCount(ClassHelper.castLong(count));
