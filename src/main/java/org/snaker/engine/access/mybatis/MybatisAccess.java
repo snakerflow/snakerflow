@@ -151,6 +151,7 @@ public class MybatisAccess extends AbstractDBAccess {
 		params.put("names", filter.getNames());
 		params.put("displayName", filter.getDisplayName());
 		params.put("state", filter.getState());
+		params.put("version", filter.getVersion());
 		buildPageParameter(session, page, params, "Process.getProcesssCount");
 		List<Process> list = session.selectList("Process.getProcesss", params);
 		if(page != null) {
