@@ -34,6 +34,10 @@ public class QueryFilter implements Serializable {
 	 */
 	private String processId;
 	/**
+	 * 流程定义版本号
+	 */
+	private Integer version;
+	/**
 	 * 流程实例id
 	 */
 	private String orderId;
@@ -197,6 +201,14 @@ public class QueryFilter implements Serializable {
 	public QueryFilter setExcludedIds(String[] excludedIds) {
 		AssertHelper.notNull(excludedIds);
 		this.excludedIds = excludedIds;
+		return this;
+	}
+	public Integer getVersion() {
+		return version;
+	}
+	public QueryFilter setVersion(Integer version) {
+		AssertHelper.notNull(version);
+		this.version = version;
 		return this;
 	}
 }
