@@ -41,7 +41,15 @@ import org.snaker.engine.parser.ModelParser;
  */
 public class ProcessService extends AccessService implements IProcessService, CacheManagerAware {
 	private static final Logger log = LoggerFactory.getLogger(ProcessService.class);
+	private static final String DEFAULT_SEPARATOR = ".";
+	private static final Integer DEFAULT_VERSION = 0;
+	/**
+	 * 流程定义对象cache名称
+	 */
 	private static final String CACHE_ENTITY = "snaker.process.entity";
+	/**
+	 * 流程id、name的cache名称
+	 */
 	private static final String CACHE_NAME = "snaker.process.name";
 	/**
 	 * cache manager
@@ -63,37 +71,75 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	}
 	
 	/**
-	 * 根据id或name获取process对象
+	 * 根据id获取process对象
 	 * 先通过cache获取，如果返回空，就从数据库读取并put
 	 */
-	public Process getProcess(String idName) {
+	public Process getProcessById(String id) {
+		AssertHelper.notEmpty(id);
 		Process entity = null;
+		String processName = "";
 		Cache<String, String> nameCache = ensureAvailableNameCache();
 		Cache<String, Process> entityCache = ensureAvailableEntityCache();
-		if(entityCache != null) {
-			entity = entityCache.get(idName);
-		}
-		if(entity == null && nameCache != null && entityCache != null) {
-			String name = nameCache.get(idName);
-			if(StringHelper.isNotEmpty(name)) {
-				entity = entityCache.get(idName);
+		if(nameCache != null && entityCache != null) {
+			processName = nameCache.get(id);
+			if(StringHelper.isNotEmpty(processName)) {
+				entity = entityCache.get(processName);
 			}
 		}
 		if(entity == null) {
 			if(log.isDebugEnabled()) {
-				log.debug("obtain process from database.");
+				log.debug("obtain process[id={}] from database.", id);
 			}
-			entity = access().getProcess(idName);
+			entity = access().getProcess(id);
 			if(entity != null) {
 				if(entity.getDBContent() != null) {
 					entity.setModel(ModelParser.parse(entity.getDBContent()));
 				}
-				ensureAvailableEntityCache().put(entity.getName(), entity);
-				ensureAvailableNameCache().put(entity.getId(), entity.getName());
+				processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
+				entityCache.put(processName, entity);
+				nameCache.put(entity.getId(), processName);
 			}
 		} else {
 			if(log.isDebugEnabled()) {
-				log.debug("obtain process from cache.");
+				log.debug("obtain process[id={}] from cache.", id);
+			}
+		}
+		return entity;
+	}
+	
+	public Process getProcessByName(String name) {
+		return getProcessByVersion(name, DEFAULT_VERSION);
+	}
+
+	public Process getProcessByVersion(String name, Integer version) {
+		AssertHelper.notEmpty(name);
+		if(version == null) version = DEFAULT_VERSION;
+		Process entity = null;
+		String processName = name + DEFAULT_SEPARATOR + version;
+		Cache<String, String> nameCache = ensureAvailableNameCache();
+		Cache<String, Process> entityCache = ensureAvailableEntityCache();
+		if(entityCache != null) {
+			entity = entityCache.get(processName);
+		}
+		if(entity == null) {
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process[name={}] from database.", processName);
+			}
+			Page<Process> page = new Page<Process>(1);
+			List<Process> processs = access().getProcesss(page, 
+					new QueryFilter().setNames(new String[]{name}).setVersion(version));
+			if(processs != null && !processs.isEmpty()) {
+				entity = processs.get(0);
+				if(entity.getDBContent() != null) {
+					entity.setModel(ModelParser.parse(entity.getDBContent()));
+				}
+				processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
+				entityCache.put(processName, entity);
+				nameCache.put(entity.getId(), processName);
+			}
+		} else {
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process[name={}] from cache.", processName);
 			}
 		}
 		return entity;
@@ -107,26 +153,30 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		try {
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
-			Process process = getProcess(model.getName());
-			boolean isNew = (process == null);
-			if(process == null) {
-				process = new Process();
-				process.setId(StringHelper.getPrimaryKey());
-			}
-			process.setName(model.getName());
-			process.setDisplayName(model.getDisplayName());
-			process.setState(STATE_ACTIVE);
-			process.setInstanceUrl(model.getInstanceUrl());
-			process.setModel(model);
-			process.setBytes(bytes);
-			if(isNew) {
-				saveProcess(process);
+			Page<Process> page = new Page<Process>(1);
+			page.setOrder(Page.DESC);
+			page.setOrderBy("version");
+			List<Process> processs = access().getProcesss(page, 
+					new QueryFilter().setNames(new String[]{model.getName()}));
+			Process entity = new Process();
+			entity.setId(StringHelper.getPrimaryKey());
+			if(processs == null || processs.isEmpty()) {
+				entity.setVersion(0);
 			} else {
-				access().updateProcess(process);
+				entity.setVersion(processs.get(0).getVersion() + 1);
 			}
-			ensureAvailableEntityCache().put(process.getName(), process);
-			ensureAvailableNameCache().put(process.getId(), process.getName());
-			return process.getId();
+			entity.setName(model.getName());
+			entity.setDisplayName(model.getDisplayName());
+			entity.setState(STATE_ACTIVE);
+			entity.setInstanceUrl(model.getInstanceUrl());
+			entity.setModel(model);
+			entity.setBytes(bytes);
+			System.out.println("version="+entity.getVersion());
+			saveProcess(entity);
+			String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
+			ensureAvailableEntityCache().put(processName, entity);
+			ensureAvailableNameCache().put(entity.getId(), processName);
+			return entity.getId();
 		} catch(Exception e) {
 			e.printStackTrace();
 			log.error(e.getMessage());
@@ -145,7 +195,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	public void undeploy(String processId) {
 		Process process = access().getProcess(processId);
 		process.setState(STATE_FINISH);
-		process.setName(process.getName() + "." + processId);
+		process.setName(process.getName() + DEFAULT_SEPARATOR + processId);
 		access().updateProcess(process);
 	}
 

@@ -27,6 +27,7 @@ import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.handlers.IHandler;
+import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.model.SubProcessModel;
 
 /**
@@ -55,7 +56,7 @@ public class StartSubProcessHandler implements IHandler {
 	public void handle(Execution execution) {
 		//根据子流程模型名称获取子流程定义对象
 		SnakerEngine engine = execution.getEngine();
-		Process process = engine.process().getProcess(model.getProcessName());
+		Process process = engine.process().getProcessByVersion(model.getProcessName(), model.getVersion());
 		
 		Execution child = execution.createSubExecution(execution, process, model.getName());
 		Order order = null;
@@ -68,15 +69,14 @@ public class StartSubProcessHandler implements IHandler {
 				es.shutdown();
 				order = future.get();
 			} catch (InterruptedException e) {
-				throw new SnakerException("Future线程被强制终止执行", e.getCause());
+				throw new SnakerException("创建子流程线程被强制终止执行", e.getCause());
 			} catch (ExecutionException e) {
-				throw new SnakerException("Future线程执行异常.", e.getCause());
+				throw new SnakerException("创建子流程线程执行异常.", e.getCause());
 			}
 		} else {
 			order  = engine.startInstanceByExecution(child);
 		}
-		if(order == null) throw new SnakerException("子流程创建失败");
-
+		AssertHelper.notNull(order, "子流程创建失败");
 		execution.addTasks(engine.query().getActiveTasks(new QueryFilter().setOrderId(order.getId())));
 	}
 

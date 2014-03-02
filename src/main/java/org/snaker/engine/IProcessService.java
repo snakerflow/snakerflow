@@ -34,11 +34,26 @@ public interface IProcessService {
 	void saveProcess(Process process);
 	
 	/**
-	 * 根据主键ID、或name获取流程定义对象
-	 * @param idName 流程定义id或name
+	 * 根据主键ID获取流程定义对象
+	 * @param id 流程定义id
 	 * @return Process 流程定义对象
 	 */
-	Process getProcess(String idName);
+	Process getProcessById(String id);
+	
+	/**
+	 * 根据流程name获取流程定义对象
+	 * @param name 流程定义名称
+	 * @return Process 流程定义对象
+	 */
+	Process getProcessByName(String name);
+	
+	/**
+	 * 根据流程name、version获取流程定义对象
+	 * @param name 流程定义名称
+	 * @param version 版本号
+	 * @return Process 流程定义对象
+	 */
+	Process getProcessByVersion(String name, Integer version);
 	
 	/**
 	 * 根据给定的参数列表args分页查询process

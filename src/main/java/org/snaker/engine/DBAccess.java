@@ -177,11 +177,11 @@ public interface DBAccess {
 	HistoryOrder getHistOrder(String orderId);
 	
 	/**
-	 * 根据流程定义id、或name查询流程定义对象
-	 * @param idName 流程定义id、name
+	 * 根据流程定义id查询流程定义对象
+	 * @param id 流程定义id
 	 * @return Process 流程定义对象
 	 */
-	public Process getProcess(String idName);
+	public Process getProcess(String id);
 	
 	/**
 	 * 根据查询的参数，分页对象，返回分页后的查询结果

@@ -43,6 +43,7 @@ public interface NodeParser {
 	public static final String ATTR_TYPE = "performType";
 	public static final String ATTR_TO = "to";
 	public static final String ATTR_PROCESSNAME = "processName";
+	public static final String ATTR_VERSION = "version";
 	public static final String ATTR_URL = "url";
 	public static final String ATTR_EXPIRETIME = "expireTime";
     public static final String ATTR_CLAZZ = "clazz";

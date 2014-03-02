@@ -46,7 +46,7 @@ public class EndProcessHandler implements IHandler {
 		if(StringHelper.isNotEmpty(order.getParentId())) {
 			Order parentOrder = engine.query().getOrder(order.getParentId());
 			if(parentOrder == null) return;
-			Process process = engine.process().getProcess(parentOrder.getProcessId());
+			Process process = engine.process().getProcessById(parentOrder.getProcessId());
 			ProcessModel pm = process.getModel();
 			if(pm ==null) return;
 			SubProcessModel spm = (SubProcessModel)pm.getNode(order.getParentNodeName());

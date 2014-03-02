@@ -174,7 +174,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	public Order startInstanceById(String id, String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
-		Process process = process().getProcess(id);
+		Process process = process().getProcessById(id);
 		AssertHelper.notNull(process, "指定的流程定义[id=" + id + "]不存在");
 		Execution execution = execute(process, operator, args, null, null);
 		
@@ -283,7 +283,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		AssertHelper.notNull(order, "指定的流程实例[id=" + orderId + "]已完成或不存在");
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
-		Process process = process().getProcess(order.getProcessId());
+		Process process = process().getProcessById(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
 		return task().createTask(model, execution);
@@ -307,7 +307,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
 		order().updateOrder(order);
-		Process process = process().getProcess(order.getProcessId());
+		Process process = process().getProcessById(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
 		execution.setTask(task);

@@ -31,6 +31,10 @@ public class SubProcessModel extends WorkModel {
 	 */
 	private String processName;
 	/**
+	 * 子流程版本号
+	 */
+	private Integer version;
+	/**
 	 * 子流程定义引用
 	 */
 	private ProcessModel subProcess;
@@ -52,5 +56,13 @@ public class SubProcessModel extends WorkModel {
 
 	public void setProcessName(String processName) {
 		this.processName = processName;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }

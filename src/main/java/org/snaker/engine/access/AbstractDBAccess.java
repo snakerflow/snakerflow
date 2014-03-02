@@ -49,8 +49,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String SAVE = "SAVE";
 	protected static final String UPDATE = "UPDATE";
 	
-	protected static final String PROCESS_INSERT = "insert into wf_process (id,parent_Id,name,display_Name,type,instance_Url,query_Url,state,version) values (?,?,?,?,?,?,?,?,0)";
-	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,query_Url=?, version = version + 1 where id=? and version = ?";
+	protected static final String PROCESS_INSERT = "insert into wf_process (id,name,display_Name,type,instance_Url,state,version) values (?,?,?,?,?,?,?)";
+	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=? where id=? ";
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
@@ -69,7 +69,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String TASK_ACTOR_DELETE = "delete from wf_task_actor where task_Id = ?";
 	protected static final String TASK_ACTOR_REDUCE = "delete from wf_task_actor where task_Id = ? and actor_Id = ?";
 	
-	protected static final String QUERY_PROCESS = "select id,parent_Id,name,display_Name,type,instance_Url,query_Url,state, content, version from wf_process ";
+	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version from wf_process ";
 	protected static final String QUERY_ORDER = "select id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,priority,order_No,variable, version from wf_order ";
 	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
 	protected static final String QUERY_TASK_ACTOR = "select task_Id, actor_Id from wf_task_actor ";
@@ -137,10 +137,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(process, SAVE));
 		} else {
-			Object[] args = new Object[]{process.getId(), process.getParentId(), process.getName(), process.getDisplayName(), process.getType(), 
-					process.getInstanceUrl(), process.getQueryUrl(), process.getState()};
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
-					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+			Object[] args = new Object[]{process.getId(), process.getName(), process.getDisplayName(), process.getType(), 
+					process.getInstanceUrl(), process.getState(), process.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
+					Types.VARCHAR, Types.INTEGER, Types.INTEGER};
 			saveOrUpdate(buildMap(PROCESS_INSERT, args, type));
 		}
 	}
@@ -152,9 +152,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(process, UPDATE));
 		} else {
 			Object[] args = new Object[]{process.getName(), process.getDisplayName(), process.getState(), 
-					process.getInstanceUrl(), process.getQueryUrl(), process.getId(), process.getVersion()};
+					process.getInstanceUrl(), process.getId(), process.getVersion()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, 
-					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+					Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
 		}
 	}
@@ -326,9 +326,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryObject(Order.class, QUERY_ORDER + where, orderId);
 	}
 
-	public Process getProcess(String idName) {
-		String where = " where id = ? or name = ?";
-		return queryObject(Process.class, QUERY_PROCESS + where, idName, idName);
+	public Process getProcess(String id) {
+		String where = " where id = ?";
+		return queryObject(Process.class, QUERY_PROCESS + where, id);
 	}
 	
 	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
@@ -343,6 +343,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 			}
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
+		}
+		if(filter.getVersion() != null) {
+			sql.append(" and version = ? ");
+			paramList.add(filter.getVersion());
 		}
 		if(filter.getState() != null) {
 			sql.append(" and state = ? ");

@@ -14,6 +14,7 @@
  */
 package org.snaker.engine.parser.impl;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.NodeModel;
@@ -40,6 +41,12 @@ public class SubProcessParser extends AbstractNodeParser {
 	protected void parseNode(NodeModel node, Element element) {
 		SubProcessModel model = (SubProcessModel)node;
 		model.setProcessName(element.getAttribute(ATTR_PROCESSNAME));
+		String version = element.getAttribute(ATTR_VERSION);
+		int ver = 0;
+        if(NumberUtils.isNumber(version)) {
+        	ver = Integer.parseInt(version);
+        }
+		model.setVersion(ver);
 		String url = element.getAttribute(ATTR_URL);
 		if(StringHelper.isNotEmpty(url)) {
 			model.setUrl(element.getAttribute(ATTR_URL));
