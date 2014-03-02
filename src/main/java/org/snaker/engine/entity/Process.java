@@ -41,10 +41,6 @@ public class Process implements Serializable {
 	 * 版本
 	 */
 	private Integer version;
-	/**
-     * 存在父子流程时，需要设置父流程定义的ID
-     */
-	private String parentId;
     /**
      * 流程定义名称
      */
@@ -63,10 +59,6 @@ public class Process implements Serializable {
 	 */
 	private String instanceUrl;
     /**
-     * 当前流程的查询url
-     */
-	private String queryUrl;
-    /**
      * 是否可用的开关
      */
 	private Integer state;
@@ -83,12 +75,6 @@ public class Process implements Serializable {
      */
     private byte[] bytes;
     
-	public String getParentId() {
-		return parentId;
-	}
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
 	public String getName() {
 		return name;
 	}
@@ -106,12 +92,6 @@ public class Process implements Serializable {
 	}
 	public void setType(Integer type) {
 		this.type = type;
-	}
-	public String getQueryUrl() {
-		return queryUrl;
-	}
-	public void setQueryUrl(String queryUrl) {
-		this.queryUrl = queryUrl;
 	}
 	public Integer getState() {
 		return state;

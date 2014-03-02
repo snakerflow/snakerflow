@@ -4,8 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Process">
     <insert id="SAVE" parameterType="process">
-    	insert into wf_process (id,parent_Id,name,display_Name,type,instance_Url,query_Url,state,content,version) 
-    	values (#{id, jdbcType=VARCHAR},#{parentId, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{displayName, jdbcType=VARCHAR},#{type, jdbcType=NUMERIC},#{instanceUrl, jdbcType=VARCHAR},#{queryUrl, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC},#{bytes, jdbcType=BLOB},0)
+    	insert into wf_process (id,name,display_Name,type,instance_Url,state,content,version) 
+    	values (#{id, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{displayName, jdbcType=VARCHAR},#{type, jdbcType=NUMERIC},#{instanceUrl, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC},#{bytes, jdbcType=BLOB},#{version, jdbcType=NUMERIC})
     </insert>
     <update id="UPDATE" parameterType="process">
     	update wf_process set 
@@ -14,33 +14,29 @@
     	state=#{state, jdbcType=NUMERIC},
     	instance_Url=#{instanceUrl, jdbcType=VARCHAR},
     	query_Url=#{queryUrl, jdbcType=VARCHAR},
-    	content=#{bytes, jdbcType=BLOB} , version = version + 1  
-    	where id=#{id, jdbcType=VARCHAR} and version=#{version, jdbcType=NUMERIC}
+    	content=#{bytes, jdbcType=BLOB}
+    	where id=#{id, jdbcType=VARCHAR}
     </update>
     <select id="SELECTONE" parameterType="string" resultType="process">
     	select 
     		id,
-    		parent_Id as parentId,
     		name,
     		display_Name as displayName,
     		type,
     		instance_Url as instanceUrl,
-    		query_Url as queryUrl,
     		state,
     		content,
     		version
     	from wf_process 
-    	where id = #{id, jdbcType=VARCHAR} or name = #{id, jdbcType=VARCHAR}
+    	where id = #{id, jdbcType=VARCHAR}
     </select>
     <select id="SELECTLIST" resultType="process">
     	select 
     		id,
-    		parent_Id as parentId,
     		name,
     		display_Name as displayName,
     		type,
     		instance_Url as instanceUrl,
-    		query_Url as queryUrl,
     		state,
     		content as bytes,
     		version
@@ -51,12 +47,10 @@
     ${limitBefore}
     	select 
     		id,
-    		parent_Id as parentId,
     		name,
     		display_Name as displayName,
     		type,
     		instance_Url as instanceUrl,
-    		query_Url as queryUrl,
     		state,
     		content as bytes,
     		version
@@ -84,6 +78,9 @@
       		</if>
       		<if test="state != null">
         		and state = #{state, jdbcType=NUMERIC}
+      		</if>
+      		<if test="version != null">
+        		and version = #{version, jdbcType=NUMERIC}
       		</if>
       	</where>
     </sql>
