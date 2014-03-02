@@ -159,7 +159,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 根据流程定义ID启动流程实例
 	 */
 	public Order startInstanceById(String id) {
-		return startInstanceById(id, null);
+		return startInstanceById(id, null, null);
 	}
 
 	/**
@@ -181,6 +181,51 @@ public class SnakerEngineImpl implements SnakerEngine {
 		if(process.getModel() != null) {
 			StartModel start = process.getModel().getStart();
 			AssertHelper.notNull(start, "指定的流程定义[id=" + id + "]没有开始节点");
+			start.execute(execution);
+		}
+		
+		return execution.getOrder();
+	}
+	
+	/**
+	 * 根据流程名称启动流程实例
+	 * @since 1.3
+	 */
+	public Order startInstanceByName(String name) {
+		return startInstanceByName(name, 0, null, null);
+	}
+
+	/**
+	 * 根据流程名称、版本号启动流程实例
+	 * @since 1.3
+	 */
+	public Order startInstanceByName(String name, Integer version) {
+		return startInstanceByName(name, version, null, null);
+	}
+
+	/**
+	 * 根据流程名称、版本号、操作人启动流程实例
+	 * @since 1.3
+	 */
+	public Order startInstanceByName(String name, Integer version,
+			String operator) {
+		return startInstanceByName(name, version, operator, null);
+	}
+
+	/**
+	 * 根据流程名称、版本号、操作人、参数列表启动流程实例
+	 * @since 1.3
+	 */
+	public Order startInstanceByName(String name, Integer version,
+			String operator, Map<String, Object> args) {
+		if(args == null) args = new HashMap<String, Object>();
+		Process process = process().getProcessByVersion(name, version);
+		AssertHelper.notNull(process, "指定的流程定义[name=" + name + ", version=" + version + "]不存在");
+		Execution execution = execute(process, operator, args, null, null);
+		
+		if(process.getModel() != null) {
+			StartModel start = process.getModel().getStart();
+			AssertHelper.notNull(start, "指定的流程定义[name=" + name + ", version=" + version + "]没有开始节点");
 			start.execute(execution);
 		}
 		

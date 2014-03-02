@@ -88,6 +88,40 @@ public interface SnakerEngine {
 	public Order startInstanceById(String id, String operator, Map<String, Object> args);
 	
 	/**
+	 * 根据流程名称启动流程实例
+	 * @param name 流程定义名称
+	 * @return Order 流程实例
+	 */
+	public Order startInstanceByName(String name);
+	
+	/**
+	 * 根据流程名称、版本号启动流程实例
+	 * @param name 流程定义名称
+	 * @param version 版本号
+	 * @return Order 流程实例
+	 */
+	public Order startInstanceByName(String name, Integer version);
+	
+	/**
+	 * 根据流程名称、版本号、操作人启动流程实例
+	 * @param name 流程定义名称
+	 * @param version 版本号
+	 * @param operator 操作人
+	 * @return Order 流程实例
+	 */
+	public Order startInstanceByName(String name, Integer version, String operator);
+	
+	/**
+	 * 根据流程名称、版本号、操作人、参数列表启动流程实例
+	 * @param name 流程定义名称
+	 * @param version 版本号
+	 * @param operator 操作人
+	 * @param args 参数列表
+	 * @return Order 流程实例
+	 */
+	public Order startInstanceByName(String name, Integer version, String operator, Map<String, Object> args);
+	
+	/**
 	 * 根据父执行对象启动子流程实例
 	 * @param execution 执行对象
 	 * @return Order 流程实例
