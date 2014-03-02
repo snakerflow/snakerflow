@@ -1,11 +1,9 @@
 /**流程定义表*/
 create table wf_process (
     id               nvarchar(100) primary key not null,
-    parent_Id        nvarchar(100),
     name             nvarchar(100),
     display_Name     nvarchar(200),
     type             tinyint,
-    query_Url        nvarchar(200),
     instance_Url     nvarchar(200),
     state            tinyint,
     content          varbinary(max),
@@ -92,7 +90,9 @@ create table wf_hist_task_actor (
     actor_Id         nvarchar(100) not null
 );
 
-alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+/**
+ * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+ */
 
 /**创建索引*/
 create index IDX_PROCESS_NAME on wf_process (name);

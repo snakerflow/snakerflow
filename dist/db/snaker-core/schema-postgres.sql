@@ -10,24 +10,20 @@ drop table if exists wf_process;
 /**流程定义表*/
 CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL,
-    parent_Id         VARCHAR(100),
-    NAME              VARCHAR(100),
+    name              VARCHAR(100),
     display_Name      VARCHAR(200),
-    TYPE              smallint,
+    type              smallint,
     instance_Url      VARCHAR(200),
-    query_Url         VARCHAR(200),
     state             smallint,
     content           text,
     version           smallint
 );
 COMMENT ON TABLE wf_process IS '流程定义表';
 COMMENT ON COLUMN wf_process.id IS '主键ID';
-COMMENT ON COLUMN wf_process.parent_Id IS '父流程ID';
-COMMENT ON COLUMN wf_process.NAME IS '流程名称';
+COMMENT ON COLUMN wf_process.name IS '流程名称';
 COMMENT ON COLUMN wf_process.display_Name IS '流程显示名称';
-COMMENT ON COLUMN wf_process.TYPE IS '流程类型';
+COMMENT ON COLUMN wf_process.type IS '流程类型';
 COMMENT ON COLUMN wf_process.instance_Url IS '实例url';
-COMMENT ON COLUMN wf_process.query_Url IS '查询url';
 COMMENT ON COLUMN wf_process.state IS '流程是否可用';
 COMMENT ON COLUMN wf_process.content IS '流程模型定义';
 COMMENT ON COLUMN wf_process.version IS '版本';
@@ -174,8 +170,6 @@ create table wf_hist_task_actor (
 COMMENT ON TABLE wf_hist_task_actor IS '历史任务参与者表';
 COMMENT ON COLUMN wf_hist_task_actor.task_Id IS '任务ID';
 COMMENT ON COLUMN wf_hist_task_actor.actor_Id IS '参与者ID';
-
-alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
 
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);

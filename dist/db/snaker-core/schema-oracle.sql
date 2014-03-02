@@ -1,11 +1,9 @@
 /**流程定义表*/
 create table wf_process (
     id               varchar2(100) primary key not null,
-    parent_Id        varchar2(100),
     name             varchar2(100),
     display_Name     varchar2(200),
     type             number(1),
-    query_Url        varchar2(200),
     instance_Url     varchar2(200),
     state            number(1),
     content          blob,
@@ -13,11 +11,9 @@ create table wf_process (
 );
 comment on table wf_process is '流程定义表';
 comment on column wf_process.id is '主键ID';
-comment on column wf_process.parent_Id is '父流程ID';
 comment on column wf_process.name is '流程名称';
 comment on column wf_process.display_Name is '流程显示名称';
 comment on column wf_process.type is '流程类型';
-comment on column wf_process.query_Url is '查询url';
 comment on column wf_process.instance_Url is '实例url';
 comment on column wf_process.state is '流程是否可用';
 comment on column wf_process.content is '流程模型定义';
@@ -166,7 +162,9 @@ comment on table wf_hist_task_actor is '历史任务参与者表';
 comment on column wf_hist_task_actor.task_Id is '任务ID';
 comment on column wf_hist_task_actor.actor_Id is '参与者ID';
 
-alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+/**
+ * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+ */
 
 /**创建索引*/
 create index IDX_PROCESS_NAME on wf_process (name);

@@ -1,12 +1,10 @@
 /**流程定义表*/
 CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL comment '主键ID',
-    parent_Id         VARCHAR(100) comment '父流程ID',
-    NAME              VARCHAR(100) comment '流程名称',
+    name              VARCHAR(100) comment '流程名称',
     display_Name      VARCHAR(200) comment '流程显示名称',
-    TYPE              TINYINT(1) comment '流程类型',
+    type              TINYINT(1) comment '流程类型',
     instance_Url      VARCHAR(200) comment '实例url',
-    query_Url         VARCHAR(200) comment '查询url',
     state             TINYINT(1) comment '流程是否可用',
     content           LONGBLOB comment '流程模型定义',
     version           TINYINT(1) comment '版本'
@@ -92,7 +90,9 @@ create table wf_hist_task_actor (
     actor_Id          VARCHAR(100) not null comment '参与者ID'
 )comment='历史任务参与者表';
 
-alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+/**
+ * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
+ */
 
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
