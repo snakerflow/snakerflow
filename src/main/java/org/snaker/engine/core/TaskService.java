@@ -114,34 +114,41 @@ public class TaskService extends AccessService implements ITaskService {
 	
 	/**
 	 * 向指定任务添加参与者
-	 * 该方法根据TaskType类型判断是否需要创建新的活动任务
 	 */
 	public void addTaskActor(String taskId, String... actors) {
+		addTaskActor(taskId, null, actors);
+	}
+	
+	/**
+	 * 向指定任务添加参与者
+	 * 该方法根据performType类型判断是否需要创建新的活动任务
+	 */
+	public void addTaskActor(String taskId, Integer performType, String... actors) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		if(task.getTaskType().intValue() == TaskType.Task.ordinal()) {
-			int performType = task.getPerformType() == null ? -1 : task.getPerformType().intValue();
-			switch(performType) {
-			case -1:
-				break;
-			case 0:
-				assignTask(task.getId(), actors);
-				break;
-			case 1:
-				try {
-					for(String actor : actors) {
-						Task newTask = (Task)task.clone();
-						newTask.setId(StringHelper.getPrimaryKey());
-						newTask.setCreateTime(DateHelper.getTime());
-						newTask.setOperator(actor);
-						saveTask(newTask);
-						assignTask(newTask.getId(), actor);
-					}
-				} catch(CloneNotSupportedException ex) {
-					throw new SnakerException("任务对象不支持复制", ex.getCause());
+		if(task.getTaskType().intValue() != TaskType.Task.ordinal()) return;
+		if(performType == null) performType = task.getPerformType();
+		if(performType == null) performType = 0;
+		switch(performType) {
+		case 0:
+			assignTask(task.getId(), actors);
+			break;
+		case 1:
+			try {
+				for(String actor : actors) {
+					Task newTask = (Task)task.clone();
+					newTask.setId(StringHelper.getPrimaryKey());
+					newTask.setCreateTime(DateHelper.getTime());
+					newTask.setOperator(actor);
+					saveTask(newTask);
+					assignTask(newTask.getId(), actor);
 				}
-				break;
+			} catch(CloneNotSupportedException ex) {
+				throw new SnakerException("任务对象不支持复制", ex.getCause());
 			}
+			break;
+		default :
+			break;
 		}
 	}
 	

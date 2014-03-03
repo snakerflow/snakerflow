@@ -25,12 +25,11 @@ import org.snaker.engine.model.WorkModel;
 /**
  * 任务业务类，包括以下服务：
  * 1、创建任务
- * 2、根据任务ID获取活动、历史对象
- * 3、对指定任务分配参与者
- * 4、完成任务
- * 5、撤回任务
- * 6、回退任务
- * 7、提取任务
+ * 2、添加、删除参与者
+ * 3、完成任务
+ * 4、撤回任务
+ * 5、回退任务
+ * 6、提取任务
  * @author yuqs
  * @version 1.0
  */
@@ -73,6 +72,14 @@ public interface ITaskService {
 	 * @param actors 参与者
 	 */
 	void addTaskActor(String taskId, String... actors);
+	
+	/**
+	 * 向指定的任务id添加参与者
+	 * @param taskId 任务id
+	 * @param performType 参与类型
+	 * @param actors 参与者
+	 */
+	void addTaskActor(String taskId, Integer performType, String... actors);
 	
 	/**
 	 * 对指定的任务id删除参与者
