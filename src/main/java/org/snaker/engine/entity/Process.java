@@ -109,8 +109,16 @@ public class Process implements Serializable {
 	public ProcessModel getModel() {
 		return model;
 	}
-	public void setModel(ProcessModel model) {
-		this.model = model;
+	
+	/**
+	 * setter name/displayName/instanceUrl
+	 * @param processModel
+	 */
+	public void setModel(ProcessModel processModel) {
+		this.model = processModel;
+    	this.name = processModel.getName();
+    	this.displayName = processModel.getDisplayName();
+    	this.instanceUrl = processModel.getInstanceUrl();
 	}
 	public String getInstanceUrl() {
 		return instanceUrl;
