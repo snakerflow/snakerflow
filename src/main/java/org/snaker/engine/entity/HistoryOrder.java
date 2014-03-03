@@ -17,6 +17,8 @@ package org.snaker.engine.entity;
 import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.snaker.engine.SnakerEngine;
+import org.snaker.engine.core.ServiceContext;
 
 /**
  * 历史流程实例实体类
@@ -176,6 +178,13 @@ public class HistoryOrder implements Serializable {
 
 	public void setVariable(String variable) {
 		this.variable = variable;
+	}
+	
+	public String getProcessName() {
+		SnakerEngine engine = ServiceContext.getContext().getEngine();
+		Process process = engine.process().getProcessById(this.processId);
+		if(process == null) return this.processId;
+		return process.getDisplayName();
 	}
 	
 	public String toString() {
