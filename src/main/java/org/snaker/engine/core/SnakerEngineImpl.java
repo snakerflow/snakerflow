@@ -29,6 +29,7 @@ import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.transaction.TransactionInterceptor;
 import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
+import org.snaker.engine.cache.memory.MemoryCacheManager;
 import org.snaker.engine.cfg.Configuration;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
@@ -102,6 +103,10 @@ public class SnakerEngineImpl implements SnakerEngine {
 			setDBAccess(access);
 		}
 		CacheManager cacheManager = context.find(CacheManager.class);
+		if(cacheManager == null) {
+			//默认使用内存缓存管理器
+			cacheManager = new MemoryCacheManager();
+		}
 		List<CacheManagerAware> cacheServices = context.findList(CacheManagerAware.class);
 		for(CacheManagerAware cacheService : cacheServices) {
 			cacheService.setCacheManager(cacheManager);
