@@ -26,7 +26,6 @@ import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.cache.Cache;
 import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
-import org.snaker.engine.cache.memory.MemoryCacheManager;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.StreamHelper;
@@ -86,70 +85,68 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 				entity = entityCache.get(processName);
 			}
 		}
-		if(entity == null) {
-			if(log.isDebugEnabled()) {
-				log.debug("obtain process[id={}] from database.", id);
-			}
-			entity = access().getProcess(id);
-			if(entity != null) {
-				if(entity.getDBContent() != null) {
-					entity.setModel(ModelParser.parse(entity.getDBContent()));
-				}
-				processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
-				entityCache.put(processName, entity);
-				nameCache.put(entity.getId(), processName);
-			}
-		} else {
+		if(entity != null) {
 			if(log.isDebugEnabled()) {
 				log.debug("obtain process[id={}] from cache.", id);
 			}
+			return entity;
 		}
-		return entity;
-	}
-	
-	public Process getProcessByName(String name) {
-		return getProcessByVersion(name, DEFAULT_VERSION);
-	}
-
-	public Process getProcessByVersion(String name, Integer version) {
-		AssertHelper.notEmpty(name);
-		if(version == null) version = DEFAULT_VERSION;
-		Process entity = null;
-		String processName = name + DEFAULT_SEPARATOR + version;
-		Cache<String, String> nameCache = ensureAvailableNameCache();
-		Cache<String, Process> entityCache = ensureAvailableEntityCache();
-		if(entityCache != null) {
-			entity = entityCache.get(processName);
-		}
-		if(entity == null) {
+		entity = access().getProcess(id);
+		if(entity != null) {
 			if(log.isDebugEnabled()) {
-				log.debug("obtain process[name={}] from database.", processName);
+				log.debug("obtain process[id={}] from database.", id);
 			}
-			Page<Process> page = new Page<Process>(1);
-			List<Process> processs = access().getProcesss(page, 
-					new QueryFilter().setNames(new String[]{name}).setVersion(version));
-			if(processs != null && !processs.isEmpty()) {
-				entity = processs.get(0);
-				if(entity.getDBContent() != null) {
-					entity.setModel(ModelParser.parse(entity.getDBContent()));
-				}
-				processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
-				entityCache.put(processName, entity);
-				nameCache.put(entity.getId(), processName);
-			}
-		} else {
-			if(log.isDebugEnabled()) {
-				log.debug("obtain process[name={}] from cache.", processName);
-			}
+			cache(entity);
 		}
 		return entity;
 	}
 	
 	/**
-	 * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且push到模型容器中
+	 * 根据name获取process对象
+	 * 先通过cache获取，如果返回空，就从数据库读取并put
+	 */
+	public Process getProcessByName(String name) {
+		return getProcessByVersion(name, DEFAULT_VERSION);
+	}
+
+	/**
+	 * 根据name获取process对象
+	 * 先通过cache获取，如果返回空，就从数据库读取并put
+	 */
+	public Process getProcessByVersion(String name, Integer version) {
+		AssertHelper.notEmpty(name);
+		if(version == null) version = DEFAULT_VERSION;
+		Process entity = null;
+		String processName = name + DEFAULT_SEPARATOR + version;
+		Cache<String, Process> entityCache = ensureAvailableEntityCache();
+		if(entityCache != null) {
+			entity = entityCache.get(processName);
+		}
+		if(entity != null) {
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process[name={}] from cache.", processName);
+			}
+			return entity;
+		}
+
+		Page<Process> page = new Page<Process>(1);
+		List<Process> processs = access().getProcesss(page, 
+				new QueryFilter().setName(name).setVersion(version));
+		if(processs != null && !processs.isEmpty()) {
+			if(log.isDebugEnabled()) {
+				log.debug("obtain process[name={}] from database.", processName);
+			}
+			cache(processs.get(0));
+		}
+		return entity;
+	}
+	
+	/**
+	 * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
 	 * @param input
 	 */
 	public String deploy(InputStream input) {
+		AssertHelper.notNull(input);
 		try {
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
@@ -157,7 +154,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			page.setOrder(Page.DESC);
 			page.setOrderBy("version");
 			List<Process> processs = access().getProcesss(page, 
-					new QueryFilter().setNames(new String[]{model.getName()}));
+					new QueryFilter().setName(model.getName()));
 			Process entity = new Process();
 			entity.setId(StringHelper.getPrimaryKey());
 			if(processs == null || processs.isEmpty()) {
@@ -165,17 +162,11 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			} else {
 				entity.setVersion(processs.get(0).getVersion() + 1);
 			}
-			entity.setName(model.getName());
-			entity.setDisplayName(model.getDisplayName());
 			entity.setState(STATE_ACTIVE);
-			entity.setInstanceUrl(model.getInstanceUrl());
 			entity.setModel(model);
 			entity.setBytes(bytes);
-			System.out.println("version="+entity.getVersion());
 			saveProcess(entity);
-			String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
-			ensureAvailableEntityCache().put(processName, entity);
-			ensureAvailableNameCache().put(entity.getId(), processName);
+			cache(entity);
 			return entity.getId();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -184,27 +175,86 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		}
 	}
 	
-	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
-		AssertHelper.notNull(filter);
-		return access().getProcesss(page, filter);
+	/**
+	 * 根据流程定义id、xml的输入流解析为字节数组，保存至数据库中，并且重新put到缓存中
+	 * @param input
+	 */
+	public void redeploy(String id, InputStream input) {
+		AssertHelper.notNull(input);
+		Process entity = access().getProcess(id);
+		AssertHelper.notNull(entity);
+		try {
+			byte[] bytes = StreamHelper.readBytes(input);
+			ProcessModel model = ModelParser.parse(bytes);
+			String oldProcessName = entity.getName();
+			entity.setModel(model);
+			entity.setBytes(bytes);
+			saveProcess(entity);
+			if(!oldProcessName.equalsIgnoreCase(entity.getName())) {
+				Cache<String, Process> entityCache = ensureAvailableEntityCache();
+				if(entityCache != null) {
+					entityCache.remove(oldProcessName + DEFAULT_SEPARATOR + entity.getVersion());
+				}
+			}
+			cache(entity);
+		} catch(Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			throw new SnakerException(e.getMessage(), e.getCause());
+		}
 	}
 
 	/**
 	 * 根据processId卸载流程
 	 */
-	public void undeploy(String processId) {
-		Process process = access().getProcess(processId);
-		process.setState(STATE_FINISH);
-		process.setName(process.getName() + DEFAULT_SEPARATOR + processId);
-		access().updateProcess(process);
+	public void undeploy(String id) {
+		Process entity = access().getProcess(id);
+		entity.setState(STATE_FINISH);
+		access().updateProcess(entity);
+		cache(entity);
+	}
+	
+	/**
+	 * 级联删除指定流程定义的所有数据
+	 */
+	public void cascadeRemove(String id) {
+		
+	}
+	
+	/**
+	 * 分页查询流程定义
+	 */
+	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getProcesss(page, filter);
+	}
+	
+	/**
+	 * 缓存实体
+	 * @param entity
+	 */
+	private void cache(Process entity) {
+		Cache<String, String> nameCache = ensureAvailableNameCache();
+		Cache<String, Process> entityCache = ensureAvailableEntityCache();
+		if(entity.getModel() == null && entity.getDBContent() != null) {
+			entity.setModel(ModelParser.parse(entity.getDBContent()));
+		}
+		String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
+		if(nameCache != null && entityCache != null) {
+			if(log.isDebugEnabled()) {
+				log.debug("cache id is[{}],name is[{}]", entity.getId(), processName);
+			}
+			entityCache.put(processName, entity);
+			nameCache.put(entity.getId(), processName);
+		} else {
+			if(log.isDebugEnabled()) {
+				log.debug("no cache implementation class");
+			}
+		}
 	}
 
 	public void setCacheManager(CacheManager cacheManager) {
-		if(cacheManager == null) {
-			this.cacheManager = new MemoryCacheManager();
-		} else {
-			this.cacheManager = cacheManager;
-		}
+		this.cacheManager = cacheManager;
 	}
 	
     private Cache<String, Process> ensureAvailableEntityCache() {

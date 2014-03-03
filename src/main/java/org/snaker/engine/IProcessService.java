@@ -71,8 +71,27 @@ public interface IProcessService {
 	String deploy(InputStream input);
 	
 	/**
-	 * 卸载指定的流程定义
-	 * @param processId 流程定义id
+	 * 根據InputStream輸入流，部署流程定义
+	 * @param id 流程定义id
+	 * @param input 流程定义输入流
+	 * @return String 流程定义id
 	 */
-	void undeploy(String processId);
+	void redeploy(String id, InputStream input);
+	
+	/**
+	 * 卸载指定的流程定义，只更新状态
+	 * @param id 流程定义id
+	 */
+	void undeploy(String id);
+	
+	/**
+	 * 谨慎使用.数据恢复非常痛苦，你懂得~~
+	 * 级联删除指定流程定义的所有数据：
+	 * 1.wf_process
+	 * 2.wf_order,wf_hist_order
+	 * 3.wf_task,wf_hist_task
+	 * 4.wf_task_actor,wf_hist_task_actor
+	 * @param id
+	 */
+	void cascadeRemove(String id);
 }
