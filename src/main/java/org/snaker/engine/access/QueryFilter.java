@@ -139,12 +139,24 @@ public class QueryFilter implements Serializable {
 		this.operators = operators;
 		return this;
 	}
+	public QueryFilter setOperator(String operator) {
+		AssertHelper.notEmpty(operator);
+		this.operators = new String[1];
+		this.operators[0] = operator;
+		return this;
+	}
 	public String[] getNames() {
 		return names;
 	}
 	public QueryFilter setNames(String[] names) {
 		AssertHelper.notNull(names);
 		this.names = names;
+		return this;
+	}
+	public QueryFilter setName(String name) {
+		AssertHelper.notEmpty(name);
+		this.names = new String[1];
+		this.names[0] = name;
 		return this;
 	}
 	public String getDisplayName() {
