@@ -120,7 +120,12 @@
 			<version>3.12.1.GA</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901.jdbc3</version>
+			<scope>provided</scope>			
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
