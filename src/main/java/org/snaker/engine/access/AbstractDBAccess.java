@@ -152,9 +152,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(process, UPDATE));
 		} else {
 			Object[] args = new Object[]{process.getName(), process.getDisplayName(), process.getState(), 
-					process.getInstanceUrl(), process.getId(), process.getVersion()};
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, 
-					Types.VARCHAR, Types.INTEGER};
+					process.getInstanceUrl(), process.getId()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
 		}
 	}
