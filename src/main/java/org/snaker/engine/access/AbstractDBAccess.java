@@ -613,6 +613,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
 		sql.append(" from wf_hist_task t ");
 		sql.append(" left join wf_hist_order o on t.order_id = o.id ");
+		sql.append(" left join wf_hist_task_actor ta on ta.task_id=t.id ");
 		sql.append(" left join wf_process p on p.id = o.process_id ");
 		sql.append(" where 1=1 ");
 		/**
