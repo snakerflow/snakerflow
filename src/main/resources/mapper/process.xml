@@ -13,7 +13,6 @@
     	display_Name=#{displayName, jdbcType=VARCHAR},
     	state=#{state, jdbcType=NUMERIC},
     	instance_Url=#{instanceUrl, jdbcType=VARCHAR},
-    	query_Url=#{queryUrl, jdbcType=VARCHAR},
     	content=#{bytes, jdbcType=BLOB}
     	where id=#{id, jdbcType=VARCHAR}
     </update>
