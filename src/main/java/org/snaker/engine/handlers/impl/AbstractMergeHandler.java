@@ -53,6 +53,8 @@ public abstract class AbstractMergeHandler implements IHandler {
 			if(orders == null || orders.isEmpty()) {
 				isSubProcessMerged = true;
 			}
+		} else {
+			isSubProcessMerged = true;
 		}
 		if(isSubProcessMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
 			QueryFilter filter = new QueryFilter().
