@@ -16,8 +16,6 @@ package org.snaker.engine.entity;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * 工作项（待办、已处理任务的查询结果实体）
  * @author yuqs
@@ -261,6 +259,14 @@ public class WorkItem implements Serializable {
 	}
 	
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("WorkItem(processId=").append(this.processId);
+		sb.append(",orderId=").append(this.orderId);
+		sb.append(",taskId=").append(this.taskId);
+		sb.append(",processName").append(this.processName);
+		sb.append(",taskType=").append(this.taskType);
+		sb.append(",taskName").append(this.taskName);
+		sb.append(",performType=").append(this.performType).append(")");
+		return sb.toString();
 	}
 }

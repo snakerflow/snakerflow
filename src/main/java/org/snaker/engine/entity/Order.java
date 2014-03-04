@@ -16,8 +16,6 @@ package org.snaker.engine.entity;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * 流程工作单实体类（一般称为流程实例）
  * @author yuqs
@@ -186,6 +184,12 @@ public class Order implements Serializable {
 	}
 	
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("Order(id=").append(this.id);
+		sb.append(",processId=").append(this.processId);
+		sb.append(",creator=").append(this.creator);
+		sb.append(",createTime").append(this.createTime);
+		sb.append(",orderNo=").append(this.orderNo).append(")");
+		return sb.toString();
 	}
 }

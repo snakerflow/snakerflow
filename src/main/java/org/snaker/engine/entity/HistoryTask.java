@@ -16,8 +16,6 @@ package org.snaker.engine.entity;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * 历史任务实体类
  * @author yuqs
@@ -250,6 +248,14 @@ public class HistoryTask implements Serializable {
 	}
 	
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("HistoryTask(id=").append(this.id);
+		sb.append(",orderId=").append(this.orderId);
+		sb.append(",taskName=").append(this.taskName);
+		sb.append(",displayName").append(this.displayName);
+		sb.append(",taskType=").append(this.taskType);
+		sb.append(",createTime").append(this.createTime);
+		sb.append(",performType=").append(this.performType).append(")");
+		return sb.toString();
 	}
 }

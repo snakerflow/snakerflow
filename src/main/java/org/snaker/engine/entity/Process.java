@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.model.ProcessModel;
 
@@ -156,6 +155,12 @@ public class Process implements Serializable {
 		this.version = version;
 	}
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("Process(id=").append(this.id);
+		sb.append(",name=").append(this.name);
+		sb.append(",displayName=").append(this.displayName);
+		sb.append(",version").append(this.version);
+		sb.append(",state=").append(this.state).append(")");
+		return sb.toString();
 	}
 }

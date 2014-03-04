@@ -16,7 +16,6 @@ package org.snaker.engine.entity;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.ServiceContext;
 
@@ -188,6 +187,12 @@ public class HistoryOrder implements Serializable {
 	}
 	
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("HistoryOrder(id=").append(this.id);
+		sb.append(",processId=").append(this.processId);
+		sb.append(",creator=").append(this.creator);
+		sb.append(",createTime").append(this.createTime);
+		sb.append(",orderNo=").append(this.orderNo).append(")");
+		return sb.toString();
 	}
 }
