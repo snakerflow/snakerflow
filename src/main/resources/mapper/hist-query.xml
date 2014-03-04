@@ -150,7 +150,7 @@
     <sql id="fromWorkItemsPart">
 	    from wf_hist_task t 
 	    left join wf_hist_order o on t.order_id = o.id 
-	    left join wf_task_actor ta on ta.task_id=t.id 
+	    left join wf_hist_task_actor ta on ta.task_id=t.id 
 	    left join wf_process p on p.id = o.process_id 
 		<where>
       		<if test="processId != null">
