@@ -189,7 +189,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			String oldProcessName = entity.getName();
 			entity.setModel(model);
 			entity.setBytes(bytes);
-			saveProcess(entity);
+			access().updateProcess(entity);
 			if(!oldProcessName.equalsIgnoreCase(entity.getName())) {
 				Cache<String, Process> entityCache = ensureAvailableEntityCache();
 				if(entityCache != null) {
@@ -242,7 +242,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
 		if(nameCache != null && entityCache != null) {
 			if(log.isDebugEnabled()) {
-				log.debug("cache id is[{}],name is[{}]", entity.getId(), processName);
+				log.debug("cache process id is[{}],name is[{}]", entity.getId(), processName);
 			}
 			entityCache.put(processName, entity);
 			nameCache.put(entity.getId(), processName);
