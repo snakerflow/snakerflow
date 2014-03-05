@@ -15,6 +15,9 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import org.snaker.engine.helper.JsonHelper;
 
 /**
  * 流程工作单实体类（一般称为流程实例）
@@ -161,6 +164,11 @@ public class Order implements Serializable {
 
 	public String getVariable() {
 		return variable;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getVariableMap() {
+		return JsonHelper.fromJson(this.variable, Map.class);
 	}
 
 	public void setVariable(String variable) {

@@ -357,6 +357,10 @@ public class SnakerEngineImpl implements SnakerEngine {
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
 		order().updateOrder(order);
+		Map<String, Object> orderMaps = order.getVariableMap();
+		if(orderMaps != null) {
+			args.putAll(orderMaps);
+		}
 		Process process = process().getProcessById(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
 		execution.setOperator(operator);
