@@ -220,6 +220,14 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	public void cascadeRemove(String id) {
 		
 	}
+
+	/**
+	 * 查询流程定义
+	 */
+	public List<Process> getProcesss(QueryFilter filter) {
+		if(filter == null) filter = new QueryFilter();
+		return access().getProcesss(null, filter);
+	}
 	
 	/**
 	 * 分页查询流程定义
