@@ -24,7 +24,7 @@
     		type,
     		instance_Url as instanceUrl,
     		state,
-    		content,
+    		content as bytes,
     		version
     	from wf_process 
     	where id = #{id, jdbcType=VARCHAR}
