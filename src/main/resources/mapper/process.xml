@@ -73,7 +73,7 @@
 				</foreach>
 			</if>
       		<if test="displayName != null">
-        		and display_Name = #{displayName, jdbcType=VARCHAR}
+        		and display_Name like "%#{displayName, jdbcType=VARCHAR}%"
       		</if>
       		<if test="state != null">
         		and state = #{state, jdbcType=NUMERIC}

@@ -352,8 +352,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 			paramList.add(filter.getState());
 		}
 		if(StringHelper.isNotEmpty(filter.getDisplayName())) {
-			sql.append(" and displayName = ? ");
-			paramList.add(filter.getDisplayName());
+			sql.append(" and display_Name like ? ");
+			paramList.add("%" + filter.getDisplayName() + "%");
 		}
 		if(page == null) {
 			return queryList(Process.class, sql.toString(), paramList.toArray());
