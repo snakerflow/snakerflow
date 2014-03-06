@@ -159,7 +159,7 @@ public class Process implements Serializable {
 		sb.append("Process(id=").append(this.id);
 		sb.append(",name=").append(this.name);
 		sb.append(",displayName=").append(this.displayName);
-		sb.append(",version").append(this.version);
+		sb.append(",version=").append(this.version);
 		sb.append(",state=").append(this.state).append(")");
 		return sb.toString();
 	}

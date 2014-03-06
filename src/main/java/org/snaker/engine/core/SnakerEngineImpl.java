@@ -197,7 +197,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * @since 1.3
 	 */
 	public Order startInstanceByName(String name) {
-		return startInstanceByName(name, 0, null, null);
+		return startInstanceByName(name, null, null, null);
 	}
 
 	/**

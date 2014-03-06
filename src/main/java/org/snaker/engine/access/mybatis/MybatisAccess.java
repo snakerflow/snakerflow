@@ -141,8 +141,12 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectOne("Order.SELECTONE", orderId);
 	}
 
-	public Process getProcess(String idName) {
-		return getSession().selectOne("Process.SELECTONE", idName);
+	public Process getProcess(String id) {
+		return getSession().selectOne("Process.SELECTONE", id);
+	}
+	
+	public Integer getLatestProcessVersion(String name) {
+		return getSession().selectOne("Process.SELECTVERSION", name);
 	}
 	
 	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {

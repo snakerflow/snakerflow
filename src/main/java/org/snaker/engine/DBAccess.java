@@ -184,6 +184,13 @@ public interface DBAccess {
 	public Process getProcess(String id);
 	
 	/**
+	 * 根据流程名称查询最近的版本号
+	 * @param name
+	 * @return Integer 流程定义版本号
+	 */
+	public Integer getLatestProcessVersion(String name);
+	
+	/**
 	 * 根据查询的参数，分页对象，返回分页后的查询结果
 	 * @param page 分页对象
 	 * @param filter 查询过滤器

@@ -29,6 +29,12 @@
     	from wf_process 
     	where id = #{id, jdbcType=VARCHAR}
     </select>
+    <select id="SELECTVERSION" parameterType="string" resultType="integer">
+    	select 
+    		max(version)
+    	from wf_process 
+    	where name = #{name, jdbcType=VARCHAR}
+    </select>
     <select id="SELECTLIST" resultType="process">
     	select 
     		id,

@@ -98,6 +98,11 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 		}
 		template.update(sql, args, type);
 	}
+	
+	public Integer getLatestProcessVersion(String name) {
+		String where = " where name = ?";
+		return template.queryForInt(QUERY_VERSION + where, name);
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {

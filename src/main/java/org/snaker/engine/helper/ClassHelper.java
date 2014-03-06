@@ -42,6 +42,8 @@ public class ClassHelper {
 			return ((Integer)count).longValue();
 		} else if(count instanceof BigInteger) {
 			return ((BigInteger)count).longValue();
+		} else if(count instanceof Byte) {
+			return ((Byte)count).longValue();
 		} else {
 			return -1L;
 		}

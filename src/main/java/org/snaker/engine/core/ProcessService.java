@@ -41,7 +41,6 @@ import org.snaker.engine.parser.ModelParser;
 public class ProcessService extends AccessService implements IProcessService, CacheManagerAware {
 	private static final Logger log = LoggerFactory.getLogger(ProcessService.class);
 	private static final String DEFAULT_SEPARATOR = ".";
-	private static final Integer DEFAULT_VERSION = 0;
 	/**
 	 * 流程定义对象cache名称
 	 */
@@ -106,7 +105,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * 先通过cache获取，如果返回空，就从数据库读取并put
 	 */
 	public Process getProcessByName(String name) {
-		return getProcessByVersion(name, DEFAULT_VERSION);
+		return getProcessByVersion(name, null);
 	}
 
 	/**
@@ -115,7 +114,9 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 */
 	public Process getProcessByVersion(String name, Integer version) {
 		AssertHelper.notEmpty(name);
-		if(version == null) version = DEFAULT_VERSION;
+		if(version == null) {
+			version = access().getLatestProcessVersion(name);
+		}
 		Process entity = null;
 		String processName = name + DEFAULT_SEPARATOR + version;
 		Cache<String, Process> entityCache = ensureAvailableEntityCache();
@@ -129,14 +130,13 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			return entity;
 		}
 
-		Page<Process> page = new Page<Process>(1);
-		List<Process> processs = access().getProcesss(page, 
-				new QueryFilter().setName(name).setVersion(version));
+		List<Process> processs = access().getProcesss(null, new QueryFilter().setName(name).setVersion(version));
 		if(processs != null && !processs.isEmpty()) {
 			if(log.isDebugEnabled()) {
 				log.debug("obtain process[name={}] from database.", processName);
 			}
-			cache(processs.get(0));
+			entity = processs.get(0);
+			cache(entity);
 		}
 		return entity;
 	}

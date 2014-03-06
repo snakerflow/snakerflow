@@ -151,6 +151,12 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         return result;
     }
     
+	public Integer getLatestProcessVersion(String name) {
+		String where = " where name = ?";
+		Object result = query(1, QUERY_VERSION + where, name);
+		return new Long(ClassHelper.castLong(result)).intValue();
+	}
+    
 	public boolean isORM() {
 		return false;
 	}
@@ -169,13 +175,13 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         }
 	}
 
-	public <T> T queryObject(Class<T> T, String sql, Object... args) {
+	public <T> T queryObject(Class<T> clazz, String sql, Object... args) {
     	List<T> result = null;
         try {
         	if(log.isDebugEnabled()) {
         		log.debug("查询单条记录=\n" + sql);
         	}
-        	result = runner.query(getConnection(), sql, new BeanPropertyHandler<T>(T), args);
+        	result = runner.query(getConnection(), sql, new BeanPropertyHandler<T>(clazz), args);
         	return JdbcHelper.requiredSingleResult(result);
         } catch (SQLException e) {
         	log.error(e.getMessage(), e);
@@ -183,19 +189,19 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         }
 	}
 	
-	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
+	public <T> List<T> queryList(Class<T> clazz, String sql, Object... args) {
         try {
         	if(log.isDebugEnabled()) {
         		log.debug("查询多条记录=\n" + sql);
         	}
-        	return runner.query(getConnection(), sql, new BeanPropertyHandler<T>(T), args);
+        	return runner.query(getConnection(), sql, new BeanPropertyHandler<T>(clazz), args);
         } catch (SQLException e) {
         	log.error(e.getMessage(), e);
             return Collections.emptyList();
         }
 	}
 	
-	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
+	public <T> List<T> queryList(Page<T> page, Class<T> clazz, String sql, Object... args) {
 		String countSQL = "select count(1) from (" + sql + ") c ";
 		String querySQL = sql;
 		if(page.isOrderBySetted()) {
@@ -210,7 +216,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
         		log.debug("分页查询多条数据=\n" + querySQL);
         	}
 			Object count = query(1, countSQL, args);
-			List<T> list = runner.query(getConnection(), querySQL, new BeanPropertyHandler<T>(T), args);
+			List<T> list = runner.query(getConnection(), querySQL, new BeanPropertyHandler<T>(clazz), args);
 			if(list == null) list = Collections.emptyList();
 			page.setResult(list);
 			page.setTotalCount(ClassHelper.castLong(count));

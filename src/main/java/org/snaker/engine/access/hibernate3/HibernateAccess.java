@@ -128,6 +128,13 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	public void saveOrUpdate(Map<String, Object> map) {
 		getSession().saveOrUpdate(map.get(KEY_ENTITY));
 	}
+	
+	public Integer getLatestProcessVersion(String name) {
+		SQLQuery query = getSession().createSQLQuery(QUERY_VERSION + " where name = ?");
+		query.setParameter(0, name);
+		Object result = query.uniqueResult();
+		return new Long(ClassHelper.castLong(result)).intValue();
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {

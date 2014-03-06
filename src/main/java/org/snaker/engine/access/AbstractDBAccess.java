@@ -69,6 +69,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String TASK_ACTOR_DELETE = "delete from wf_task_actor where task_Id = ?";
 	protected static final String TASK_ACTOR_REDUCE = "delete from wf_task_actor where task_Id = ? and actor_Id = ?";
 	
+	protected static final String QUERY_VERSION = "select max(version) from wf_process ";
 	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version from wf_process ";
 	protected static final String QUERY_ORDER = "select id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,priority,order_No,variable, version from wf_order ";
 	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
