@@ -94,11 +94,12 @@ public class SnakerEngineImpl implements SnakerEngine {
 			
 			TransactionInterceptor interceptor = context.find(TransactionInterceptor.class);
 			//如果初始化配置时提供了访问对象，就对DBAccess进行初始化
-			if(this.configuration.getAccessDBObject() != null) {
+			Object accessObject = this.configuration.getAccessDBObject();
+			if(accessObject != null) {
 				if(interceptor != null) {
-					interceptor.initialize(this.configuration.getAccessDBObject());
+					interceptor.initialize(accessObject);
 				}
-				access.initialize(this.configuration.getAccessDBObject());
+				access.initialize(accessObject);
 			}
 			setDBAccess(access);
 		}
@@ -180,7 +181,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	public Order startInstanceById(String id, String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
 		Process process = process().getProcessById(id);
-		AssertHelper.notNull(process, "指定的流程定义[id=" + id + "]不存在");
+		process().check(process, id);
 		Execution execution = execute(process, operator, args, null, null);
 		
 		if(process.getModel() != null) {
@@ -225,7 +226,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 			String operator, Map<String, Object> args) {
 		if(args == null) args = new HashMap<String, Object>();
 		Process process = process().getProcessByVersion(name, version);
-		AssertHelper.notNull(process, "指定的流程定义[name=" + name + ", version=" + version + "]不存在");
+		process().check(process, name);
 		Execution execution = execute(process, operator, args, null, null);
 		
 		if(process.getModel() != null) {

@@ -61,6 +61,15 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * 名称cache(key=id,value=name对象)
 	 */
 	private Cache<String, String> nameCache;
+	
+	public void check(Process process, String idOrName) {
+		AssertHelper.notNull(process, "指定的流程定义[id/name=" + idOrName + "]不存在");
+		if(process.getState() != null && process.getState().intValue() == 0) {
+			throw new IllegalArgumentException("指定的流程定义[id/name=" + idOrName + 
+					",version=" + process.getVersion() + "]为非活动状态");
+		}
+	}
+	
 	/**
 	 * 保存process实体对象
 	 */

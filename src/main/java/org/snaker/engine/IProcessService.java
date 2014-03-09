@@ -28,6 +28,13 @@ import org.snaker.engine.entity.Process;
  */
 public interface IProcessService {
 	/**
+	 * 检查流程定义对象
+	 * @param entity 流程定义对象
+	 * @param idOrName 流程定义id/name
+	 */
+	void check(Process process, String idOrName);
+	
+	/**
 	 * 保存流程定义
 	 * @param process 流程定义对象
 	 */
