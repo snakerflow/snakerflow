@@ -360,7 +360,12 @@ public class SnakerEngineImpl implements SnakerEngine {
 		order().updateOrder(order);
 		Map<String, Object> orderMaps = order.getVariableMap();
 		if(orderMaps != null) {
-			args.putAll(orderMaps);
+			for(Map.Entry<String, Object> entry : orderMaps.entrySet()) {
+				if(args.containsKey(entry.getKey())) {
+					continue;
+				}
+				args.put(entry.getKey(), entry.getValue());
+			}
 		}
 		Process process = process().getProcessById(order.getProcessId());
 		Execution execution = new Execution(this, process, order, args);
