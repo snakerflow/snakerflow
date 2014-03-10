@@ -15,6 +15,7 @@
 package org.snaker.engine.access.transaction;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -71,6 +72,12 @@ public class DataSourceTransactionInterceptor extends TransactionInterceptor {
             	log.error(e.getMessage(), e);
                 throw new RuntimeException(e.getMessage(), e);
             } finally {
+            	try {
+					JdbcHelper.close(conn);
+				} catch (SQLException e) {
+	            	log.error(e.getMessage(), e);
+	                throw new RuntimeException(e.getMessage(), e);
+				}
             	TransactionObjectHolder.unbind();
             }
         }
@@ -88,6 +95,12 @@ public class DataSourceTransactionInterceptor extends TransactionInterceptor {
             	log.error(e.getMessage(), e);
                 throw new RuntimeException(e.getMessage(), e);
             } finally {
+            	try {
+					JdbcHelper.close(conn);
+				} catch (SQLException e) {
+	            	log.error(e.getMessage(), e);
+	                throw new RuntimeException(e.getMessage(), e);
+				}
             	TransactionObjectHolder.unbind();
             }
         }
