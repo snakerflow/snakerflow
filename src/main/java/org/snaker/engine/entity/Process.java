@@ -14,11 +14,12 @@
  */
 package org.snaker.engine.entity;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.Blob;
-import java.sql.SQLException;
 
 import org.snaker.engine.SnakerException;
+import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.model.ProcessModel;
 
 /**
@@ -129,8 +130,13 @@ public class Process implements Serializable {
 		if(this.content != null) {
 			try {
 				return this.content.getBytes(1L, Long.valueOf(this.content.length()).intValue());
-			} catch (SQLException e) {
-				throw new SnakerException("couldn't extract stream out of blob", e);
+			} catch (Exception e) {
+				try {
+					InputStream is = content.getBinaryStream();
+					return StreamHelper.readBytes(is);
+				} catch (Exception e1) {
+					throw new SnakerException("couldn't extract stream out of blob", e1);
+				}
 			}
 		}
 		
