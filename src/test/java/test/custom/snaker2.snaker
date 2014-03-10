@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<process displayName="custom2" name="custom2">
+<start displayName="start1" layout="70,121,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="CustomClass"/>
+</start>
+<custom args="msg" clazz="test.custom.CustomClass" displayName="CustomClass" layout="222,119,-1,-1" methodName="execute" name="CustomClass" var="returnValue">
+<transition g="" name="transition2" offset="0,0" to="end1"/>
+</custom>
+<end displayName="end1" layout="421,121,-1,-1" name="end1"/>
+</process>
