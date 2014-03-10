@@ -14,15 +14,24 @@
  */
 package org.snaker.engine.access.mybatis;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snaker.engine.access.AbstractDBAccess;
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
+import org.snaker.engine.access.jdbc.BeanPropertyHandler;
+import org.snaker.engine.access.jdbc.JdbcHelper;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
@@ -31,6 +40,7 @@ import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
@@ -39,6 +49,7 @@ import org.snaker.engine.helper.StringHelper;
  * @version 1.0
  */
 public class MybatisAccess extends AbstractDBAccess {
+	private static final Logger log = LoggerFactory.getLogger(MybatisAccess.class);
 	/**
 	 * mybatis的sqlSessionFactory
 	 */
@@ -299,18 +310,59 @@ public class MybatisAccess extends AbstractDBAccess {
 	}
 
 	public <T> T queryObject(Class<T> T, String sql, Object... args) {
-		// not needed in this version
-		return null;
+		QueryRunner runner = new QueryRunner();
+    	List<T> result = null;
+        try {
+        	if(log.isDebugEnabled()) {
+        		log.debug("查询单条记录=\n" + sql);
+        	}
+        	result = runner.query(MybatisHelper.getConnection(), sql, new BeanPropertyHandler<T>(T), args);
+        	return JdbcHelper.requiredSingleResult(result);
+        } catch (SQLException e) {
+        	log.error(e.getMessage(), e);
+            return null;
+        }
 	}
 
 	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
-		// not needed in this version
-		return null;
+		QueryRunner runner = new QueryRunner();
+        try {
+        	if(log.isDebugEnabled()) {
+        		log.debug("查询多条记录=\n" + sql);
+        	}
+        	return runner.query(MybatisHelper.getConnection(), sql, new BeanPropertyHandler<T>(T), args);
+        } catch (SQLException e) {
+        	log.error(e.getMessage(), e);
+            return Collections.emptyList();
+        }
 	}
 
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql,
 			Object... args) {
-		// not needed in this version
-		return null;
+		String countSQL = "select count(1) from (" + sql + ") c ";
+		String querySQL = sql;
+		if(page.isOrderBySetted()) {
+			querySQL = sql + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());
+		}
+		//判断是否需要分页（根据pageSize判断）
+		if(page.getPageSize() != Page.NON_PAGE) {
+			querySQL = getDialect().getPageSql(querySQL, page.getPageNo(), page.getPageSize());
+		}
+		QueryRunner runner = new QueryRunner();
+		try {
+        	if(log.isDebugEnabled()) {
+        		log.debug("分页查询多条数据=\n" + querySQL);
+        	}
+        	Connection conn = MybatisHelper.getConnection();
+			Object count = runner.query(conn, countSQL, new ScalarHandler(1), args);
+			List<T> list = runner.query(conn, querySQL, new BeanPropertyHandler<T>(T), args);
+			if(list == null) list = Collections.emptyList();
+			page.setResult(list);
+			page.setTotalCount(ClassHelper.castLong(count));
+			return list;
+		} catch(Exception e) {
+			log.error(e.getMessage(), e);
+			return Collections.emptyList();
+		}
 	}
 }

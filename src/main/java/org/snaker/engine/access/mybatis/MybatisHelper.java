@@ -16,6 +16,8 @@ package org.snaker.engine.access.mybatis;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,6 +34,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
+import org.snaker.engine.access.jdbc.JdbcHelper;
 import org.snaker.engine.access.transaction.TransactionObjectHolder;
 import org.snaker.engine.helper.ConfigHelper;
 
@@ -96,6 +99,20 @@ public abstract class MybatisHelper {
 			ErrorContext.instance().reset();
 		}
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+	}
+	
+	public static Connection getConnection() throws SQLException {
+		if(sqlSessionFactory != null) {
+	    	log.info("found sqlSessionFactory:" + sqlSessionFactory);
+    	} else {
+    		log.info("don't found available sqlSessionFactory");
+    		sqlSessionFactory = getSqlSessionFactory();
+    	}
+    	DataSource dataSource = sqlSessionFactory.
+    			getConfiguration().
+    			getEnvironment().
+    			getDataSource();
+    	return JdbcHelper.getConnection(dataSource);
 	}
 	
 	public static SqlSession getSession(SqlSessionFactory sqlSessionFactory) {
