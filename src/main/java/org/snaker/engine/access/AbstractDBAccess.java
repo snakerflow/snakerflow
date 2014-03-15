@@ -79,6 +79,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
 	protected static final String QUERY_HIST_TASK_ACTOR = "select task_Id, actor_Id from wf_hist_task_actor ";
 	
+	protected Dialect dialect;
+	
 	/**
 	 * 是否为ORM框架，用以标识对象直接持久化
 	 * @return
@@ -128,7 +130,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 * @return
 	 */
 	protected Dialect getDialect() {
-		return ServiceContext.getContext().find(Dialect.class);
+		if(dialect == null) {
+			dialect = ServiceContext.getContext().find(Dialect.class);
+		}
+		return dialect;
 	}
 	
 	/**
