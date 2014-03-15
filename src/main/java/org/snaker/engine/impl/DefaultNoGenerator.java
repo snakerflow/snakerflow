@@ -14,25 +14,22 @@
  */
 package org.snaker.engine.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
+import org.joda.time.DateTime;
 import org.snaker.engine.INoGenerator;
 import org.snaker.engine.model.ProcessModel;
 
 /**
  * 默认的流程实例编号生成器
- * 编号生成规则为:yyyy-mm-dd-hh-mi-ss-ms-random
+ * 编号生成规则为:yyyyMMdd-HH:mm:ss-SSS-random
  * @author yuqs
  * @version 1.0
  */
 public class DefaultNoGenerator implements INoGenerator {
-	private static DateFormat df = new SimpleDateFormat("yyyyMMdd-HH:mm:ss-SSS");
-	
 	public String generate(ProcessModel model) {
-		String time = df.format(new Date());
+		DateTime dateTime = new DateTime();
+		String time = dateTime.toString("yyyyMMdd-HH:mm:ss-SSS");
 		Random random = new Random();
 		return time + "-" + random.nextInt(1000);
 	}
