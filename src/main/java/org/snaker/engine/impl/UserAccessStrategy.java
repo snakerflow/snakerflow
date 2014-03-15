@@ -12,24 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine;
+package org.snaker.engine.impl;
 
 import java.util.List;
 
+import org.snaker.engine.TaskAccessStrategy;
 import org.snaker.engine.entity.TaskActor;
 
 /**
- * 任务访问策略类
- * 用于判断给定的操作人员是否允许执行某个任务
+ * 基于用户的访问策略类
+ * 该策略类适合用户标识作为参与者的情况
  * @author yuqs
  * @since 1.4
  */
-public interface TaskAccessStrategy {
+public class UserAccessStrategy implements TaskAccessStrategy {
 	/**
-	 * 根据操作人id、参与者集合判断是否允许访问所属任务
-	 * @param operator 操作人id
-	 * @param actors 参与者列表 传递至该接口的实现类中的参与者都是为非空
-	 * @return boolean 是否允许访问
+	 * 如果操作人id存在于参与者集合中，则表示可访问
 	 */
-	boolean isAllowed(String operator, List<TaskActor> actors); 
+	public boolean isAllowed(String operator, List<TaskActor> actors) {
+		boolean isAllowed = false;
+		for(TaskActor actor : actors) {
+			if(actor.getActorId().equals(operator)) {
+				isAllowed = true;
+				break;
+			}
+		}
+		return isAllowed;
+	}
 }

@@ -23,6 +23,7 @@ import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
+import org.snaker.engine.TaskAccessStrategy;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
@@ -32,6 +33,7 @@ import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
+import org.snaker.engine.impl.UserAccessStrategy;
 import org.snaker.engine.model.BaseModel;
 import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
@@ -410,13 +412,11 @@ public class TaskService extends AccessService implements ITaskService {
 		List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 		if(actors == null || actors.isEmpty()) return true;
 		if(StringHelper.isEmpty(operator)) return false;
-		boolean isAllowed = false;
-		for(TaskActor actor : actors) {
-			if(actor.getActorId().equals(operator)) {
-				isAllowed = true;
-				break;
-			}
+		TaskAccessStrategy strategy = ServiceContext.getContext().find(TaskAccessStrategy.class);
+		if(strategy == null) {
+			strategy = new UserAccessStrategy();
+			ServiceContext.getContext().put(strategy.getClass().getName(), strategy);
 		}
-		return isAllowed;
+		return strategy.isAllowed(operator, actors);
 	}
 }
