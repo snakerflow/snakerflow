@@ -33,7 +33,7 @@ import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
-import org.snaker.engine.impl.UserAccessStrategy;
+import org.snaker.engine.impl.GeneralAccessStrategy;
 import org.snaker.engine.model.BaseModel;
 import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
@@ -49,6 +49,8 @@ import org.snaker.engine.model.WorkModel;
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";
+	
+	private TaskAccessStrategy strategy = null;
 	/**
 	 * 任务类型
 	 */
@@ -412,11 +414,21 @@ public class TaskService extends AccessService implements ITaskService {
 		List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 		if(actors == null || actors.isEmpty()) return true;
 		if(StringHelper.isEmpty(operator)) return false;
-		TaskAccessStrategy strategy = ServiceContext.getContext().find(TaskAccessStrategy.class);
+		return getStrategy().isAllowed(operator, actors);
+	}
+
+	public void setStrategy(TaskAccessStrategy strategy) {
+		this.strategy = strategy;
+	}
+
+	public TaskAccessStrategy getStrategy() {
 		if(strategy == null) {
-			strategy = new UserAccessStrategy();
+			strategy = ServiceContext.getContext().find(TaskAccessStrategy.class);
+		}
+		if(strategy == null) {
+			strategy = new GeneralAccessStrategy();
 			ServiceContext.getContext().put(strategy.getClass().getName(), strategy);
 		}
-		return strategy.isAllowed(operator, actors);
+		return strategy;
 	}
 }
