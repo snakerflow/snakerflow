@@ -199,7 +199,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	public Task rejectTask(ProcessModel model, Task currentTask) {
 		String parentTaskId = currentTask.getParentTaskId();
-		if(StringHelper.isEmpty(parentTaskId)) {
+		if(StringHelper.isEmpty(parentTaskId) || parentTaskId.equals(START)) {
 			throw new SnakerException("上一步任务ID为空，无法驳回至上一步处理");
 		}
 		NodeModel current = model.getNode(currentTask.getTaskName());
