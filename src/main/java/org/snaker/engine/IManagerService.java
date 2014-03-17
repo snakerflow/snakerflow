@@ -55,6 +55,14 @@ public interface IManagerService {
 	public List<Surrogate> getSurrogate(QueryFilter filter);
 	
 	/**
+	 * 根据授权人、流程名称获取代理人
+	 * @param operator 授权人
+	 * @param processName 流程名称
+	 * @return String 代理人
+	 */
+	public String getSurrogate(String operator, String processName);
+	
+	/**
 	 * 根据过滤条件查询委托代理对象
 	 * @param page 分页对象
 	 * @param filter 查询过滤器

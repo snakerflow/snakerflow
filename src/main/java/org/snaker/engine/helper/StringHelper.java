@@ -50,6 +50,21 @@ public class StringHelper {
 	}
 	
 	/**
+	 * 字符串数组合并
+	 * @param array1 数组1
+	 * @param array2 数组2
+	 * @return String[] 合并后的数组
+	 */
+	public static String[] joinArray(String[] array1, String[] array2) {
+		if(array1 == null) return array2;
+		if(array2 == null) return array2;
+		String[] result = new String[array1.length + array2.length];
+		System.arraycopy(array1, 0, result, 0, array1.length);
+		System.arraycopy(array2, 0, result, array1.length, array2.length);
+		return result;
+	}
+	
+	/**
 	 * 根据字符串数组返回逗号分隔的字符串值
 	 * @param strs
 	 * @return

@@ -21,6 +21,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.DBAccess;
+import org.snaker.engine.IManagerService;
 import org.snaker.engine.IOrderService;
 import org.snaker.engine.IProcessService;
 import org.snaker.engine.IQueryService;
@@ -74,6 +75,10 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * 查询业务类
 	 */
 	protected IQueryService queryService;
+	/**
+	 * 管理业务类
+	 */
+	protected IManagerService managerService;
 	
 	/**
 	 * 根据serviceContext上下文，查找processService、orderService、taskService服务
@@ -85,6 +90,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		queryService = context.find(IQueryService.class);
 		orderService = context.find(IOrderService.class);
 		taskService = context.find(ITaskService.class);
+		managerService = context.find(IManagerService.class);
 		/*
 		 * 无spring环境，DBAccess的实现类通过服务上下文获取
 		 */
@@ -159,6 +165,15 @@ public class SnakerEngineImpl implements SnakerEngine {
 	public ITaskService task() {
 		AssertHelper.notNull(taskService);
 		return taskService;
+	}
+	
+	/**
+	 * 获取管理服务
+	 * @since 1.4
+	 */
+	public IManagerService manager() {
+		AssertHelper.notNull(managerService);
+		return managerService;
 	}
 	
 	/**

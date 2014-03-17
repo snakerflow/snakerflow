@@ -14,10 +14,16 @@
  */
 package org.snaker.engine.impl;
 
+import java.util.List;
+
 import org.snaker.engine.ITaskService;
+import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerInterceptor;
+import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.core.Execution;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
+import org.snaker.engine.helper.StringHelper;
 
 /**
  * 委托代理拦截器
@@ -29,9 +35,14 @@ import org.snaker.engine.entity.Task;
  */
 public class SurrogateInterceptor implements SnakerInterceptor {
 	public void intercept(Execution execution) {
-		//TODO getSurrogate(String operator, String processName)
+		SnakerEngine engine = execution.getEngine();
+		String[] actors = null;
 		for(Task task : execution.getTasks()) {
-			execution.getEngine().task().addTaskActor(task.getId(), "");
+			actors = StringHelper.joinArray(actors, task.getActorIds());
+			List<Surrogate> surrogates = engine.manager().getSurrogate(new QueryFilter().
+					setOperators(task.getActorIds()).
+					setName(execution.getProcess().getName()));
+			engine.task().addTaskActor(task.getId(), "");
 		}
 	}
 

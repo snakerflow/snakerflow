@@ -45,14 +45,29 @@ public class ManagerService extends AccessService implements IManagerService {
 	}
 
 	public Surrogate getSurrogate(String id) {
-		return getSurrogate(id);
+		return access().getSurrogate(id);
 	}
 	
 	public List<Surrogate> getSurrogate(QueryFilter filter) {
+		AssertHelper.notNull(filter);
 		return access().getSurrogate(null, filter);
 	}
 
 	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
 		return access().getSurrogate(page, filter);
+	}
+	
+	public String getSurrogate(String operator, String processName) {
+		AssertHelper.notEmpty(operator);
+		QueryFilter filter = new QueryFilter().setOperator(operator);
+		if(StringHelper.isNotEmpty(processName)) {
+			filter.setName(processName);
+		}
+		List<Surrogate> surrogates = getSurrogate(filter);
+		for(Surrogate surrogate : surrogates) {
+			//TODO 判断当前时间是否介于sdate、edate之间，如果是，则需要递归代理人是否还存在委托的情况
+		}
+		return "";
 	}
 }

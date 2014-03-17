@@ -62,6 +62,12 @@ public interface SnakerEngine {
 	public ITaskService task();
 	
 	/**
+	 * 获取管理服务
+	 * @return IManagerService 管理服务
+	 */
+	public IManagerService manager();
+	
+	/**
 	 * 根据流程定义ID启动流程实例
 	 * @param id 流程定义ID
 	 * @return Order 流程实例
