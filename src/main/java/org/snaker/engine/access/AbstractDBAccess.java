@@ -333,9 +333,33 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryObject(Surrogate.class, SURROGATE_QUERY + where, id);
 	}
 	
-	public Surrogate getSurrogate(String operator, String processName) {
-		String where = " where operator = ? and processName = ? and state = 1";
-		return queryObject(Surrogate.class, SURROGATE_QUERY + where, operator, processName);
+	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
+		StringBuffer sql = new StringBuffer(SURROGATE_QUERY);
+		sql.append(" where 1=1 and state = 1 ");
+		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getNames() != null && filter.getNames().length > 0) {
+			sql.append(" and process_Name in(");
+			for(int i = 0; i < filter.getNames().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getNames()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and operator in (");
+			for(String actor : filter.getOperators()) {
+				sql.append("?,");
+				paramList.add(actor);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(page == null) {
+			return queryList(Surrogate.class, sql.toString(), paramList.toArray());
+		} else {
+			return queryList(page, Surrogate.class, sql.toString(), paramList.toArray());
+		}
 	}
 
 	public Task getTask(String taskId) {

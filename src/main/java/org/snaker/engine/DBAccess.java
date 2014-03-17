@@ -146,11 +146,11 @@ public interface DBAccess {
 	
 	/**
 	 * 根据授权人、流程名称查询委托代理对象
-	 * @param operator 授权人
-	 * @param processName 流程名称
-	 * @return surrogate 委托代理对象
+	 * @param page 分页对象
+	 * @param filter 查询过滤器
+	 * @return List<Surrogate> 委托代理对象集合
 	 */
-	public Surrogate getSurrogate(String operator, String processName);
+	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter);
 	
 	/**
 	 * 根据任务id查询任务对象

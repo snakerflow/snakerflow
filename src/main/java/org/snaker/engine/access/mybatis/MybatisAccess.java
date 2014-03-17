@@ -165,6 +165,23 @@ public class MybatisAccess extends AbstractDBAccess {
 		return getSession().selectOne("Process.SELECTVERSION", name);
 	}
 	
+	public Surrogate getSurrogate(String id) {
+		return getSession().selectOne("Surrogate.SELECTONE", id);
+	}
+	
+	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
+		SqlSession session = getSession();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("names", filter.getNames());
+		params.put("operators", filter.getOperators());
+		buildPageParameter(session, page, params, "Surrogate.getSurrogateCount");
+		List<Surrogate> list = session.selectList("Surrogate.getSurrogates", params);
+		if(page != null) {
+			page.setResult(list);
+		}
+		return list;
+	}
+	
 	public List<Process> getProcesss(Page<Process> page, QueryFilter filter) {
 		SqlSession session = getSession();
 		Map<String, Object> params = new HashMap<String, Object>();
