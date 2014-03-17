@@ -16,4 +16,5 @@
 	<bean class="org.snaker.engine.core.OrderService" proxy="transaction"/>
 	<bean class="org.snaker.engine.core.ProcessService" proxy="transaction"/>
 	<bean class="org.snaker.engine.core.QueryService" proxy="transaction"/>
+	<bean class="org.snaker.engine.core.ManagerService" proxy="transaction"/>
 </config>
