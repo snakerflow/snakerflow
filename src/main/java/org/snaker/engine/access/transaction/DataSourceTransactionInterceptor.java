@@ -90,10 +90,12 @@ public class DataSourceTransactionInterceptor extends TransactionInterceptor {
             	if(log.isInfoEnabled()) {
             		log.info("rollback transaction=" + conn.hashCode());
             	}
-                conn.rollback();
+            	if(!conn.isClosed()) {
+            		conn.rollback();
+            	}
             } catch (Exception e) {
             	log.error(e.getMessage(), e);
-                throw new RuntimeException(e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e.getCause());
             } finally {
             	try {
 					JdbcHelper.close(conn);
