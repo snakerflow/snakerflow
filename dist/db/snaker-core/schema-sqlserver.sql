@@ -90,6 +90,18 @@ create table wf_hist_task_actor (
     actor_Id         nvarchar(100) not null
 );
 
+/**委托代理表*/
+create table wf_surrogate (
+    id                nvarchar(100) not null primary key,
+    process_Name      nvarchar(100),
+    operator          nvarchar(100),
+    surrogate         nvarchar(100),
+    odate             nvarchar(64),
+    sdate             nvarchar(64),
+    edate             nvarchar(64),
+    state             tinyint
+);
+create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 /**
  * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
  */

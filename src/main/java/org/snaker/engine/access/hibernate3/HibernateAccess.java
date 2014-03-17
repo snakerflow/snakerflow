@@ -31,6 +31,7 @@ import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.helper.ClassHelper;
@@ -110,6 +111,10 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 
 	public void deleteOrder(Order order) {
 		getSession().delete(order);
+	}
+	
+	public void deleteSurrogate(Surrogate surrogate) {
+		getSession().delete(surrogate);
 	}
 	
 	public void removeTaskActor(String taskId, String... actors) {

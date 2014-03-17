@@ -28,6 +28,7 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
@@ -78,6 +79,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String QUERY_HIST_ORDER = "select id,process_Id,order_State,priority,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable from wf_hist_order ";
 	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
 	protected static final String QUERY_HIST_TASK_ACTOR = "select task_Id, actor_Id from wf_hist_task_actor ";
+	
+	/**委托代理CRUD*/
+	protected static final String SURROGATE_INSERT = "insert into wf_surrogate (id, process_Name, operator, surrogate, odate, sdate, edate, state) values (?,?,?,?,?,?,?,?)";
+	protected static final String SURROGATE_UPDATE = "update wf_surrogate set process_Name=?, surrogate=?, odate=?, sdate=?, edate=?, state=? where id = ?";
+	protected static final String SURROGATE_DELETE = "delete from wf_surrogate where id = ?";
+	protected static final String SURROGATE_QUERY = "select id, process_Name, operator, surrogate, odate, sdate, edate, state from wf_surrogate";
 	
 	protected Dialect dialect;
 	
@@ -286,6 +293,49 @@ public abstract class AbstractDBAccess implements DBAccess {
 				saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
 			}
 		}
+	}
+	
+	public void saveSurrogate(Surrogate surrogate) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(surrogate, SAVE));
+		} else {
+			Object[] args = new Object[]{surrogate.getId(), surrogate.getProcessName(), surrogate.getOperator(),
+					surrogate.getSurrogate(), surrogate.getOdate(), surrogate.getSdate(), surrogate.getEdate(),
+					surrogate.getState()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(SURROGATE_INSERT, args, type));
+		}
+	}
+	
+	public void updateSurrogate(Surrogate surrogate) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(surrogate, UPDATE));
+		} else {
+			Object[] args = new Object[]{surrogate.getProcessName(), surrogate.getSurrogate(), surrogate.getOdate(), 
+					surrogate.getSdate(), surrogate.getEdate(), surrogate.getState(), surrogate.getId()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.VARCHAR, 
+					Types.INTEGER, Types.VARCHAR};
+			saveOrUpdate(buildMap(SURROGATE_UPDATE, args, type));
+		}
+	}
+	
+	public void deleteSurrogate(Surrogate surrogate) {
+		if(!isORM()) {
+			Object[] args = new Object[]{surrogate.getId()};
+			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(SURROGATE_DELETE, args, type));
+		}
+	}
+	
+	public Surrogate getSurrogate(String id) {
+		String where = " where id = ?";
+		return queryObject(Surrogate.class, SURROGATE_QUERY + where, id);
+	}
+	
+	public Surrogate getSurrogate(String operator, String processName) {
+		String where = " where operator = ? and processName = ? and state = 1";
+		return queryObject(Surrogate.class, SURROGATE_QUERY + where, operator, processName);
 	}
 
 	public Task getTask(String taskId) {

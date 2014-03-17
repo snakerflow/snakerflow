@@ -37,6 +37,7 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
@@ -107,6 +108,10 @@ public class MybatisAccess extends AbstractDBAccess {
 
 	public void deleteOrder(Order order) {
 		getSession().update("Order.DELETE", order);
+	}
+	
+	public void deleteSurrogate(Surrogate surrogate) {
+		getSession().update("Surrogate.DELETE", surrogate);
 	}
 	
 	public void removeTaskActor(String taskId, String... actors) {
