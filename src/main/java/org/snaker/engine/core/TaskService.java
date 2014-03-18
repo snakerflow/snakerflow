@@ -390,6 +390,11 @@ public class TaskService extends AccessService implements ITaskService {
 			results = new String[1];
 			results[0] = String.valueOf((Long)actors);
 			return results;
+		} else if(actors instanceof Integer) {
+			//如果为Long类型，则返回1个元素的String[]
+			results = new String[1];
+			results[0] = String.valueOf((Integer)actors);
+			return results;
 		} else if(actors instanceof String[]) {
 			//如果为String[]类型，则直接返回
 			return (String[])actors;
