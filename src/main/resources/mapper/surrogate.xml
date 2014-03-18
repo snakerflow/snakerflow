@@ -28,7 +28,6 @@
     		sdate, 
     		edate, 
     		state
-    		name
     	from wf_surrogate 
     	where id = #{id, jdbcType=VARCHAR}
     </select>
@@ -42,7 +41,6 @@
     		sdate, 
     		edate, 
     		state
-    		name
     	from wf_surrogate 
     </select>
     
@@ -57,7 +55,6 @@
     		sdate, 
     		edate, 
     		state
-    		name
     	<include refid="selectSurrogate"/>
 	${orderby}
 	${limitAfter}
@@ -83,7 +80,7 @@
 				</foreach>
 			</if>
       		<if test="operateTime != null">
-      			 and sdate <= #{operateTime, jdbcType=VARCHAR} and edate >= #{operateTime, jdbcType=VARCHAR}
+      			 and sdate &lt;= #{operateTime, jdbcType=VARCHAR} and edate &gt;= #{operateTime, jdbcType=VARCHAR}
       		</if>
     </sql>
 </mapper>
