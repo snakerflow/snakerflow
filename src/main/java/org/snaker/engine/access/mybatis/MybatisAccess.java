@@ -174,6 +174,7 @@ public class MybatisAccess extends AbstractDBAccess {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("names", filter.getNames());
 		params.put("operators", filter.getOperators());
+		params.put("operateTime", filter.getOperateTime());
 		buildPageParameter(session, page, params, "Surrogate.getSurrogateCount");
 		List<Surrogate> list = session.selectList("Surrogate.getSurrogates", params);
 		if(page != null) {

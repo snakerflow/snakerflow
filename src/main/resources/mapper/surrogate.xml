@@ -82,5 +82,8 @@
 					#{item, jdbcType=VARCHAR}
 				</foreach>
 			</if>
+      		<if test="operateTime != null">
+      			 and sdate <= #{operateTime, jdbcType=VARCHAR} and edate >= #{operateTime, jdbcType=VARCHAR}
+      		</if>
     </sql>
 </mapper>

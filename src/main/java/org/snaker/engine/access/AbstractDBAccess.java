@@ -355,6 +355,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
 		}
+		if(StringHelper.isNotEmpty(filter.getOperateTime())) {
+			sql.append(" and sdate <= ? and edate >= ? ");
+			paramList.add(filter.getOperateTime());
+			paramList.add(filter.getOperateTime());
+		}
 		if(page == null) {
 			return queryList(Surrogate.class, sql.toString(), paramList.toArray());
 		} else {
