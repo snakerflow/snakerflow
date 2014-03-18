@@ -14,14 +14,10 @@
  */
 package org.snaker.engine.impl;
 
-import java.util.List;
-
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerInterceptor;
-import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.core.Execution;
-import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.StringHelper;
 
@@ -36,13 +32,13 @@ import org.snaker.engine.helper.StringHelper;
 public class SurrogateInterceptor implements SnakerInterceptor {
 	public void intercept(Execution execution) {
 		SnakerEngine engine = execution.getEngine();
-		String[] actors = null;
 		for(Task task : execution.getTasks()) {
-			actors = StringHelper.joinArray(actors, task.getActorIds());
-			List<Surrogate> surrogates = engine.manager().getSurrogate(new QueryFilter().
-					setOperators(task.getActorIds()).
-					setName(execution.getProcess().getName()));
-			engine.task().addTaskActor(task.getId(), "");
+			for(String actor : task.getActorIds()) {
+				String agent = engine.manager().getSurrogate(actor, execution.getProcess().getName());
+				if(StringHelper.isNotEmpty(agent) && !actor.equals(agent)) {
+					engine.task().addTaskActor(task.getId(), agent);
+				}
+			}
 		}
 	}
 

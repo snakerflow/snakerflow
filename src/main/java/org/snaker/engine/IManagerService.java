@@ -55,7 +55,8 @@ public interface IManagerService {
 	public List<Surrogate> getSurrogate(QueryFilter filter);
 	
 	/**
-	 * 根据授权人、流程名称获取代理人
+	 * 根据授权人、流程名称获取最终代理人
+	 * 如存在user1->user2->user3，那么最终返回user3
 	 * @param operator 授权人
 	 * @param processName 流程名称
 	 * @return String 代理人

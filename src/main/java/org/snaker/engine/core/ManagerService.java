@@ -21,6 +21,7 @@ import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.helper.AssertHelper;
+import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
@@ -60,14 +61,20 @@ public class ManagerService extends AccessService implements IManagerService {
 	
 	public String getSurrogate(String operator, String processName) {
 		AssertHelper.notEmpty(operator);
-		QueryFilter filter = new QueryFilter().setOperator(operator);
+		QueryFilter filter = new QueryFilter().
+				setOperator(operator).
+				setOperateTime(DateHelper.getTime());
 		if(StringHelper.isNotEmpty(processName)) {
 			filter.setName(processName);
 		}
 		List<Surrogate> surrogates = getSurrogate(filter);
+		if(surrogates == null || surrogates.isEmpty()) return operator;
+		StringBuffer buffer = new StringBuffer(50);
 		for(Surrogate surrogate : surrogates) {
-			//TODO 判断当前时间是否介于sdate、edate之间，如果是，则需要递归代理人是否还存在委托的情况
+			String result = getSurrogate(surrogate.getSurrogate(), processName);
+			buffer.append(result).append(",");
 		}
-		return "";
+		buffer.deleteCharAt(buffer.length() - 1);
+		return buffer.toString();
 	}
 }
