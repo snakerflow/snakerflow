@@ -11,5 +11,6 @@
      <mapping resource="hbm/snaker.process.hbm.xml" />
      <mapping resource="hbm/snaker.taskactor.hbm.xml" />
      <mapping resource="hbm/snaker.workitem.hbm.xml" />
+     <mapping resource="hbm/snaker.surrogate.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
