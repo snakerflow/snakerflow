@@ -25,8 +25,9 @@ import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
+ * 管理服务类
  * @author yuqs
- * @version 1.0
+ * @since 1.4
  */
 public class ManagerService extends AccessService implements IManagerService {
 	public void saveOrUpdate(Surrogate surrogate) {
