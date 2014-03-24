@@ -30,6 +30,7 @@ import org.snaker.engine.model.WorkModel;
  */
 public interface SnakerEngine {
 	public static final String ADMIN = "snaker.admin";
+	public static final String AUTO = "snaker.auto";
 	/**
 	 * 根据Configuration对象配置实现类
 	 * @param config 全局配置对象
