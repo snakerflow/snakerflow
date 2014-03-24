@@ -46,6 +46,10 @@ public interface NodeParser {
 	public static final String ATTR_VERSION = "version";
 	public static final String ATTR_URL = "url";
 	public static final String ATTR_EXPIRETIME = "expireTime";
+	public static final String ATTR_AUTOEXECUTE = "autoExecute";
+	public static final String ATTR_CALLBACK = "callback";
+	public static final String ATTR_REMINDERTIME = "reminderTime";
+	public static final String ATTR_REMINDERREPEAT = "reminderRepeat";
     public static final String ATTR_CLAZZ = "clazz";
     public static final String ATTR_METHODNAME = "methodName";
     public static final String ATTR_ARGS = "args";
