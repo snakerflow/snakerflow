@@ -409,7 +409,8 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	public boolean isAllowed(Task task, String operator) {
 		if(StringHelper.isNotEmpty(operator)) {
-			if(SnakerEngine.ADMIN.equalsIgnoreCase(operator)) {
+			if(SnakerEngine.ADMIN.equalsIgnoreCase(operator)
+					|| SnakerEngine.AUTO.equalsIgnoreCase(operator)) {
 				return true;
 			}
 			if(StringHelper.isNotEmpty(task.getOperator())) {
