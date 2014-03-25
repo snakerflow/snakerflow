@@ -67,6 +67,7 @@ public class ExecutorJob extends AbstractJob {
 	 * @param task 任务对象
 	 */
 	private void callback(JobCallback jobCallback, Task task, List<Task> tasks) {
+		if(jobCallback == null) return;
 		jobCallback.callback(task, tasks);
 	}
 }
