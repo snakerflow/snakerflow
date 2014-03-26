@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.job;
+package org.snaker.engine.scheduling.quartz;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,7 @@ import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
+import org.snaker.engine.scheduling.JobCallback;
 
 /**
  * 自动执行的job
@@ -37,26 +38,25 @@ public class ExecutorJob extends AbstractJob {
 	private static final Logger log = LoggerFactory.getLogger(ExecutorJob.class);
 	
 	/**
-	 * 根据传递的id、参数列表，自动执行任务
+	 * 根据传递的key、model、参数列表，自动执行任务
 	 */
-	public void exec(String id, Map<String, Object> args) 
+	public void exec(String key, String model, Map<String, Object> args) 
 			throws JobExecutionException {
-		String[] ids = id.split("-");
+		String[] ids = key.split("-");
 		if(ids.length != 3) {
 			log.warn("id值不合法,执行操作被忽略.");
 			return;
 		}
 		String processId = ids[0];
 		String taskId = ids[2];
-		Task task = engine.query().getTask(taskId);
 		List<Task> tasks = engine.executeTask(taskId, SnakerEngine.AUTO, args);
 		Process process = engine.process().getProcessById(processId);
-		ProcessModel model = process.getModel();
-		if(model != null && StringHelper.isNotEmpty(task.getTaskName())) {
-			NodeModel node = model.getNode(task.getTaskName());
+		ProcessModel processModel = process.getModel();
+		if(processModel != null && StringHelper.isNotEmpty(model)) {
+			NodeModel node = processModel.getNode(model);
 			if(node != null && node instanceof TaskModel) {
 				JobCallback jobCallback = ((TaskModel)node).getJobCallback();
-				callback(jobCallback, task, tasks);
+				callback(jobCallback, taskId, tasks);
 			}
 		}
 	}
@@ -64,10 +64,11 @@ public class ExecutorJob extends AbstractJob {
 	/**
 	 * 回调类执行
 	 * @param jobCallback 回调类
-	 * @param task 任务对象
+	 * @param taskId 任务id
+	 * @param tasks 新产生的任务列表
 	 */
-	private void callback(JobCallback jobCallback, Task task, List<Task> tasks) {
+	private void callback(JobCallback jobCallback, String taskId, List<Task> tasks) {
 		if(jobCallback == null) return;
-		jobCallback.callback(task, tasks);
+		jobCallback.callback(taskId, tasks);
 	}
 }

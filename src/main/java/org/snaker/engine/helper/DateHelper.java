@@ -14,9 +14,9 @@
  */
 package org.snaker.engine.helper;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.joda.time.DateTime;
 
 /**
  * 日期帮助类
@@ -24,14 +24,14 @@ import java.util.Date;
  * @version 1.0
  */
 public class DateHelper {
-	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final String DATE_FORMAT_DEFAULT = "yyyy-MM-dd HH:mm:ss";
 	
 	/**
 	 * 返回标准格式的当前时间
 	 * @return
 	 */
 	public static String getTime() {
-		return df.format(new Date());
+		return new DateTime().toString(DATE_FORMAT_DEFAULT);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class DateHelper {
 	public static String parseTime(Object date) {
 		if(date == null) return null;
 		if(date instanceof Date) {
-			return df.format(date);
+			return new DateTime((Date)date).toString(DATE_FORMAT_DEFAULT);
 		} else if(date instanceof String) {
 			return String.valueOf(date);
 		}

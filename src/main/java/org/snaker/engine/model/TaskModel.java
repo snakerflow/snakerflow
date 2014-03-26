@@ -21,7 +21,7 @@ import org.snaker.engine.handlers.impl.MergeActorHandler;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
-import org.snaker.engine.job.JobCallback;
+import org.snaker.engine.scheduling.JobCallback;
 
 /**
  * 任务定义task元素

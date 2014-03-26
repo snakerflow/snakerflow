@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.job;
+package org.snaker.engine.scheduling;
 
 import java.util.List;
 
@@ -26,8 +26,8 @@ import org.snaker.engine.entity.Task;
 public interface JobCallback {
 	/**
 	 * 回调函数
-	 * @param curTask 当前任务对象
+	 * @param taskId 当前任务id
 	 * @param newTasks 新产生的任务集合
 	 */
-	void callback(Task curTask, List<Task> newTasks);
+	void callback(String taskId, List<Task> newTasks);
 }

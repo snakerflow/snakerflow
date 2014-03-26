@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.job;
+package org.snaker.engine.scheduling.quartz;
 
 import java.util.Map;
 
@@ -22,6 +22,7 @@ import org.quartz.JobExecutionException;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.helper.AssertHelper;
+import org.snaker.engine.scheduling.IScheduler;
 
 /**
  * 抽象的job类
@@ -29,7 +30,6 @@ import org.snaker.engine.helper.AssertHelper;
  * @since 1.4
  */
 public abstract class AbstractJob implements Job {
-	public static final String KEY = "ID";
 	protected SnakerEngine engine = ServiceContext.getContext().getEngine();
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext context)
@@ -37,17 +37,20 @@ public abstract class AbstractJob implements Job {
 		if(engine == null) throw new JobExecutionException("Snaker流程引擎初始化失败.");
 		Map<String, Object> data = context.getJobDetail().getJobDataMap().getWrappedMap();
 		if(data == null) throw new JobExecutionException("根据job执行的上下文获取不到snaker相关信息.");
-		String id = (String)data.get(KEY);
-		AssertHelper.notEmpty(id);
-		data.remove(KEY);
-		exec(id, data);
+		String key = (String)data.get(IScheduler.KEY);
+		String model = (String)data.get(IScheduler.MODEL);
+		AssertHelper.notEmpty(key);
+		data.remove(IScheduler.KEY);
+		data.remove(IScheduler.MODEL);
+		exec(key, model, data);
 	}
 
 	/**
 	 * 抽象方法，由具体的job进行处理
-	 * @param id 标识id
+	 * @param key 标识key
+	 * @param model 模型
 	 * @param data 执行数据
 	 * @throws JobExecutionException job执行异常
 	 */
-	abstract void exec(String id, Map<String, Object> data) throws JobExecutionException;
+	abstract void exec(String key, String model, Map<String, Object> data) throws JobExecutionException;
 }

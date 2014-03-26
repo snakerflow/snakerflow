@@ -12,25 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.impl;
+package org.snaker.engine.scheduling.quartz;
 
-import org.snaker.engine.SnakerInterceptor;
-import org.snaker.engine.core.Execution;
-import org.snaker.engine.entity.Task;
+import java.util.Map;
+
+import org.quartz.JobExecutionException;
 
 /**
- * 时限控制拦截器
- * 主要拦截任务的expireTime(期望完成时间)，并且向定时任务表插入数据
- * 由具体的定时器轮训产生提醒操作
+ * 提醒的job
  * @author yuqs
  * @since 1.4
  */
-public class TimeInterceptor implements SnakerInterceptor {
-	public void intercept(Execution execution) {
-		for(Task task : execution.getTasks()) {
-			//TODO 获取expireTime值
-			task.getExpireTime();
-		}
+public class ReminderJob extends AbstractJob {
+	public void exec(String id, String model, Map<String, Object> args) 
+			throws JobExecutionException {
+		
 	}
-
 }

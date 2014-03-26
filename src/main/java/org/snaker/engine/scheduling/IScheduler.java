@@ -12,20 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.snaker.engine.job;
-
-import java.util.Map;
-
-import org.quartz.JobExecutionException;
+package org.snaker.engine.scheduling;
 
 /**
- * 提醒的job
+ * 调度器接口，与具体的定时调度框架无关
  * @author yuqs
  * @since 1.4
  */
-public class ReminderJob extends AbstractJob {
-	public void exec(String id, Map<String, Object> args) 
-			throws JobExecutionException {
-		
-	}
+public interface IScheduler {
+	public static final String KEY = "ID";
+	public static final String MODEL = "MODEL";
+	/**
+	 * 调度执行方法
+	 * @param entity 调度DTO
+	 */
+    void schedule(JobEntity entity);
 }
