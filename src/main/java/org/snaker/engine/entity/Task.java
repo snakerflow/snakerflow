@@ -15,6 +15,7 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 任务实体类
@@ -47,7 +48,7 @@ public class Task implements Serializable, Cloneable {
 	 */
 	private String displayName;
 	/**
-	 * 参与方式（0：普通任务；1：参与者fork任务[即：如果10个参与者，需要每个人都要完成，才继续流转]）
+	 * 参与方式（0：普通任务；1：参与者会签任务）
 	 */
 	private Integer performType;
 	/**
@@ -70,6 +71,14 @@ public class Task implements Serializable, Cloneable {
      * 期望任务完成时间
      */
     private String expireTime;
+    /**
+     * 期望的完成时间date类型
+     */
+    private Date expireDate;
+    /**
+     * 提醒时间date类型
+     */
+    private Date remindDate;
     /**
      * 任务关联的表单url
      */
@@ -230,5 +239,21 @@ public class Task implements Serializable, Cloneable {
 		sb.append(",createTime").append(this.createTime);
 		sb.append(",performType=").append(this.performType).append(")");
 		return sb.toString();
+	}
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+	public Date getRemindDate() {
+		return remindDate;
+	}
+
+	public void setRemindDate(Date remindDate) {
+		this.remindDate = remindDate;
 	}
 }
