@@ -336,7 +336,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	private Task createTask(TaskModel taskModel, Execution execution, int performType, Date expireDate, String... actors) {
 		Task task = createTask(taskModel, execution, TaskType.Task.ordinal());
-		task.setActionUrl(taskModel.getForm());
+		task.setActionUrl(taskModel.getUrl());
 		task.setExpireDate(expireDate);
 		task.setExpireTime(DateHelper.parseTime(expireDate));
 		task.setPerformType(performType);
