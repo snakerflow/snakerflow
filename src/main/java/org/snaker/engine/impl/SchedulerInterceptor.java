@@ -14,23 +14,22 @@
  */
 package org.snaker.engine.impl;
 
-import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.Task;
-import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.scheduling.IScheduler;
 import org.snaker.engine.scheduling.JobEntity;
+import org.snaker.engine.scheduling.JobEntity.JobType;
 
 /**
  * 时限控制拦截器
- * 主要拦截任务的expireTime(期望完成时间)，并且向定时任务表插入数据
- * 由具体的定时器轮训产生提醒操作
+ * 主要拦截任务的expireDate(期望完成时间)
+ * 再交给具体的调度器完成调度处理
  * @author yuqs
  * @since 1.4
  */
@@ -41,26 +40,53 @@ public class SchedulerInterceptor implements SnakerInterceptor {
 	 */
 	private IScheduler scheduler;
 	/**
+	 * 是否调度
+	 */
+	private boolean isScheduled = true;
+	/**
 	 * 时限控制拦截方法
 	 */
 	public void intercept(Execution execution) {
+		if(!isScheduled) return;
 		for(Task task : execution.getTasks()) {
-			String expireTime = task.getExpireTime();
-			if(StringHelper.isNotEmpty(expireTime)) {
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String id = execution.getProcess().getId() 
+					+ "-" + execution.getOrder().getId() 
+					+ "-" + task.getId();
+			Date expireDate = task.getExpireDate();
+			if(expireDate != null) {
 				try {
-					DateTime time = new DateTime(df.parse(expireTime));
-				    JobEntity entity = new JobEntity(task, time.toDate(), execution.getArgs());
-				    if(scheduler == null) {
-				    	scheduler = ServiceContext.getContext().find(IScheduler.class);
-				    }
-				    if(scheduler != null) {
-				    	scheduler.schedule(entity);
-				    }
+				    JobEntity entity = new JobEntity(id, task, expireDate, execution.getArgs());
+				    entity.setModelName(task.getTaskName());
+				    entity.setJobType(JobType.EXECUTER.ordinal());
+				    schedule(entity);
 				} catch (Exception e) {
 					log.error(e.getMessage());
+					log.info("scheduler failed.task is:" + task);
+				}
+			}
+			Date remindDate = task.getRemindDate();
+			if(remindDate != null) {
+				try {
+				    JobEntity entity = new JobEntity(id, task, remindDate, execution.getArgs());
+				    entity.setModelName(task.getTaskName());
+				    entity.setJobType(JobType.REMINDER.ordinal());
+				    schedule(entity);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					log.info("scheduler failed.task is:" + task);
 				}
 			}
 		}
+	}
+	
+	private void schedule(JobEntity entity) {
+	    if(scheduler == null) {
+	    	scheduler = ServiceContext.getContext().find(IScheduler.class);
+	    }
+	    if(scheduler != null) {
+	    	scheduler.schedule(entity);
+	    } else {
+	    	isScheduled = false;
+	    }
 	}
 }
