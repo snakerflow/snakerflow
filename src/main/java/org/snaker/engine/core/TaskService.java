@@ -16,6 +16,8 @@ package org.snaker.engine.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -259,30 +261,30 @@ public class TaskService extends AccessService implements ITaskService {
 	
 	/**
 	 * 由DBAccess实现类创建task，并根据model类型决定是否分配参与者
-	 * @param model 模型
-	 * @param order 流程实例对象
-	 * @param args 执行参数
+	 * @param taskModel 模型
+	 * @param execution 执行对象
 	 * @return List<Task> 任务列表
 	 */
 	private List<Task> createTask(TaskModel taskModel, Execution execution) {
 		List<Task> tasks = new ArrayList<Task>();
 		
 		Map<String, Object> args = execution.getArgs();
-		String expireTime = null;
-		if(args != null && !args.isEmpty()) {
-			expireTime = DateHelper.parseTime(args.get(taskModel.getExpireTime()));
-		}
+		if(args == null) args = new HashMap<String, Object>();
+		Date expireDate = processTime(args, taskModel.getExpireTime());
+		Date remindDate = processTime(args, taskModel.getReminderTime());
 		String[] actors = getTaskActors(taskModel.getAssignee(), args, taskModel.getAssignmentHandler(), execution);
 		
 		String type = taskModel.getPerformType();
 		if(type == null || type.equalsIgnoreCase(TaskModel.TYPE_ANY)) {
 			//任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireTime, actors);
+			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireDate, actors);
+			task.setRemindDate(remindDate);
 			tasks.add(task);
 		} else {
 			//任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
 			for(String actor : actors) {
-				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireTime, actor);
+				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireDate, actor);
+				ftask.setRemindDate(remindDate);
 				tasks.add(ftask);
 			}
 		}
@@ -290,9 +292,29 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 	
 	/**
+	 * 对时限数据进行处理
+	 * 1、运行时设置的date型数据直接返回
+	 * 2、模型设置的需要特殊转换成date类型
+	 * 3、运行时设置的转换为date型
+	 * @param args 运行时参数
+	 * @param parameter 模型参数
+	 * @return Date类型
+	 */
+	private Date processTime(Map<String, Object> args, String parameter) {
+		if(StringHelper.isEmpty(parameter)) return null;
+		Date result = null;
+		Object data = args.get(parameter);
+		if(data != null && data instanceof Date) {
+			return (Date)data;
+		}
+		//TODO 解决模型设置的时限配置以及运行时传递的时限数据
+		return result;
+	}
+	
+	/**
 	 * 由自定义模型创建任务
-	 * @param customModel
-	 * @param order
+	 * @param customModel 自定义模型
+	 * @param execution 执行对象
 	 * @return
 	 */
 	private List<Task> createTask(CustomModel customModel, Execution execution) {
@@ -306,16 +328,17 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 由任务模型创建任务
 	 * @param taskModel 任务模型
-	 * @param order 流程实例对象
-	 * @param type 任务类型
+	 * @param execution 执行对象
+	 * @param performType 参与类型
 	 * @param expireTime 期望完成时间
 	 * @param actors 任务参与者集合
 	 * @return
 	 */
-	private Task createTask(TaskModel taskModel, Execution execution, int performType, String expireTime, String... actors) {
+	private Task createTask(TaskModel taskModel, Execution execution, int performType, Date expireDate, String... actors) {
 		Task task = createTask(taskModel, execution, TaskType.Task.ordinal());
-		task.setActionUrl(taskModel.getUrl());
-		task.setExpireTime(expireTime);
+		task.setActionUrl(taskModel.getForm());
+		task.setExpireDate(expireDate);
+		task.setExpireTime(DateHelper.parseTime(expireDate));
 		task.setPerformType(performType);
 		task.setVariable(StringHelper.getStringByArray(actors));
 		saveTask(task);
@@ -326,9 +349,9 @@ public class TaskService extends AccessService implements ITaskService {
 	
 	/**
 	 * 根据模型、执行对象、任务类型构建基本的task对象
-	 * @param model
-	 * @param execution
-	 * @param taskType
+	 * @param model 模型
+	 * @param execution 执行对象
+	 * @param taskType 任务类型
 	 * @return
 	 */
 	private Task createTask(BaseModel model, Execution execution, int taskType) {
@@ -351,15 +374,15 @@ public class TaskService extends AccessService implements ITaskService {
 
 	/**
 	 * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
-	 * @param assignee
-	 * @param args
-	 * @param handler
-	 * @param execution
+	 * @param assignee 模型设置的参与者变量名称
+	 * @param args 参数集合
+	 * @param handler 参与处理类
+	 * @param execution 执行对象
 	 * @return
 	 */
 	private String[] getTaskActors(String assignee, Map<String, Object> args, AssignmentHandler handler, Execution execution) {
 		Object assigneeObject = null;
-		if(StringHelper.isNotEmpty(assignee) && args != null && !args.isEmpty()) {
+		if(StringHelper.isNotEmpty(assignee)) {
 			assigneeObject = args.get(assignee);
 		} else if(handler != null) {
 			assigneeObject = handler.assign(execution);
@@ -371,7 +394,6 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 根据taskmodel指定的assignee属性，从args中取值
 	 * 将取到的值处理为String[]类型。
 	 * @param actors
-	 * @param key
 	 * @return
 	 */
 	private String[] getTaskActors(Object actors) {
