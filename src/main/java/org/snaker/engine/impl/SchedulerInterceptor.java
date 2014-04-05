@@ -15,6 +15,7 @@
 package org.snaker.engine.impl;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.Task;
+import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.scheduling.IScheduler;
 import org.snaker.engine.scheduling.JobEntity;
 import org.snaker.engine.scheduling.JobEntity.JobType;
@@ -54,28 +56,30 @@ public class SchedulerInterceptor implements SnakerInterceptor {
 					+ "-" + task.getId();
 			Date expireDate = task.getExpireDate();
 			if(expireDate != null) {
-				try {
-				    JobEntity entity = new JobEntity(id, task, expireDate, execution.getArgs());
-				    entity.setModelName(task.getTaskName());
-				    entity.setJobType(JobType.EXECUTER.ordinal());
-				    schedule(entity);
-				} catch (Exception e) {
-					log.error(e.getMessage());
-					log.info("scheduler failed.task is:" + task);
-				}
+				schedule(id, task, expireDate, JobType.EXECUTER.ordinal(), execution.getArgs());
 			}
 			Date remindDate = task.getRemindDate();
 			if(remindDate != null) {
-				try {
-				    JobEntity entity = new JobEntity(id, task, remindDate, execution.getArgs());
-				    entity.setModelName(task.getTaskName());
-				    entity.setJobType(JobType.REMINDER.ordinal());
-				    schedule(entity);
-				} catch (Exception e) {
-					log.error(e.getMessage());
-					log.info("scheduler failed.task is:" + task);
-				}
+				schedule(id, task, remindDate, JobType.REMINDER.ordinal(), execution.getArgs());
 			}
+		}
+	}
+	
+	public void schedule(String id, Task task, Date startDate, int jobType, Map<String, Object> args) {
+		try {
+		    JobEntity entity = new JobEntity(id, task, startDate, args);
+		    entity.setModelName(task.getTaskName());
+		    entity.setJobType(jobType);
+		    if(jobType == JobType.REMINDER.ordinal()) {
+		    	TaskModel model = (TaskModel)task.getModel();
+		    	if(model != null && model.getReminderRepeat() > 0) {
+		    		entity.setPeriod(model.getReminderRepeat());
+		    	}
+		    }
+		    schedule(entity);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			log.info("scheduler failed.task is:" + task);
 		}
 	}
 	

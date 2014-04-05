@@ -66,7 +66,7 @@ public class TaskModel extends WorkModel {
 	 */
 	private String reminderTime;
 	/**
-	 * 提醒次数
+	 * 提醒间隔(分钟)
 	 */
 	private int reminderRepeat = 0;
 	/**

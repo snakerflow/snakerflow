@@ -36,7 +36,6 @@ import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.impl.GeneralAccessStrategy;
-import org.snaker.engine.model.BaseModel;
 import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
@@ -354,7 +353,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param taskType 任务类型
 	 * @return
 	 */
-	private Task createTask(BaseModel model, Execution execution, int taskType) {
+	private Task createTask(WorkModel model, Execution execution, int taskType) {
 		Task task = new Task(StringHelper.getPrimaryKey());
 		task.setOrderId(execution.getOrder().getId());
 		task.setTaskName(model.getName());
@@ -362,6 +361,7 @@ public class TaskService extends AccessService implements ITaskService {
 		task.setCreateTime(DateHelper.getTime());
 		task.setTaskType(taskType);
 		task.setParentTaskId(execution.getTask() == null ? START : execution.getTask().getId());
+		task.setModel(model);
 		return task;
 	}
 	

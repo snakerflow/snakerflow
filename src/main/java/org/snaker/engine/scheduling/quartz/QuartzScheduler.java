@@ -14,6 +14,7 @@
  */
 package org.snaker.engine.scheduling.quartz;
 
+import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -21,6 +22,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.helper.AssertHelper;
+import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.scheduling.IScheduler;
 import org.snaker.engine.scheduling.JobEntity;
@@ -44,6 +47,7 @@ public class QuartzScheduler implements IScheduler {
 	private Scheduler getScheduler() {
 		try {
 			Scheduler scheduler = schedulerFactory.getScheduler();
+			//TODO add calendar
 			return scheduler;
 		} catch (SchedulerException e) {
 			throw new SnakerException(e.getMessage(), e.getCause());
@@ -53,22 +57,43 @@ public class QuartzScheduler implements IScheduler {
 	/**
 	 * 
 	 */
-	//TODO 需要根据job类型（提醒、执行...）确定是否需要过滤节假日
 	public void schedule(JobEntity entity) {
 		AssertHelper.notNull(entity);
 	    JobDataMap data = new JobDataMap(entity.getArgs());
 	    data.put(KEY, entity.getId());
 	    data.put(MODEL, entity.getModelName());
+	    Class<? extends Job> jobClazz = null;
+	    switch(entity.getJobType()) {
+	    case 0:
+	    	jobClazz = ExecutorJob.class;
+	    	break;
+	    case 1:
+	    	jobClazz = ReminderJob.class;
+	    	break;
+	    }
 	    JobDetail job = JobBuilder
-	    		.newJob(ExecutorJob.class)
+	    		.newJob(jobClazz)
 	    		.usingJobData(data)
 	    		.withIdentity(entity.getKey(), GROUP)
 	    		.build();
-	    Trigger trigger = TriggerBuilder
-	    		.newTrigger()
-	    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
-	    		.startAt(entity.getStartTime())
-	    		.build();
+	    Trigger trigger = null;
+	    if(jobClazz == ReminderJob.class) {
+	    	int count = ConfigHelper.getNumerProperty("repeatCount");
+	    	if(count < 0) count = 1;
+	    	trigger = TriggerBuilder
+    		.newTrigger()
+    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
+    		.withSchedule(SimpleScheduleBuilder.
+    				repeatMinutelyForTotalCount(count, entity.getPeriod()))
+    		.startAt(entity.getStartTime())
+    		.build();
+	    } else {
+	    	trigger = TriggerBuilder
+    		.newTrigger()
+    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
+    		.startAt(entity.getStartTime())
+    		.build();
+	    }
 	    try {
 			getScheduler().scheduleJob(job, trigger);
 		} catch (SchedulerException e) {

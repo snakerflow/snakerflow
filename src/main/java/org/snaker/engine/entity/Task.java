@@ -17,6 +17,8 @@ package org.snaker.engine.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.snaker.engine.model.WorkModel;
+
 /**
  * 任务实体类
  * @author yuqs
@@ -95,6 +97,10 @@ public class Task implements Serializable, Cloneable {
      * 任务附属变量
      */
     private String variable;
+    /**
+     * 保持模型对象
+     */
+    private WorkModel model;
     
     public Task() {
     	
@@ -255,5 +261,13 @@ public class Task implements Serializable, Cloneable {
 
 	public void setRemindDate(Date remindDate) {
 		this.remindDate = remindDate;
+	}
+
+	public WorkModel getModel() {
+		return model;
+	}
+
+	public void setModel(WorkModel model) {
+		this.model = model;
 	}
 }
