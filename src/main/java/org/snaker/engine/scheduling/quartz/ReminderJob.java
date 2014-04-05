@@ -17,6 +17,8 @@ package org.snaker.engine.scheduling.quartz;
 import java.util.Map;
 
 import org.quartz.JobExecutionException;
+import org.snaker.engine.entity.Process;
+import org.snaker.engine.model.NodeModel;
 
 /**
  * 提醒的job
@@ -24,7 +26,8 @@ import org.quartz.JobExecutionException;
  * @since 1.4
  */
 public class ReminderJob extends AbstractJob {
-	public void exec(String id, String model, Map<String, Object> args) 
+	public void exec(Process process, String orderId,
+			String taskId, NodeModel nodeModel, Map<String, Object> data) 
 			throws JobExecutionException {
 		
 	}

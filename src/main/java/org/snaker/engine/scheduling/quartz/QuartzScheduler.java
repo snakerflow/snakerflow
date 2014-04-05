@@ -17,6 +17,7 @@ package org.snaker.engine.scheduling.quartz;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -42,11 +43,17 @@ public class QuartzScheduler implements IScheduler {
 	
 	private Scheduler getScheduler() {
 		try {
-			return schedulerFactory.getScheduler();
+			Scheduler scheduler = schedulerFactory.getScheduler();
+			return scheduler;
 		} catch (SchedulerException e) {
 			throw new SnakerException(e.getMessage(), e.getCause());
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	//TODO 需要根据job类型（提醒、执行...）确定是否需要过滤节假日
 	public void schedule(JobEntity entity) {
 		AssertHelper.notNull(entity);
 	    JobDataMap data = new JobDataMap(entity.getArgs());
@@ -55,15 +62,24 @@ public class QuartzScheduler implements IScheduler {
 	    JobDetail job = JobBuilder
 	    		.newJob(ExecutorJob.class)
 	    		.usingJobData(data)
-	    		.withIdentity(StringHelper.getPrimaryKey(), "group1")
+	    		.withIdentity(entity.getKey(), GROUP)
 	    		.build();
 	    Trigger trigger = TriggerBuilder
 	    		.newTrigger()
-	    		.withIdentity(StringHelper.getPrimaryKey(), "group1")
+	    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
 	    		.startAt(entity.getStartTime())
 	    		.build();
 	    try {
 			getScheduler().scheduleJob(job, trigger);
+		} catch (SchedulerException e) {
+			log.error(e.getMessage());
+		}
+	}
+
+	public void pause(String key) {
+		AssertHelper.notEmpty(key);
+		try {
+			getScheduler().pauseJob(new JobKey(key, GROUP));
 		} catch (SchedulerException e) {
 			log.error(e.getMessage());
 		}

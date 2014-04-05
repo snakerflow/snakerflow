@@ -28,7 +28,21 @@ import org.snaker.engine.entity.Task;
 public class JobEntity implements Serializable {
 	private static final long serialVersionUID = 5807718947643229134L;
 	/**
-	 * job id
+	 * 参与类型
+	 */
+	public enum JobType {
+		EXECUTER, REMINDER;
+	}
+	/**
+	 * job主键
+	 */
+	private String key;
+	/**
+	 * job组
+	 */
+	private String group;
+	/**
+	 * 任务对应的业务id串
 	 */
 	private String id;
 	/**
@@ -56,24 +70,23 @@ public class JobEntity implements Serializable {
 	 */
 	private Map<String, Object> args;
 	
-	public JobEntity(Task task, Date startTime) {
-		this.task = task;
-		this.startTime = startTime;
+	public JobEntity(String id, Task task, Date startTime) {
+		this(id, task, startTime, 0L);
 	}
 	
-	public JobEntity(Task task, Date startTime, long period) {
+	public JobEntity(String id, Task task, Date startTime, long period) {
+		this.id = id;
 		this.task = task;
 		this.startTime = startTime;
 		this.period = period;
 	}
 	
-	public JobEntity(Task task, Date startTime, Map<String, Object> args) {
-		this.task = task;
-		this.startTime = startTime;
-		this.args = args;
+	public JobEntity(String id, Task task, Date startTime, Map<String, Object> args) {
+		this(id, task, startTime, args, 0L);
 	}
 	
-	public JobEntity(Task task, Date startTime, long period, Map<String, Object> args) {
+	public JobEntity(String id, Task task, Date startTime, Map<String, Object> args, long period) {
+		this.id = id;
 		this.task = task;
 		this.startTime = startTime;
 		this.period = period;
@@ -127,5 +140,21 @@ public class JobEntity implements Serializable {
 
 	public void setJobType(int jobType) {
 		this.jobType = jobType;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 }

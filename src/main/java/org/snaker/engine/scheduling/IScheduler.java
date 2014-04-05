@@ -22,9 +22,16 @@ package org.snaker.engine.scheduling;
 public interface IScheduler {
 	public static final String KEY = "ID";
 	public static final String MODEL = "MODEL";
+	public static final String GROUP = "snaker";
 	/**
 	 * 调度执行方法
 	 * @param entity 调度DTO
 	 */
     void schedule(JobEntity entity);
+    
+    /**
+     * 停止调度
+     * @param key job主键
+     */
+    void pause(String key);
 }

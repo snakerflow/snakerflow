@@ -25,7 +25,6 @@ import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.NodeModel;
-import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.scheduling.JobCallback;
 
@@ -38,27 +37,22 @@ public class ExecutorJob extends AbstractJob {
 	private static final Logger log = LoggerFactory.getLogger(ExecutorJob.class);
 	
 	/**
-	 * 根据传递的key、model、参数列表，自动执行任务
+	 * 根据传递的执行参数，自动执行任务
 	 */
-	public void exec(String key, String model, Map<String, Object> args) 
+	public void exec(Process process, String orderId,
+			String taskId, NodeModel nodeModel, Map<String, Object> data) 
 			throws JobExecutionException {
-		String[] ids = key.split("-");
-		if(ids.length != 3) {
-			log.warn("id值不合法,执行操作被忽略.");
+		if(nodeModel == null || !(nodeModel instanceof TaskModel)) {
+			log.debug("节点模型为空，或不是任务模型，则不满足执行条件");
 			return;
 		}
-		String processId = ids[0];
-		String taskId = ids[2];
-		List<Task> tasks = engine.executeTask(taskId, SnakerEngine.AUTO, args);
-		Process process = engine.process().getProcessById(processId);
-		ProcessModel processModel = process.getModel();
-		if(processModel != null && StringHelper.isNotEmpty(model)) {
-			NodeModel node = processModel.getNode(model);
-			if(node != null && node instanceof TaskModel) {
-				JobCallback jobCallback = ((TaskModel)node).getJobCallback();
-				callback(jobCallback, taskId, tasks);
-			}
+		TaskModel tm = (TaskModel)nodeModel;
+		List<Task> tasks = null;
+		if(StringHelper.isNotEmpty(tm.getAutoExecute()) 
+				&& tm.getAutoExecute().equalsIgnoreCase("Y")) {
+			tasks = engine.executeTask(taskId, SnakerEngine.AUTO, data);
 		}
+		callback(tm.getJobCallback(), taskId, tasks);
 	}
 	
 	/**
