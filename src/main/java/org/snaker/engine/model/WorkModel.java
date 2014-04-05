@@ -25,13 +25,13 @@ public abstract class WorkModel extends NodeModel {
 	 */
 	private static final long serialVersionUID = 761102386160546149L;
 	/**
-	 * url
+	 * form
 	 */
-	private String url;
-	public String getUrl() {
-		return url;
+	private String form;
+	public String getForm() {
+		return form;
 	}
-	public void setUrl(String url) {
-		this.url = url;
+	public void setForm(String form) {
+		this.form = form;
 	}
 }

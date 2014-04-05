@@ -310,7 +310,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	private Task createTask(TaskModel taskModel, Execution execution, int performType, String expireTime, String... actors) {
 		Task task = createTask(taskModel, execution, TaskType.Task.ordinal());
-		task.setActionUrl(taskModel.getUrl());
+		task.setActionUrl(taskModel.getForm());
 		task.setExpireTime(expireTime);
 		task.setPerformType(performType);
 		task.setVariable(StringHelper.getStringByArray(actors));
