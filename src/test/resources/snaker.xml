@@ -29,14 +29,19 @@
 	<!-- 任务拦截器，这里可配置多个拦截器，在任务执行后进行拦截处理(如：记录日志、短信提醒等) -->
 	<bean class="org.snaker.engine.impl.LogInterceptor"/>
 	<bean class="org.snaker.engine.impl.SurrogateInterceptor"/>
+	<bean class="org.snaker.engine.impl.SchedulerInterceptor"/>
 	
-	<!-- 配置表达式引擎实现类 -->
-	<bean class="org.snaker.engine.impl.JuelExpression"/>
 	<!-- 
-	<bean class="org.snaker.engine.spring.SpelExpression"/>
+	配置表达式引擎实现类
+	org.snaker.engine.spring.SpelExpression
+	org.snaker.engine.impl.JuelExpression
 	 -->
+	<bean class="org.snaker.engine.impl.JuelExpression"/>
 	
-	<!-- cache setting 
+	<!-- 缓存配置
 	<bean class="org.snaker.engine.cache.ehcache.EhCacheManager"/>
 	-->
+	
+	<!-- 定时调度器配置 -->
+	<bean class="org.snaker.engine.scheduling.quartz.QuartzScheduler"/>
 </config>
