@@ -20,9 +20,14 @@ package org.snaker.engine.scheduling;
  * @since 1.4
  */
 public interface IScheduler {
-	public static final String KEY = "ID";
-	public static final String MODEL = "MODEL";
+	public static final String REPEAT = "scheduler.repeat";
+	public static final String JOBID = "jobId";
+	public static final String KEY = "id";
+	public static final String MODEL = "model";
 	public static final String GROUP = "snaker";
+	
+	public static final String TYPE_EXECUTOR = "executor.";
+	public static final String TYPE_REMINDER = "reminder.";
 	/**
 	 * 调度执行方法
 	 * @param entity 调度DTO
@@ -33,5 +38,5 @@ public interface IScheduler {
      * 停止调度
      * @param key job主键
      */
-    void pause(String key);
+    void delete(String key);
 }

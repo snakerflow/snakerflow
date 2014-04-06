@@ -47,6 +47,7 @@ public class QuartzScheduler implements IScheduler {
 	private Scheduler getScheduler() {
 		try {
 			Scheduler scheduler = schedulerFactory.getScheduler();
+			scheduler.start();
 			//TODO add calendar
 			return scheduler;
 		} catch (SchedulerException e) {
@@ -63,48 +64,52 @@ public class QuartzScheduler implements IScheduler {
 	    data.put(KEY, entity.getId());
 	    data.put(MODEL, entity.getModelName());
 	    Class<? extends Job> jobClazz = null;
+	    String jobId = "";
 	    switch(entity.getJobType()) {
 	    case 0:
 	    	jobClazz = ExecutorJob.class;
+	    	jobId = TYPE_EXECUTOR + entity.getTask().getId();
 	    	break;
 	    case 1:
 	    	jobClazz = ReminderJob.class;
+	    	jobId = TYPE_REMINDER + entity.getTask().getId();
 	    	break;
 	    }
+	    if(jobClazz == null) {
+	    	log.error("Quartz不支持的JOB类型:{}", entity.getJobType());
+	    	return;
+	    }
+	    
 	    JobDetail job = JobBuilder
 	    		.newJob(jobClazz)
 	    		.usingJobData(data)
-	    		.withIdentity(entity.getKey(), GROUP)
+	    		.withIdentity(jobId, GROUP)
 	    		.build();
 	    Trigger trigger = null;
-	    if(jobClazz == ReminderJob.class) {
-	    	int count = ConfigHelper.getNumerProperty("repeatCount");
-	    	if(count < 0) count = 1;
-	    	trigger = TriggerBuilder
-    		.newTrigger()
-    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
-    		.withSchedule(SimpleScheduleBuilder.
-    				repeatMinutelyForTotalCount(count, entity.getPeriod()))
-    		.startAt(entity.getStartTime())
-    		.build();
-	    } else {
-	    	trigger = TriggerBuilder
-    		.newTrigger()
-    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
-    		.startAt(entity.getStartTime())
-    		.build();
+	    TriggerBuilder<Trigger> builder = TriggerBuilder
+	    		.newTrigger()
+	    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
+	    		.startAt(entity.getStartTime());
+	    if(jobClazz == ReminderJob.class && entity.getPeriod() > 0) {
+	    	int count = ConfigHelper.getNumerProperty(REPEAT);
+	    	if(count <= 0) count = 1;
+	    	builder.withSchedule(SimpleScheduleBuilder.
+    				repeatMinutelyForTotalCount(count, entity.getPeriod()));
 	    }
+	    trigger = builder.build();
 	    try {
+	    	log.info("jobId:{} class:{} starting......", jobId, jobClazz);
 			getScheduler().scheduleJob(job, trigger);
 		} catch (SchedulerException e) {
 			log.error(e.getMessage());
 		}
 	}
 
-	public void pause(String key) {
+	public void delete(String key) {
 		AssertHelper.notEmpty(key);
 		try {
-			getScheduler().pauseJob(new JobKey(key, GROUP));
+			log.info("jobId:{} deleted......", key);
+			getScheduler().deleteJob(new JobKey(key, GROUP));
 		} catch (SchedulerException e) {
 			log.error(e.getMessage());
 		}

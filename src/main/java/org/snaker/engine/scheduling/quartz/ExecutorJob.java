@@ -26,6 +26,7 @@ import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.TaskModel;
+import org.snaker.engine.scheduling.IScheduler;
 import org.snaker.engine.scheduling.JobCallback;
 
 /**
@@ -42,6 +43,7 @@ public class ExecutorJob extends AbstractJob {
 	public void exec(Process process, String orderId,
 			String taskId, NodeModel nodeModel, Map<String, Object> data) 
 			throws JobExecutionException {
+		log.info("ExecutorJob execute taskId:{}", taskId);
 		if(nodeModel == null || !(nodeModel instanceof TaskModel)) {
 			log.debug("节点模型为空，或不是任务模型，则不满足执行条件");
 			return;
@@ -51,6 +53,7 @@ public class ExecutorJob extends AbstractJob {
 		if(StringHelper.isNotEmpty(tm.getAutoExecute()) 
 				&& tm.getAutoExecute().equalsIgnoreCase("Y")) {
 			tasks = engine.executeTask(taskId, SnakerEngine.AUTO, data);
+			schedule().delete(IScheduler.TYPE_REMINDER + taskId);
 		}
 		callback(tm.getJobCallback(), taskId, tasks);
 	}

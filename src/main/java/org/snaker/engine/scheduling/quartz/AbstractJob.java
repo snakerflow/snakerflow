@@ -37,7 +37,15 @@ import org.snaker.engine.scheduling.IScheduler;
  */
 public abstract class AbstractJob implements Job {
 	private static final Logger log = LoggerFactory.getLogger(AbstractJob.class);
+	/**
+	 * 调度器接口
+	 */
+	private IScheduler scheduler;
+	/**
+	 * 流程引擎
+	 */
 	protected SnakerEngine engine = ServiceContext.getContext().getEngine();
+	
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
@@ -79,4 +87,15 @@ public abstract class AbstractJob implements Job {
 	 */
 	abstract void exec(Process process, String orderId,
 			String taskId, NodeModel nodeModel, Map<String, Object> data) throws JobExecutionException;
+	
+	/**
+	 * 获取调度器接口
+	 * @return
+	 */
+	protected IScheduler schedule() {
+	    if(scheduler == null) {
+	    	scheduler = ServiceContext.getContext().find(IScheduler.class);
+	    }
+	    return scheduler;
+	}
 }
