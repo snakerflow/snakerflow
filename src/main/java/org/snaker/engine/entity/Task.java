@@ -242,7 +242,7 @@ public class Task implements Serializable, Cloneable {
 		sb.append(",taskName=").append(this.taskName);
 		sb.append(",displayName").append(this.displayName);
 		sb.append(",taskType=").append(this.taskType);
-		sb.append(",createTime").append(this.createTime);
+		sb.append(",createTime=").append(this.createTime);
 		sb.append(",performType=").append(this.performType).append(")");
 		return sb.toString();
 	}
