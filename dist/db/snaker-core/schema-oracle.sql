@@ -7,7 +7,9 @@ create table wf_process (
     instance_Url     varchar2(200),
     state            number(1),
     content          blob,
-    version          number(1)
+    version          number(1),
+    create_Time      varchar2(50),
+    creator          varchar2(50)
 );
 comment on table wf_process is '流程定义表';
 comment on column wf_process.id is '主键ID';
@@ -18,6 +20,8 @@ comment on column wf_process.instance_Url is '实例url';
 comment on column wf_process.state is '流程是否可用';
 comment on column wf_process.content is '流程模型定义';
 comment on column wf_process.version is '版本';
+comment on column wf_process.create_Time is '创建时间';
+comment on column wf_process.creator is '创建人';
 
 /**流程实例表*/
 create table wf_order (
