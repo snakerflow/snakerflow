@@ -16,5 +16,7 @@
         <property name="state" type="java.lang.Integer" column="state"/>
         <property name="content" type="java.sql.Blob" column="content"/>
         <property name="version" type="java.lang.Integer" column="version"/>
+        <property name="createTime" type="java.lang.String" column="create_Time"/>
+        <property name="creator" type="java.lang.String" column="creator"/>
     </class>
 </hibernate-mapping>

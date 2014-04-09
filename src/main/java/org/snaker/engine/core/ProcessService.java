@@ -28,6 +28,7 @@ import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.AssertHelper;
+import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.ProcessModel;
@@ -155,25 +156,32 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * @param input
 	 */
 	public String deploy(InputStream input) {
+		return deploy(input, null);
+	}
+	
+	/**
+	 * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
+	 * @param input
+	 * @param creator
+	 */
+	public String deploy(InputStream input, String creator) {
 		AssertHelper.notNull(input);
 		try {
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
-			Page<Process> page = new Page<Process>(1);
-			page.setOrder(Page.DESC);
-			page.setOrderBy("version");
-			List<Process> processs = access().getProcesss(page, 
-					new QueryFilter().setName(model.getName()));
+			Integer version = access().getLatestProcessVersion(model.getName());
 			Process entity = new Process();
 			entity.setId(StringHelper.getPrimaryKey());
-			if(processs == null || processs.isEmpty()) {
+			if(version == null || version < 0) {
 				entity.setVersion(0);
 			} else {
-				entity.setVersion(processs.get(0).getVersion() + 1);
+				entity.setVersion(version + 1);
 			}
 			entity.setState(STATE_ACTIVE);
 			entity.setModel(model);
 			entity.setBytes(bytes);
+			entity.setCreateTime(DateHelper.getTime());
+			entity.setCreator(creator);
 			saveProcess(entity);
 			cache(entity);
 			return entity.getId();
