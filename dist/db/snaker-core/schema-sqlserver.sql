@@ -7,9 +7,7 @@ create table wf_process (
     instance_Url     nvarchar(200),
     state            tinyint,
     content          varbinary(max),
-    version          tinyint,
-    create_Time      nvarchar(50),
-    creator          nvarchar(50)
+    version          tinyint
 );
 
 /**流程实例表*/
