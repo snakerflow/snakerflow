@@ -14,6 +14,11 @@
  */
 package org.snaker.engine.scheduling.quartz;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -26,6 +31,8 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.calendar.BaseCalendar;
+import org.quartz.impl.calendar.DailyCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerException;
@@ -43,12 +50,21 @@ import org.snaker.engine.scheduling.JobEntity;
 public class QuartzScheduler implements IScheduler {
 	private static final Logger log = LoggerFactory.getLogger(QuartzScheduler.class);
 	private SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+	private boolean isUseCalendar = false;
 	
 	private Scheduler getScheduler() {
 		try {
 			Scheduler scheduler = schedulerFactory.getScheduler();
+			String useCalendarStr = ConfigHelper.getProperty(CONFIG_USECALENDAR);
+			boolean isUse = Boolean.parseBoolean(useCalendarStr);
+			if(isUse) {
+				BaseCalendar cal = build();
+				if(cal != null) {
+					scheduler.addCalendar(CALENDAR_NAME, cal, false, false);
+					isUseCalendar = true;
+				}
+			}
 			scheduler.start();
-			//TODO add calendar
 			return scheduler;
 		} catch (SchedulerException e) {
 			throw new SnakerException(e.getMessage(), e.getCause());
@@ -91,10 +107,13 @@ public class QuartzScheduler implements IScheduler {
 	    		.withIdentity(StringHelper.getPrimaryKey(), GROUP)
 	    		.startAt(entity.getStartTime());
 	    if(jobClazz == ReminderJob.class && entity.getPeriod() > 0) {
-	    	int count = ConfigHelper.getNumerProperty(REPEAT);
+	    	int count = ConfigHelper.getNumerProperty(CONFIG_REPEAT);
 	    	if(count <= 0) count = 1;
 	    	builder.withSchedule(SimpleScheduleBuilder.
     				repeatMinutelyForTotalCount(count, entity.getPeriod()));
+	    	if(isUseCalendar) {
+	    		builder.modifiedByCalendar(CALENDAR_NAME);
+	    	}
 	    }
 	    trigger = builder.build();
 	    try {
@@ -113,5 +132,37 @@ public class QuartzScheduler implements IScheduler {
 		} catch (SchedulerException e) {
 			log.error(e.getMessage());
 		}
+	}
+	
+	private BaseCalendar build() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String holidays = ConfigHelper.getProperty(CONFIG_HOLIDAYS);
+		String weeks = ConfigHelper.getProperty(CONFIG_WEEKS);
+		String workTime = ConfigHelper.getProperty(CONFIG_WORKTIME);
+		BaseCalendar holidayCal = null;
+		if(StringHelper.isNotEmpty(holidays)) {
+			String[] holidayArray = holidays.split(",");
+			List<Calendar> calendars = new ArrayList<Calendar>();
+			for(String holiday : holidayArray) {
+				
+			}
+		}
+		
+		BaseCalendar weekdayCal = null;
+		if(StringHelper.isNotEmpty(weeks)) {
+			String[] weekArray = weeks.split(",");
+			for(String week : weekArray) {
+				
+			}
+		}
+		
+		DailyCalendar dailyCal = null;
+		if(StringHelper.isNotEmpty(workTime)) {
+			String[] workTimeArray = workTime.split("-");
+			if(workTimeArray.length == 2) {
+				dailyCal = new DailyCalendar(weekdayCal == null ? holidayCal : weekdayCal, workTimeArray[0], workTimeArray[1]);
+			}
+		}
+		return dailyCal == null ? (weekdayCal == null ? holidayCal : weekdayCal) : dailyCal;
 	}
 }
