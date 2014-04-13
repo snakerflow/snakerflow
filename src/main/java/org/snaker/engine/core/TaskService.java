@@ -301,12 +301,17 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	private Date processTime(Map<String, Object> args, String parameter) {
 		if(StringHelper.isEmpty(parameter)) return null;
-		Date result = null;
 		Object data = args.get(parameter);
-		if(data != null && data instanceof Date) {
+		if(data == null) data = parameter;
+		
+		Date result = null;
+		if(data instanceof Date) {
 			return (Date)data;
+		} else if(data instanceof Long) {
+			return new Date((Long)data);
+		} else if(data instanceof String) {
+			//TODO 1.4-dev ignore
 		}
-		//TODO 解决模型设置的时限配置以及运行时传递的时限数据
 		return result;
 	}
 	
