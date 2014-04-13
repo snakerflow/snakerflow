@@ -265,20 +265,23 @@ public class TaskService extends AccessService implements ITaskService {
 		
 		Map<String, Object> args = execution.getArgs();
 		String expireTime = null;
+		String actionUrl = null;
 		if(args != null && !args.isEmpty()) {
 			expireTime = DateHelper.parseTime(args.get(taskModel.getExpireTime()));
+			String form = (String)args.get(taskModel.getForm());
+			actionUrl = StringHelper.isEmpty(form) ? taskModel.getForm() : form;
 		}
 		String[] actors = getTaskActors(taskModel.getAssignee(), args, taskModel.getAssignmentHandler(), execution);
 		
 		String type = taskModel.getPerformType();
 		if(type == null || type.equalsIgnoreCase(TaskModel.TYPE_ANY)) {
 			//任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireTime, actors);
+			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireTime, actionUrl, actors);
 			tasks.add(task);
 		} else {
 			//任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
 			for(String actor : actors) {
-				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireTime, actor);
+				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireTime, actionUrl, actor);
 				tasks.add(ftask);
 			}
 		}
@@ -308,9 +311,10 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @param actors 任务参与者集合
 	 * @return
 	 */
-	private Task createTask(TaskModel taskModel, Execution execution, int performType, String expireTime, String... actors) {
+	private Task createTask(TaskModel taskModel, Execution execution, int performType, 
+			String expireTime, String actionUrl, String... actors) {
 		Task task = createTask(taskModel, execution, TaskType.Task.ordinal());
-		task.setActionUrl(taskModel.getForm());
+		task.setActionUrl(actionUrl);
 		task.setExpireTime(expireTime);
 		task.setPerformType(performType);
 		task.setVariable(StringHelper.getStringByArray(actors));
