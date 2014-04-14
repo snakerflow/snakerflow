@@ -126,6 +126,9 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		if(version == null) {
 			version = access().getLatestProcessVersion(name);
 		}
+		if(version == null) {
+			version = 0;
+		}
 		Process entity = null;
 		String processName = name + DEFAULT_SEPARATOR + version;
 		Cache<String, Process> entityCache = ensureAvailableEntityCache();
@@ -159,17 +162,13 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 		try {
 			byte[] bytes = StreamHelper.readBytes(input);
 			ProcessModel model = ModelParser.parse(bytes);
-			Page<Process> page = new Page<Process>(1);
-			page.setOrder(Page.DESC);
-			page.setOrderBy("version");
-			List<Process> processs = access().getProcesss(page, 
-					new QueryFilter().setName(model.getName()));
+			Integer version = access().getLatestProcessVersion(model.getName());
 			Process entity = new Process();
 			entity.setId(StringHelper.getPrimaryKey());
-			if(processs == null || processs.isEmpty()) {
+			if(version == null || version < 0) {
 				entity.setVersion(0);
 			} else {
-				entity.setVersion(processs.get(0).getVersion() + 1);
+				entity.setVersion(version + 1);
 			}
 			entity.setState(STATE_ACTIVE);
 			entity.setModel(model);
