@@ -101,7 +101,7 @@ public interface DBAccess {
 	public void removeTaskActor(String taskId, String... actors);
 	
 	/**
-	 * 迁移活动任务
+	 * 迁移活动实例
 	 * @param order 历史流程实例对象
 	 */
 	public void saveHistory(HistoryOrder order);
@@ -113,7 +113,7 @@ public interface DBAccess {
 	public void updateHistory(HistoryOrder order);
 	
 	/**
-	 * 迁移活动流程实例
+	 * 迁移活动任务
 	 * @param task 历史任务对象
 	 */
 	public void saveHistory(HistoryTask task);
