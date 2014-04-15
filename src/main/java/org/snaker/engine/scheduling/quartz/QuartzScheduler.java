@@ -17,8 +17,10 @@ package org.snaker.engine.scheduling.quartz;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -31,8 +33,10 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.calendar.AnnualCalendar;
 import org.quartz.impl.calendar.BaseCalendar;
 import org.quartz.impl.calendar.DailyCalendar;
+import org.quartz.impl.calendar.WeeklyCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerException;
@@ -58,7 +62,12 @@ public class QuartzScheduler implements IScheduler {
 			String useCalendarStr = ConfigHelper.getProperty(CONFIG_USECALENDAR);
 			boolean isUse = Boolean.parseBoolean(useCalendarStr);
 			if(isUse) {
-				BaseCalendar cal = build();
+				BaseCalendar cal = null;
+				try {
+					cal = build();
+				} catch(Exception e) {
+					log.error("构造BaseCalendar失败->" + e.getMessage());
+				}
 				if(cal != null) {
 					scheduler.addCalendar(CALENDAR_NAME, cal, false, false);
 					isUseCalendar = true;
@@ -67,12 +76,12 @@ public class QuartzScheduler implements IScheduler {
 			scheduler.start();
 			return scheduler;
 		} catch (SchedulerException e) {
-			throw new SnakerException(e.getMessage(), e.getCause());
+			throw new SnakerException(e);
 		}
 	}
 	
 	/**
-	 * 
+	 * 根据job实体调度具体的任务
 	 */
 	public void schedule(JobEntity entity) {
 		AssertHelper.notNull(entity);
@@ -139,20 +148,39 @@ public class QuartzScheduler implements IScheduler {
 		String holidays = ConfigHelper.getProperty(CONFIG_HOLIDAYS);
 		String weeks = ConfigHelper.getProperty(CONFIG_WEEKS);
 		String workTime = ConfigHelper.getProperty(CONFIG_WORKTIME);
-		BaseCalendar holidayCal = null;
+		AnnualCalendar holidayCal = null;
 		if(StringHelper.isNotEmpty(holidays)) {
 			String[] holidayArray = holidays.split(",");
-			List<Calendar> calendars = new ArrayList<Calendar>();
-			for(String holiday : holidayArray) {
-				
+			ArrayList<Calendar> calendars = new ArrayList<Calendar>();
+			try {
+				for(String holiday : holidayArray) {
+					Date date = sdf.parse(holiday);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(date);
+					calendars.add(new GregorianCalendar(cal.get(Calendar.YEAR),
+							cal.get(Calendar.MONTH), 
+							cal.get(Calendar.DAY_OF_MONTH)));
+				}
+			} catch(Exception e) {
+				log.warn("节假日配置格式有误,请确认是否满足2013-01-04格式");
+			}
+			if(calendars.size() > 0) {
+				holidayCal = new AnnualCalendar();
+				holidayCal.setDaysExcluded(calendars);
 			}
 		}
 		
-		BaseCalendar weekdayCal = null;
+		WeeklyCalendar weekdayCal = null;
 		if(StringHelper.isNotEmpty(weeks)) {
+			weekdayCal = new WeeklyCalendar(holidayCal);
 			String[] weekArray = weeks.split(",");
 			for(String week : weekArray) {
-				
+				if(NumberUtils.isNumber(week)) {
+					int w = Integer.parseInt(week);
+					weekdayCal.setDayExcluded(w + 1, true);
+				} else {
+					log.warn("{} 不是合法的星期数值,请检查星期的配置在1~7内");
+				}
 			}
 		}
 		
@@ -160,7 +188,8 @@ public class QuartzScheduler implements IScheduler {
 		if(StringHelper.isNotEmpty(workTime)) {
 			String[] workTimeArray = workTime.split("-");
 			if(workTimeArray.length == 2) {
-				dailyCal = new DailyCalendar(weekdayCal == null ? holidayCal : weekdayCal, workTimeArray[0], workTimeArray[1]);
+				dailyCal = new DailyCalendar(weekdayCal == null ? holidayCal : weekdayCal, 
+						workTimeArray[0], workTimeArray[1]);
 			}
 		}
 		return dailyCal == null ? (weekdayCal == null ? holidayCal : weekdayCal) : dailyCal;
