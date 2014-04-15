@@ -16,7 +16,9 @@ CREATE TABLE wf_process (
     instance_Url      VARCHAR(200),
     state             smallint,
     content           text,
-    version           smallint
+    version           smallint,
+    create_Time       VARCHAR(50),
+    creator           VARCHAR(50)
 );
 COMMENT ON TABLE wf_process IS '流程定义表';
 COMMENT ON COLUMN wf_process.id IS '主键ID';
