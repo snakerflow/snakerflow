@@ -26,6 +26,7 @@ public class WorkItem implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2630386406754942892L;
+	private String id;
     /**
      * 流程定义ID
      */
@@ -268,5 +269,11 @@ public class WorkItem implements Serializable {
 		sb.append(",taskName").append(this.taskName);
 		sb.append(",performType=").append(this.performType).append(")");
 		return sb.toString();
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

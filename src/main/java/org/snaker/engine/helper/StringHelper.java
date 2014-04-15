@@ -101,6 +101,7 @@ public class StringHelper {
 	 * @return
 	 */
 	public static String buildPageOrder(String order, String orderby) {
+		if(isEmpty(orderby) || isEmpty(order)) return "";
 		String[] orderByArray = StringUtils.split(orderby, ',');
 		String[] orderArray = StringUtils.split(order, ',');
 		if(orderArray.length != orderByArray.length) throw new SnakerException("分页多重排序参数中,排序字段与排序方向的个数不相等");

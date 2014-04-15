@@ -14,32 +14,23 @@
  */
 package org.snaker.engine.access.dialect;
 
+import org.snaker.engine.access.Page;
+
 /**
  * Mysql数据库方言实现
  * @author yuqs
  * @version 1.0
  */
-public class MySqlDialect implements Dialect {
+public class MySqlDialect extends AbstractDialect {
 	/**
 	 * mysql分页通过limit实现
 	 */
-	public String getPageSql(String sql, int pageNo, int pageSize) {
+	public String getPageSql(String sql, Page<?> page) {
 		StringBuffer pageSql = new StringBuffer(sql.length() + 100);
-		pageSql.append(getPageBefore(pageNo, pageSize));
 		pageSql.append(sql);
-		pageSql.append(getPageAfter(pageNo, pageSize));
+		pageSql.append(getOrderby(sql, page));
+		long start = (page.getPageNo() - 1) * page.getPageSize();
+		pageSql.append(" limit ").append(start).append(",").append(page.getPageSize());
 		return pageSql.toString();
-	}
-
-	
-	public String getPageBefore(int pageNo, int pageSize) {
-		return "";
-	}
-
-	public String getPageAfter(int pageNo, int pageSize) {
-		long start = (pageNo - 1) * pageSize;
-		StringBuffer sb = new StringBuffer();
-		sb.append(" limit ").append(start).append(",").append(pageSize);
-		return sb.toString();
 	}
 }

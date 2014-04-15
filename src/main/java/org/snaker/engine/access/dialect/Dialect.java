@@ -14,6 +14,8 @@
  */
 package org.snaker.engine.access.dialect;
 
+import org.snaker.engine.access.Page;
+
 /**
  * 数据库差异的方言接口
  * @author yuqs
@@ -21,27 +23,18 @@ package org.snaker.engine.access.dialect;
  */
 public interface Dialect {
 	/**
-	 * 根据提供的sql、分页参数：start、pagesize获取分页后的sql语句
+	 * 根据分页对象获取分页sql语句
 	 * @param sql 未分页sql语句
-	 * @param pageNo 当前页数
-	 * @param pageSize 每页记录数
+	 * @param page 分页对象
 	 * @return
 	 */
-	public String getPageSql(String sql, int pageNo, int pageSize);
+	String getPageSql(String sql, Page<?> page);
 	
 	/**
-	 * 根据提供的sql、分页参数：start、pagesize获取分页sql语句before字符串
-	 * @param pageNo 当前页数
-	 * @param pageSize 每页记录数
+	 * 根据分页对象获取排序语句
+	 * @param sql 未分页sql语句
+	 * @param page 分页对象
 	 * @return
 	 */
-	public String getPageBefore(int pageNo, int pageSize);
-	
-	/**
-	 * 根据提供的sql、分页参数：start、pagesize获取分页sql语句after字符串
-	 * @param pageNo 当前页数
-	 * @param pageSize 每页记录数
-	 * @return
-	 */
-	public String getPageAfter(int pageNo, int pageSize);
+	String getOrderby(String sql, Page<?> page);
 }
