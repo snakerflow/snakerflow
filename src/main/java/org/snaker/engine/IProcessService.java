@@ -96,7 +96,6 @@ public interface IProcessService {
 	 * 根據InputStream輸入流，部署流程定义
 	 * @param id 流程定义id
 	 * @param input 流程定义输入流
-	 * @return String 流程定义id
 	 */
 	void redeploy(String id, InputStream input);
 	
