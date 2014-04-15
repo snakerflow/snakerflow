@@ -92,7 +92,7 @@ public abstract class TransactionInterceptor implements MethodInterceptor {
 				}
 			} catch (Exception e) {
 				rollback(status);
-				throw new SnakerException(e.getMessage(), e.getCause());
+				throw new SnakerException(e);
 			}
 		} else {
 			if(log.isDebugEnabled()) {
