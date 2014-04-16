@@ -23,7 +23,6 @@ import org.snaker.engine.helper.StringHelper;
  * @since 1.4
  */
 public abstract class AbstractDialect implements Dialect {
-	@Override
 	public String getOrderby(String sql, Page<?> page) {
 		return StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());
 	}

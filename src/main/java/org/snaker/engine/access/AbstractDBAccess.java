@@ -451,6 +451,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 		StringBuffer sql = new StringBuffer(QUERY_ORDER);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and creator in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and parent_Id = ? ");
 		}
@@ -555,6 +564,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and creator in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
 		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and process_Id = ? ");
 			paramList.add(filter.getProcessId());
