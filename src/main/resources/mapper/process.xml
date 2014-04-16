@@ -4,8 +4,10 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Process">
     <insert id="SAVE" parameterType="process">
-    	insert into wf_process (id,name,display_Name,type,instance_Url,state,content,version) 
-    	values (#{id, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{displayName, jdbcType=VARCHAR},#{type, jdbcType=NUMERIC},#{instanceUrl, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC},#{bytes, jdbcType=BLOB},#{version, jdbcType=NUMERIC})
+    	insert into wf_process (id,name,display_Name,type,instance_Url,state,content,version,create_Time,creator) 
+    	values (#{id, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{displayName, jdbcType=VARCHAR},
+    	#{type, jdbcType=NUMERIC},#{instanceUrl, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC},
+    	#{bytes, jdbcType=BLOB},#{version, jdbcType=NUMERIC},#{createTime, jdbcType=VARCHAR},#{creator, jdbcType=VARCHAR})
     </insert>
     <update id="UPDATE" parameterType="process">
     	update wf_process set 
@@ -13,7 +15,9 @@
     	display_Name=#{displayName, jdbcType=VARCHAR},
     	state=#{state, jdbcType=NUMERIC},
     	instance_Url=#{instanceUrl, jdbcType=VARCHAR},
-    	content=#{bytes, jdbcType=BLOB}
+    	content=#{bytes, jdbcType=BLOB},
+       	create_Time=#{createTime, jdbcType=VARCHAR}, 
+    	creator=#{creator, jdbcType=VARCHAR}
     	where id=#{id, jdbcType=VARCHAR}
     </update>
     <select id="SELECTONE" parameterType="string" resultType="process">
@@ -25,7 +29,9 @@
     		instance_Url as instanceUrl,
     		state,
     		content as bytes,
-    		version
+    		version,
+    		create_Time as createTime,
+    		creator
     	from wf_process 
     	where id = #{id, jdbcType=VARCHAR}
     </select>
@@ -44,7 +50,9 @@
     		instance_Url as instanceUrl,
     		state,
     		content as bytes,
-    		version
+    		version,
+    		create_Time as createTime,
+    		creator
     	from wf_process 
     </select>
     
@@ -58,7 +66,9 @@
     		instance_Url as instanceUrl,
     		state,
     		content as bytes,
-    		version
+    		version,
+    		create_Time as createTime,
+    		creator
     	<include refid="selectProcesss"/>
 	${orderby}
 	${limitAfter}

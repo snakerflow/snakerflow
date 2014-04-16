@@ -7,7 +7,9 @@ CREATE TABLE wf_process (
     instance_Url      VARCHAR(200) comment '实例url',
     state             TINYINT(1) comment '流程是否可用',
     content           LONGBLOB comment '流程模型定义',
-    version           TINYINT(1) comment '版本'
+    version           TINYINT(1) comment '版本',
+    create_Time       VARCHAR(50) comment '创建时间',
+    creator           VARCHAR(50) comment '创建人'
 )comment='流程定义表';
 
 /**流程实例表*/
@@ -90,6 +92,18 @@ create table wf_hist_task_actor (
     actor_Id          VARCHAR(100) not null comment '参与者ID'
 )comment='历史任务参与者表';
 
+/**委托代理表*/
+create table wf_surrogate (
+    id                VARCHAR(100) PRIMARY KEY NOT NULL COMMENT '主键ID',
+    process_Name       VARCHAR(100) COMMENT '流程名称',
+    operator          VARCHAR(100) COMMENT '授权人',
+    surrogate         VARCHAR(100) COMMENT '代理人',
+    odate             VARCHAR(64) COMMENT '操作时间',
+    sdate             VARCHAR(64) COMMENT '开始时间',
+    edate             VARCHAR(64) COMMENT '结束时间',
+    state             TINYINT(1) COMMENT '状态'
+)COMMENT='委托代理表';
+create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 /**
  * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
  */

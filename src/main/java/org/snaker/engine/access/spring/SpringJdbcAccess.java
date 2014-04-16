@@ -30,7 +30,6 @@ import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.ClassHelper;
-import org.snaker.engine.helper.StringHelper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -129,12 +128,9 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		String countSQL = "select count(1) from (" + sql + ") c ";
 		String querySQL = sql;
-		if(page.isOrderBySetted()) {
-			querySQL = sql + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());
-		}
 		//判断是否需要分页（根据pageSize判断）
 		if(page.getPageSize() != Page.NON_PAGE) {
-			querySQL = getDialect().getPageSql(querySQL, page.getPageNo(), page.getPageSize());
+			querySQL = getDialect().getPageSql(querySQL, page);
 		}
 		if(log.isDebugEnabled()) {
 			log.debug("查询分页countSQL=\n" + countSQL);

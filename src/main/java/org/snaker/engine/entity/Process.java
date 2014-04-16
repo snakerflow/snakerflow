@@ -63,6 +63,14 @@ public class Process implements Serializable {
      */
 	private Integer state;
 	/**
+	 * 创建时间
+	 */
+	private String createTime;
+	/**
+	 * 创建人
+	 */
+	private String creator;
+	/**
 	 * 流程定义模型
 	 */
     private ProcessModel model;
@@ -168,5 +176,17 @@ public class Process implements Serializable {
 		sb.append(",version=").append(this.version);
 		sb.append(",state=").append(this.state).append(")");
 		return sb.toString();
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	public String getCreator() {
+		return creator;
+	}
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 }

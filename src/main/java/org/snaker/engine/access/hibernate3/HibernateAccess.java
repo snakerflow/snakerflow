@@ -31,10 +31,10 @@ import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.helper.ClassHelper;
-import org.snaker.engine.helper.StringHelper;
 
 /**
  * hibernate方式的数据库访问
@@ -112,6 +112,10 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 		getSession().delete(order);
 	}
 	
+	public void deleteSurrogate(Surrogate surrogate) {
+		getSession().delete(surrogate);
+	}
+	
 	public void removeTaskActor(String taskId, String... actors) {
 		for(String actorId : actors) {
 			TaskActor ta = new TaskActor();
@@ -161,10 +165,7 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 		try {
 			String countSQL = "select count(1) from (" + sql + ") c ";
 			String querySQL = sql;
-			if(page.isOrderBySetted()) {
-				querySQL = querySQL + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());
-			}
-			System.out.println("querySQL=" + querySQL);
+			log.info("querySQL=" + querySQL);
 			SQLQuery countQuery = getSession().createSQLQuery(countSQL);
 			SQLQuery pageQuery = getSession().createSQLQuery(querySQL);
 			pageQuery.addEntity(T);

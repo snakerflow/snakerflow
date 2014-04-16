@@ -7,7 +7,9 @@ create table wf_process (
     instance_Url     varchar2(200),
     state            number(1),
     content          blob,
-    version          number(1)
+    version          number(1),
+    create_Time      varchar2(50),
+    creator          varchar2(50)
 );
 comment on table wf_process is '流程定义表';
 comment on column wf_process.id is '主键ID';
@@ -18,6 +20,8 @@ comment on column wf_process.instance_Url is '实例url';
 comment on column wf_process.state is '流程是否可用';
 comment on column wf_process.content is '流程模型定义';
 comment on column wf_process.version is '版本';
+comment on column wf_process.create_Time is '创建时间';
+comment on column wf_process.creator is '创建人';
 
 /**流程实例表*/
 create table wf_order (
@@ -161,6 +165,28 @@ create table wf_hist_task_actor (
 comment on table wf_hist_task_actor is '历史任务参与者表';
 comment on column wf_hist_task_actor.task_Id is '任务ID';
 comment on column wf_hist_task_actor.actor_Id is '参与者ID';
+
+/**委托代理表*/
+create table wf_surrogate (
+    id                varchar2(100) not null primary key,
+    process_Name      varchar2(100),
+    operator          varchar2(100),
+    surrogate         varchar2(100),
+    odate             varchar2(64),
+    sdate             varchar2(64),
+    edate             varchar2(64),
+    state             number(1)
+);
+comment on table wf_surrogate is '委托代理表';
+comment on column wf_surrogate.id is '主键ID';
+comment on column wf_surrogate.process_Name is '流程名称';
+comment on column wf_surrogate.operator is '授权人';
+comment on column wf_surrogate.surrogate is '代理人';
+comment on column wf_surrogate.odate is '操作时间';
+comment on column wf_surrogate.sdate is '开始时间';
+comment on column wf_surrogate.edate is '结束时间';
+comment on column wf_surrogate.state is '状态';
+create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
 /**
  * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);

@@ -23,6 +23,7 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
@@ -117,6 +118,39 @@ public interface DBAccess {
 	 * @param task 历史任务对象
 	 */
 	public void saveHistory(HistoryTask task);
+	
+	/**
+	 * 保存委托代理对象
+	 * @param surrogate 委托代理对象
+	 */
+	public void saveSurrogate(Surrogate surrogate);
+	
+	/**
+	 * 更新委托代理对象
+	 * @param surrogate 委托代理对象
+	 */
+	public void updateSurrogate(Surrogate surrogate);
+	
+	/**
+	 * 删除委托代理对象
+	 * @param surrogate 委托代理对象
+	 */
+	public void deleteSurrogate(Surrogate surrogate);
+	
+	/**
+	 * 根据主键id查询委托代理对象
+	 * @param id 主键id
+	 * @return surrogate 委托代理对象
+	 */
+	public Surrogate getSurrogate(String id);
+	
+	/**
+	 * 根据授权人、流程名称查询委托代理对象
+	 * @param page 分页对象
+	 * @param filter 查询过滤器
+	 * @return List<Surrogate> 委托代理对象集合
+	 */
+	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter);
 	
 	/**
 	 * 根据任务id查询任务对象

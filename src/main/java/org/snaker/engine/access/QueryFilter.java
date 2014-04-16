@@ -50,6 +50,7 @@ public class QueryFilter implements Serializable {
 	 */
 	private String createTimeStart;
 	private String createTimeEnd;
+	private String operateTime;
 	/**
 	 * 操作人员id
 	 */
@@ -221,6 +222,14 @@ public class QueryFilter implements Serializable {
 	public QueryFilter setVersion(Integer version) {
 		AssertHelper.notNull(version);
 		this.version = version;
+		return this;
+	}
+	public String getOperateTime() {
+		return operateTime;
+	}
+	public QueryFilter setOperateTime(String operateTime) {
+		AssertHelper.notEmpty(operateTime);
+		this.operateTime = operateTime;
 		return this;
 	}
 }

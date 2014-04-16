@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Surrogate">
+    <insert id="SAVE" parameterType="surrogate">
+    	insert into wf_surrogate (id, process_Name, operator, surrogate, odate, sdate, edate, state) 
+    	values (#{id, jdbcType=VARCHAR},#{processName, jdbcType=VARCHAR},#{operator, jdbcType=VARCHAR},#{surrogate, jdbcType=VARCHAR},
+    	#{odate, jdbcType=VARCHAR},#{sdate, jdbcType=VARCHAR},#{edate, jdbcType=VARCHAR},#{state, jdbcType=NUMERIC})
+    </insert>
+    <update id="UPDATE" parameterType="surrogate">
+    	update wf_surrogate set 
+    	process_Name=#{processName, jdbcType=VARCHAR}, 
+    	surrogate=#{surrogate, jdbcType=VARCHAR},
+    	odate=#{odate, jdbcType=VARCHAR},
+    	sdate=#{sdate, jdbcType=VARCHAR},
+    	edate=#{edate, jdbcType=VARCHAR},
+    	state=#{state, jdbcType=NUMERIC}
+    	where id=#{id, jdbcType=VARCHAR}
+    </update>
+    <select id="SELECTONE" parameterType="string" resultType="surrogate">
+    	select 
+    		id, 
+    		process_Name, 
+    		operator, 
+    		surrogate, 
+    		odate, 
+    		sdate, 
+    		edate, 
+    		state
+    	from wf_surrogate 
+    	where id = #{id, jdbcType=VARCHAR}
+    </select>
+    <select id="SELECTLIST" resultType="surrogate">
+    	select 
+    		id, 
+    		process_Name, 
+    		operator, 
+    		surrogate, 
+    		odate, 
+    		sdate, 
+    		edate, 
+    		state
+    	from wf_surrogate 
+    </select>
+    
+    <select id="getSurrogates" resultType="surrogate" parameterType="hashmap">
+    ${limitBefore}
+    	select 
+    		id, 
+    		process_Name, 
+    		operator, 
+    		surrogate, 
+    		odate, 
+    		sdate, 
+    		edate, 
+    		state
+    	<include refid="selectSurrogate"/>
+	${orderby}
+	${limitAfter}
+    </select>
+    
+    <select id="getSurrogateCount" resultType="long" parameterType="hashmap">
+   		select count(id)
+    	<include refid="selectSurrogate"/>
+    </select>
+    
+    <sql id="selectSurrogate">
+		from wf_surrogate where state = 1
+	        <if test="names != null and names.length > 0">
+		        and process_Name in
+				<foreach collection="names" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+	        <if test="operators != null and operators.length > 0">
+		        and operator in
+				<foreach collection="operators" index="index" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+      		<if test="operateTime != null">
+      			 and sdate &lt;= #{operateTime, jdbcType=VARCHAR} and edate &gt;= #{operateTime, jdbcType=VARCHAR}
+      		</if>
+    </sql>
+</mapper>

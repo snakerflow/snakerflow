@@ -22,16 +22,26 @@
 	<bean class="org.snaker.engine.access.dialect.OracleDialect"/>
 	<bean class="org.snaker.engine.access.dialect.SQLServerDialect"/>
 	 -->
+	 
+	<!-- 配置任务访问的策略类，如果涉及到组、角色作为参与者，则需要自定义策略类-->
+	<bean class="test.task.group.CustomAccessStrategy"/>
 	
 	<!-- 任务拦截器，这里可配置多个拦截器，在任务执行后进行拦截处理(如：记录日志、短信提醒等) -->
 	<bean class="org.snaker.engine.impl.LogInterceptor"/>
+	<bean class="org.snaker.engine.impl.SurrogateInterceptor"/>
+	<bean class="org.snaker.engine.impl.SchedulerInterceptor"/>
 	
-	<!-- 配置表达式引擎实现类 -->
-	<bean class="org.snaker.engine.impl.JuelExpression"/>
 	<!-- 
-	<bean class="org.snaker.engine.spring.SpelExpression"/>
+	配置表达式引擎实现类
+	org.snaker.engine.spring.SpelExpression
+	org.snaker.engine.impl.JuelExpression
 	 -->
+	<bean class="org.snaker.engine.impl.JuelExpression"/>
 	
-	<!-- cache setting -->
+	<!-- 缓存配置
 	<bean class="org.snaker.engine.cache.ehcache.EhCacheManager"/>
+	-->
+	
+	<!-- 定时调度器配置 -->
+	<bean class="org.snaker.engine.scheduling.quartz.QuartzScheduler"/>
 </config>

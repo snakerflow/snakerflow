@@ -28,5 +28,6 @@
     	<mapper resource="mapper/hist-task-actor.xml"/>
     	<mapper resource="mapper/query.xml"/>
     	<mapper resource="mapper/hist-query.xml"/>
+    	<mapper resource="mapper/surrogate.xml"/>
     </mappers>
 </configuration>

@@ -28,6 +28,7 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
@@ -49,8 +50,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String SAVE = "SAVE";
 	protected static final String UPDATE = "UPDATE";
 	
-	protected static final String PROCESS_INSERT = "insert into wf_process (id,name,display_Name,type,instance_Url,state,version) values (?,?,?,?,?,?,?)";
-	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=? where id=? ";
+	protected static final String PROCESS_INSERT = "insert into wf_process (id,name,display_Name,type,instance_Url,state,version,create_Time,creator) values (?,?,?,?,?,?,?,?,?)";
+	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,create_Time=?,creator=? where id=? ";
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
@@ -70,7 +71,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String TASK_ACTOR_REDUCE = "delete from wf_task_actor where task_Id = ? and actor_Id = ?";
 	
 	protected static final String QUERY_VERSION = "select max(version) from wf_process ";
-	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version from wf_process ";
+	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version,create_Time,creator from wf_process ";
 	protected static final String QUERY_ORDER = "select id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,priority,order_No,variable, version from wf_order ";
 	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
 	protected static final String QUERY_TASK_ACTOR = "select task_Id, actor_Id from wf_task_actor ";
@@ -78,6 +79,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String QUERY_HIST_ORDER = "select id,process_Id,order_State,priority,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable from wf_hist_order ";
 	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
 	protected static final String QUERY_HIST_TASK_ACTOR = "select task_Id, actor_Id from wf_hist_task_actor ";
+	
+	/**委托代理CRUD*/
+	protected static final String SURROGATE_INSERT = "insert into wf_surrogate (id, process_Name, operator, surrogate, odate, sdate, edate, state) values (?,?,?,?,?,?,?,?)";
+	protected static final String SURROGATE_UPDATE = "update wf_surrogate set process_Name=?, surrogate=?, odate=?, sdate=?, edate=?, state=? where id = ?";
+	protected static final String SURROGATE_DELETE = "delete from wf_surrogate where id = ?";
+	protected static final String SURROGATE_QUERY = "select id, process_Name, operator, surrogate, odate, sdate, edate, state from wf_surrogate";
+	
+	protected Dialect dialect;
 	
 	/**
 	 * 是否为ORM框架，用以标识对象直接持久化
@@ -128,7 +137,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 * @return
 	 */
 	protected Dialect getDialect() {
-		return ServiceContext.getContext().find(Dialect.class);
+		if(dialect == null) {
+			dialect = ServiceContext.getContext().find(Dialect.class);
+		}
+		return dialect;
 	}
 	
 	/**
@@ -139,9 +151,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(process, SAVE));
 		} else {
 			Object[] args = new Object[]{process.getId(), process.getName(), process.getDisplayName(), process.getType(), 
-					process.getInstanceUrl(), process.getState(), process.getVersion()};
+					process.getInstanceUrl(), process.getState(), process.getVersion(), process.getCreateTime(), process.getCreator()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
-					Types.VARCHAR, Types.INTEGER, Types.INTEGER};
+					Types.VARCHAR, Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(PROCESS_INSERT, args, type));
 		}
 	}
@@ -153,8 +165,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(process, UPDATE));
 		} else {
 			Object[] args = new Object[]{process.getName(), process.getDisplayName(), process.getState(), 
-					process.getInstanceUrl(), process.getId()};
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
+					process.getInstanceUrl(), process.getCreateTime(), process.getCreator(), process.getId()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
 		}
 	}
@@ -282,6 +294,78 @@ public abstract class AbstractDBAccess implements DBAccess {
 			}
 		}
 	}
+	
+	public void saveSurrogate(Surrogate surrogate) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(surrogate, SAVE));
+		} else {
+			Object[] args = new Object[]{surrogate.getId(), surrogate.getProcessName(), surrogate.getOperator(),
+					surrogate.getSurrogate(), surrogate.getOdate(), surrogate.getSdate(), surrogate.getEdate(),
+					surrogate.getState()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(SURROGATE_INSERT, args, type));
+		}
+	}
+	
+	public void updateSurrogate(Surrogate surrogate) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(surrogate, UPDATE));
+		} else {
+			Object[] args = new Object[]{surrogate.getProcessName(), surrogate.getSurrogate(), surrogate.getOdate(), 
+					surrogate.getSdate(), surrogate.getEdate(), surrogate.getState(), surrogate.getId()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR, Types.VARCHAR, 
+					Types.INTEGER, Types.VARCHAR};
+			saveOrUpdate(buildMap(SURROGATE_UPDATE, args, type));
+		}
+	}
+	
+	public void deleteSurrogate(Surrogate surrogate) {
+		if(!isORM()) {
+			Object[] args = new Object[]{surrogate.getId()};
+			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(SURROGATE_DELETE, args, type));
+		}
+	}
+	
+	public Surrogate getSurrogate(String id) {
+		String where = " where id = ?";
+		return queryObject(Surrogate.class, SURROGATE_QUERY + where, id);
+	}
+	
+	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
+		StringBuffer sql = new StringBuffer(SURROGATE_QUERY);
+		sql.append(" where 1=1 and state = 1 ");
+		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getNames() != null && filter.getNames().length > 0) {
+			sql.append(" and process_Name in(");
+			for(int i = 0; i < filter.getNames().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getNames()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and operator in (");
+			for(String actor : filter.getOperators()) {
+				sql.append("?,");
+				paramList.add(actor);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
+		if(StringHelper.isNotEmpty(filter.getOperateTime())) {
+			sql.append(" and sdate <= ? and edate >= ? ");
+			paramList.add(filter.getOperateTime());
+			paramList.add(filter.getOperateTime());
+		}
+		if(page == null) {
+			return queryList(Surrogate.class, sql.toString(), paramList.toArray());
+		} else {
+			return queryList(page, Surrogate.class, sql.toString(), paramList.toArray());
+		}
+	}
 
 	public Task getTask(String taskId) {
 		String where = " where id = ?";
@@ -367,6 +451,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 		StringBuffer sql = new StringBuffer(QUERY_ORDER);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and creator in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and parent_Id = ? ");
 		}
@@ -471,6 +564,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 		StringBuffer sql = new StringBuffer(QUERY_HIST_ORDER);
 		sql.append(" where 1=1 ");
 		List<Object> paramList = new ArrayList<Object>();
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and creator in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
 		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and process_Id = ? ");
 			paramList.add(filter.getProcessId());
@@ -550,7 +652,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select o.process_Id, t.order_Id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
+		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
 		sql.append(" t.display_Name as task_Name, t.task_Type, t.perform_Type, t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
@@ -608,7 +710,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select o.process_Id, t.order_Id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
+		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
 		sql.append(" t.display_Name as task_Name, t.task_Type, t.perform_Type,t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");

@@ -14,12 +14,14 @@
  */
 package org.snaker.engine.model;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.handlers.impl.MergeActorHandler;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
+import org.snaker.engine.scheduling.JobCallback;
 
 /**
  * 任务定义task元素
@@ -59,6 +61,22 @@ public class TaskModel extends WorkModel {
 	 * 期望完成时间
 	 */
 	private String expireTime;
+	/**
+	 * 提醒时间
+	 */
+	private String reminderTime;
+	/**
+	 * 提醒间隔(分钟)
+	 */
+	private int reminderRepeat = 0;
+	/**
+	 * 是否自动执行
+	 */
+	private String autoExecute;
+	/**
+	 * 任务执行后回调方法
+	 */
+	private JobCallback callback;
 	/**
 	 * 分配参与者处理类
 	 */
@@ -102,6 +120,43 @@ public class TaskModel extends WorkModel {
 
 	public void setPerformType(String performType) {
 		this.performType = performType;
+	}
+
+	public String getReminderTime() {
+		return reminderTime;
+	}
+
+	public void setReminderTime(String reminderTime) {
+		this.reminderTime = reminderTime;
+	}
+
+	public int getReminderRepeat() {
+		return reminderRepeat;
+	}
+
+	public void setReminderRepeat(String reminderRepeat) {
+		if(NumberUtils.isNumber(reminderRepeat)) {
+			this.reminderRepeat = Integer.parseInt(reminderRepeat);
+		}
+	}
+
+	public String getAutoExecute() {
+		return autoExecute;
+	}
+
+	public void setAutoExecute(String autoExecute) {
+		this.autoExecute = autoExecute;
+	}
+
+	public JobCallback getJobCallback() {
+		return callback;
+	}
+
+	public void setJobCallback(String callbackStr) {
+		if(StringHelper.isNotEmpty(callbackStr)) {
+			callback = (JobCallback)ClassHelper.newInstance(callbackStr);
+			AssertHelper.notNull(callback, "回调处理类实例化失败");
+		}
 	}
 
 	public AssignmentHandler getAssignmentHandler() {

@@ -30,6 +30,7 @@ import org.snaker.engine.model.WorkModel;
  */
 public interface SnakerEngine {
 	public static final String ADMIN = "snaker.admin";
+	public static final String AUTO = "snaker.auto";
 	/**
 	 * 根据Configuration对象配置实现类
 	 * @param config 全局配置对象
@@ -60,6 +61,12 @@ public interface SnakerEngine {
 	 * @return ITaskService 任务服务
 	 */
 	public ITaskService task();
+	
+	/**
+	 * 获取管理服务
+	 * @return IManagerService 管理服务
+	 */
+	public IManagerService manager();
 	
 	/**
 	 * 根据流程定义ID启动流程实例

@@ -16,6 +16,8 @@ package org.snaker.engine.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
+import org.snaker.engine.TaskAccessStrategy;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
@@ -32,7 +35,7 @@ import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
-import org.snaker.engine.model.BaseModel;
+import org.snaker.engine.impl.GeneralAccessStrategy;
 import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
@@ -47,6 +50,8 @@ import org.snaker.engine.model.WorkModel;
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";
+	
+	private TaskAccessStrategy strategy = null;
 	/**
 	 * 任务类型
 	 */
@@ -255,33 +260,32 @@ public class TaskService extends AccessService implements ITaskService {
 	
 	/**
 	 * 由DBAccess实现类创建task，并根据model类型决定是否分配参与者
-	 * @param model 模型
-	 * @param order 流程实例对象
-	 * @param args 执行参数
+	 * @param taskModel 模型
+	 * @param execution 执行对象
 	 * @return List<Task> 任务列表
 	 */
 	private List<Task> createTask(TaskModel taskModel, Execution execution) {
 		List<Task> tasks = new ArrayList<Task>();
 		
 		Map<String, Object> args = execution.getArgs();
-		String expireTime = null;
-		String actionUrl = null;
-		if(args != null && !args.isEmpty()) {
-			expireTime = DateHelper.parseTime(args.get(taskModel.getExpireTime()));
-			String form = (String)args.get(taskModel.getForm());
-			actionUrl = StringHelper.isEmpty(form) ? taskModel.getForm() : form;
-		}
-		String[] actors = getTaskActors(taskModel.getAssignee(), args, taskModel.getAssignmentHandler(), execution);
+		if(args == null) args = new HashMap<String, Object>();
+		Date expireDate = processTime(args, taskModel.getExpireTime());
+		Date remindDate = processTime(args, taskModel.getReminderTime());
+		String form = (String)args.get(taskModel.getForm());
+		String actionUrl = StringHelper.isEmpty(form) ? taskModel.getForm() : form;
 		
+		String[] actors = getTaskActors(taskModel.getAssignee(), args, taskModel.getAssignmentHandler(), execution);
 		String type = taskModel.getPerformType();
 		if(type == null || type.equalsIgnoreCase(TaskModel.TYPE_ANY)) {
 			//任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireTime, actionUrl, actors);
+			Task task = createTask(taskModel, execution, PerformType.ANY.ordinal(), expireDate, actionUrl, actors);
+			task.setRemindDate(remindDate);
 			tasks.add(task);
 		} else {
 			//任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
 			for(String actor : actors) {
-				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireTime, actionUrl, actor);
+				Task ftask = createTask(taskModel, execution, PerformType.ALL.ordinal(), expireDate, actionUrl, actor);
+				ftask.setRemindDate(remindDate);
 				tasks.add(ftask);
 			}
 		}
@@ -289,9 +293,34 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 	
 	/**
+	 * 对时限数据进行处理
+	 * 1、运行时设置的date型数据直接返回
+	 * 2、模型设置的需要特殊转换成date类型
+	 * 3、运行时设置的转换为date型
+	 * @param args 运行时参数
+	 * @param parameter 模型参数
+	 * @return Date类型
+	 */
+	private Date processTime(Map<String, Object> args, String parameter) {
+		if(StringHelper.isEmpty(parameter)) return null;
+		Object data = args.get(parameter);
+		if(data == null) data = parameter;
+		
+		Date result = null;
+		if(data instanceof Date) {
+			return (Date)data;
+		} else if(data instanceof Long) {
+			return new Date((Long)data);
+		} else if(data instanceof String) {
+			//TODO 1.4-dev ignore
+		}
+		return result;
+	}
+	
+	/**
 	 * 由自定义模型创建任务
-	 * @param customModel
-	 * @param order
+	 * @param customModel 自定义模型
+	 * @param execution 执行对象
 	 * @return
 	 */
 	private List<Task> createTask(CustomModel customModel, Execution execution) {
@@ -305,17 +334,18 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 由任务模型创建任务
 	 * @param taskModel 任务模型
-	 * @param order 流程实例对象
-	 * @param type 任务类型
+	 * @param execution 执行对象
+	 * @param performType 参与类型
 	 * @param expireTime 期望完成时间
 	 * @param actors 任务参与者集合
 	 * @return
 	 */
 	private Task createTask(TaskModel taskModel, Execution execution, int performType, 
-			String expireTime, String actionUrl, String... actors) {
+			Date expireDate, String actionUrl, String... actors) {
 		Task task = createTask(taskModel, execution, TaskType.Task.ordinal());
 		task.setActionUrl(actionUrl);
-		task.setExpireTime(expireTime);
+		task.setExpireDate(expireDate);
+		task.setExpireTime(DateHelper.parseTime(expireDate));
 		task.setPerformType(performType);
 		task.setVariable(StringHelper.getStringByArray(actors));
 		saveTask(task);
@@ -326,12 +356,12 @@ public class TaskService extends AccessService implements ITaskService {
 	
 	/**
 	 * 根据模型、执行对象、任务类型构建基本的task对象
-	 * @param model
-	 * @param execution
-	 * @param taskType
+	 * @param model 模型
+	 * @param execution 执行对象
+	 * @param taskType 任务类型
 	 * @return
 	 */
-	private Task createTask(BaseModel model, Execution execution, int taskType) {
+	private Task createTask(WorkModel model, Execution execution, int taskType) {
 		Task task = new Task(StringHelper.getPrimaryKey());
 		task.setOrderId(execution.getOrder().getId());
 		task.setTaskName(model.getName());
@@ -339,6 +369,7 @@ public class TaskService extends AccessService implements ITaskService {
 		task.setCreateTime(DateHelper.getTime());
 		task.setTaskType(taskType);
 		task.setParentTaskId(execution.getTask() == null ? START : execution.getTask().getId());
+		task.setModel(model);
 		return task;
 	}
 	
@@ -351,15 +382,15 @@ public class TaskService extends AccessService implements ITaskService {
 
 	/**
 	 * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
-	 * @param assignee
-	 * @param args
-	 * @param handler
-	 * @param execution
+	 * @param assignee 模型设置的参与者变量名称
+	 * @param args 参数集合
+	 * @param handler 参与处理类
+	 * @param execution 执行对象
 	 * @return
 	 */
 	private String[] getTaskActors(String assignee, Map<String, Object> args, AssignmentHandler handler, Execution execution) {
 		Object assigneeObject = null;
-		if(StringHelper.isNotEmpty(assignee) && args != null && !args.isEmpty()) {
+		if(StringHelper.isNotEmpty(assignee)) {
 			assigneeObject = args.get(assignee);
 		} else if(handler != null) {
 			assigneeObject = handler.assign(execution);
@@ -371,7 +402,6 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 根据taskmodel指定的assignee属性，从args中取值
 	 * 将取到的值处理为String[]类型。
 	 * @param actors
-	 * @param key
 	 * @return
 	 */
 	private String[] getTaskActors(Object actors) {
@@ -390,6 +420,11 @@ public class TaskService extends AccessService implements ITaskService {
 			results = new String[1];
 			results[0] = String.valueOf((Long)actors);
 			return results;
+		} else if(actors instanceof Integer) {
+			//如果为Long类型，则返回1个元素的String[]
+			results = new String[1];
+			results[0] = String.valueOf((Integer)actors);
+			return results;
 		} else if(actors instanceof String[]) {
 			//如果为String[]类型，则直接返回
 			return (String[])actors;
@@ -404,7 +439,8 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	public boolean isAllowed(Task task, String operator) {
 		if(StringHelper.isNotEmpty(operator)) {
-			if(SnakerEngine.ADMIN.equalsIgnoreCase(operator)) {
+			if(SnakerEngine.ADMIN.equalsIgnoreCase(operator)
+					|| SnakerEngine.AUTO.equalsIgnoreCase(operator)) {
 				return true;
 			}
 			if(StringHelper.isNotEmpty(task.getOperator())) {
@@ -414,13 +450,21 @@ public class TaskService extends AccessService implements ITaskService {
 		List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 		if(actors == null || actors.isEmpty()) return true;
 		if(StringHelper.isEmpty(operator)) return false;
-		boolean isAllowed = false;
-		for(TaskActor actor : actors) {
-			if(actor.getActorId().equals(operator)) {
-				isAllowed = true;
-				break;
-			}
+		return getStrategy().isAllowed(operator, actors);
+	}
+
+	public void setStrategy(TaskAccessStrategy strategy) {
+		this.strategy = strategy;
+	}
+
+	public TaskAccessStrategy getStrategy() {
+		if(strategy == null) {
+			strategy = ServiceContext.getContext().find(TaskAccessStrategy.class);
 		}
-		return isAllowed;
+		if(strategy == null) {
+			strategy = new GeneralAccessStrategy();
+			ServiceContext.getContext().put(strategy.getClass().getName(), strategy);
+		}
+		return strategy;
 	}
 }

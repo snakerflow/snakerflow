@@ -14,34 +14,27 @@
  */
 package org.snaker.engine.access.dialect;
 
+import org.snaker.engine.access.Page;
+
 /**
  * Oracle数据库方言实现
  * @author yuqs
  * @version 1.0
  */
-public class OracleDialect implements Dialect {
+public class OracleDialect extends AbstractDialect {
 	/**
 	 * oracle分页通过rownum实现
 	 */
-	public String getPageSql(String sql, int pageNo, int pageSize) {
+	public String getPageSql(String sql, Page<?> page) {
 		StringBuffer pageSql = new StringBuffer(sql.length() + 100);
-		pageSql.append(getPageBefore(pageNo, pageSize));
+		pageSql.append("select * from ( select row_.*, rownum rownum_ from ( ");
 		pageSql.append(sql);
-		pageSql.append(getPageAfter(pageNo, pageSize));
+		pageSql.append(getOrderby(sql, page));
+		long start = (page.getPageNo() - 1) * page.getPageSize() + 1;
+		pageSql.append(" ) row_ where rownum < ");
+		pageSql.append(start + page.getPageSize());
+		pageSql.append(" ) where rownum_ >= ");
+		pageSql.append(start);
 		return pageSql.toString();
-	}
-
-	public String getPageBefore(int pageNo, int pageSize) {
-		return "select * from ( select row_.*, rownum rownum_ from ( ";
-	}
-
-	public String getPageAfter(int pageNo, int pageSize) {
-		long start = (pageNo - 1) * pageSize + 1;
-		StringBuffer after = new StringBuffer();
-		after.append(" ) row_ where rownum < ");
-		after.append(start + pageSize);
-		after.append(" ) where rownum_ >= ");
-		after.append(start);
-		return after.toString();
 	}
 }

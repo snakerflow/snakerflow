@@ -16,7 +16,9 @@ CREATE TABLE wf_process (
     instance_Url      VARCHAR(200),
     state             smallint,
     content           text,
-    version           smallint
+    version           smallint,
+    create_Time       VARCHAR(50),
+    creator           VARCHAR(50)
 );
 COMMENT ON TABLE wf_process IS '流程定义表';
 COMMENT ON COLUMN wf_process.id IS '主键ID';
@@ -170,6 +172,28 @@ create table wf_hist_task_actor (
 COMMENT ON TABLE wf_hist_task_actor IS '历史任务参与者表';
 COMMENT ON COLUMN wf_hist_task_actor.task_Id IS '任务ID';
 COMMENT ON COLUMN wf_hist_task_actor.actor_Id IS '参与者ID';
+
+/**委托代理表*/
+create table wf_surrogate (
+    id                VARCHAR(100) not null primary key,
+    process_Name      VARCHAR(100),
+    operator          VARCHAR(100),
+    surrogate         VARCHAR(100),
+    odate             VARCHAR(64),
+    sdate             VARCHAR(64),
+    edate             VARCHAR(64),
+    state             smallint
+);
+COMMENT on table wf_surrogate is '委托代理表';
+COMMENT on column wf_surrogate.id is '主键ID';
+COMMENT on column wf_surrogate.process_Name is '流程名称';
+COMMENT on column wf_surrogate.operator is '授权人';
+COMMENT on column wf_surrogate.surrogate is '代理人';
+COMMENT on column wf_surrogate.odate is '操作时间';
+COMMENT on column wf_surrogate.sdate is '开始时间';
+COMMENT on column wf_surrogate.edate is '结束时间';
+COMMENT on column wf_surrogate.state is '状态';
+create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
