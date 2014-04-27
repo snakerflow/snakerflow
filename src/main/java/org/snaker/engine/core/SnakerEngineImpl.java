@@ -201,8 +201,9 @@ public class SnakerEngineImpl implements SnakerEngine {
 		
 		if(process.getModel() != null) {
 			StartModel start = process.getModel().getStart();
-			AssertHelper.notNull(start, "指定的流程定义[id=" + id + "]没有开始节点");
-			start.execute(execution);
+			if(start != null) {
+				start.execute(execution);
+			}
 		}
 		
 		return execution.getOrder();
