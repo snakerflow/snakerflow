@@ -54,7 +54,7 @@ public class StreamHelper {
 	
 	public static InputStream getStreamFromString(String text) {
 		try {
-			byte[] bytes = text.getBytes("GBK");
+			byte[] bytes = text.getBytes("UTF-8");
 			return new ByteArrayInputStream(bytes);
 		} catch (Exception e) {
 			throw new AssertionError(e);
