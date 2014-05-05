@@ -15,8 +15,6 @@
 package org.snaker.engine.spring;
 
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.cfg.Configuration;
-import org.snaker.engine.DBAccess;
 import org.snaker.engine.core.SnakerEngineImpl;
 import org.snaker.engine.helper.ConfigHelper;
 import org.springframework.context.ApplicationContext;
@@ -32,11 +30,11 @@ public class SpringSnakerEngine extends SnakerEngineImpl {
 	/**
 	 * 根据applicatinContext上下文，查找processService、orderService、taskService服务
 	 */
-	public SnakerEngine configure(Configuration config) {
+	public SnakerEngine configure(SpringConfiguration config) {
 		/**
 		 * 通过Configuration获取applicationContext对象（通过SpringHelper添加到Configuration中）
 		 */
-		applicationContext = (ApplicationContext) config.getApplicationContext();
+		applicationContext = config.getApplicationContext();
 		if(applicationContext == null) {
 			//如果不存在applicationContext，通过配置的spring属性初始化applicationContext
 			String configFile = ConfigHelper.getProperty("spring");
@@ -49,12 +47,6 @@ public class SpringSnakerEngine extends SnakerEngineImpl {
 		 * 调用父类configure方法
 		 */
 		super.configure(config);
-		/**
-		 * 由于SnakerEngine非spring的bean，而DBAccess实现类在spring中配置
-		 * 所以需要手动设置DBAccess
-		 */
-		DBAccess access = (DBAccess)applicationContext.getBean("dbAccess");
-		super.setDBAccess(access);
 		return this;
 	}
 }

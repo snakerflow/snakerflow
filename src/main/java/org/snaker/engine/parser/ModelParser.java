@@ -79,9 +79,9 @@ public class ModelParser {
 				return process;
 			} catch (SAXException e) {
 				e.printStackTrace();
-				throw new SnakerException("parse file failed.", e.getCause());
+				throw new SnakerException(e);
 			} catch (IOException e) {
-				throw new SnakerException("parse file failed.", e.getCause());
+				throw new SnakerException(e);
 			}
 		} else {
 			throw new SnakerException("documentBuilder is null");

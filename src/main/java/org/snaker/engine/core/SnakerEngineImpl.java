@@ -56,10 +56,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	protected Configuration configuration;
 	/**
-	 * 服务上下文
-	 */
-	protected ServiceContext context;
-	/**
 	 * 流程定义业务类
 	 */
 	protected IProcessService processService;
@@ -85,20 +81,19 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	public SnakerEngine configure(Configuration config) {
 		this.configuration = config;
-		context = config.getContext();
-		processService = context.find(IProcessService.class);
-		queryService = context.find(IQueryService.class);
-		orderService = context.find(IOrderService.class);
-		taskService = context.find(ITaskService.class);
-		managerService = context.find(IManagerService.class);
+		processService = ServiceContext.find(IProcessService.class);
+		queryService = ServiceContext.find(IQueryService.class);
+		orderService = ServiceContext.find(IOrderService.class);
+		taskService = ServiceContext.find(ITaskService.class);
+		managerService = ServiceContext.find(IManagerService.class);
 		/*
 		 * 无spring环境，DBAccess的实现类通过服务上下文获取
 		 */
 		if(this.configuration.getApplicationContext() == null) {
-			DBAccess access = context.find(DBAccess.class);
+			DBAccess access = ServiceContext.find(DBAccess.class);
 			AssertHelper.notNull(access);
 			
-			TransactionInterceptor interceptor = context.find(TransactionInterceptor.class);
+			TransactionInterceptor interceptor = ServiceContext.find(TransactionInterceptor.class);
 			//如果初始化配置时提供了访问对象，就对DBAccess进行初始化
 			Object accessObject = this.configuration.getAccessDBObject();
 			if(accessObject != null) {
@@ -109,12 +104,12 @@ public class SnakerEngineImpl implements SnakerEngine {
 			}
 			setDBAccess(access);
 		}
-		CacheManager cacheManager = context.find(CacheManager.class);
+		CacheManager cacheManager = ServiceContext.find(CacheManager.class);
 		if(cacheManager == null) {
 			//默认使用内存缓存管理器
 			cacheManager = new MemoryCacheManager();
 		}
-		List<CacheManagerAware> cacheServices = context.findList(CacheManagerAware.class);
+		List<CacheManagerAware> cacheServices = ServiceContext.findList(CacheManagerAware.class);
 		for(CacheManagerAware cacheService : cacheServices) {
 			cacheService.setCacheManager(cacheManager);
 		}
@@ -126,7 +121,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 * @param access
 	 */
 	protected void setDBAccess(DBAccess access) {
-		List<AccessService> services = context.findList(AccessService.class);
+		List<AccessService> services = ServiceContext.findList(AccessService.class);
 		for(AccessService service : services) {
 			service.setAccess(access);
 			service.setEngine(this);

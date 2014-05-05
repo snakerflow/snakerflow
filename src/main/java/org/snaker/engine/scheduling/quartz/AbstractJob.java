@@ -44,7 +44,7 @@ public abstract class AbstractJob implements Job {
 	/**
 	 * 流程引擎
 	 */
-	protected SnakerEngine engine = ServiceContext.getContext().getEngine();
+	protected SnakerEngine engine = ServiceContext.getEngine();
 	
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext context)

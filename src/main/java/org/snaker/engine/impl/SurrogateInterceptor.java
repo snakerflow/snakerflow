@@ -35,6 +35,7 @@ public class SurrogateInterceptor implements SnakerInterceptor {
 		SnakerEngine engine = execution.getEngine();
 		for(Task task : execution.getTasks()) {
 			for(String actor : task.getActorIds()) {
+				if(StringHelper.isEmpty(actor)) continue;
 				String agent = engine.manager().getSurrogate(actor, execution.getProcess().getName());
 				if(StringHelper.isNotEmpty(agent) && !actor.equals(agent)) {
 					engine.task().addTaskActor(task.getId(), agent);

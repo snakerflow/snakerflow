@@ -180,7 +180,7 @@ public class HistoryOrder implements Serializable {
 	}
 	
 	public String getProcessName() {
-		SnakerEngine engine = ServiceContext.getContext().getEngine();
+		SnakerEngine engine = ServiceContext.getEngine();
 		Process process = engine.process().getProcessById(this.processId);
 		if(process == null) return this.processId;
 		return process.getDisplayName();

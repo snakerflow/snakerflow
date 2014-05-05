@@ -15,7 +15,6 @@
 package org.snaker.engine.spring;
 
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.cfg.Configuration;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,8 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 public class SpringHelper implements ApplicationContextAware {
 	protected ApplicationContext applicationContext;
 	public SnakerEngine createProcessEngine() {
-		return new Configuration()
-		.initSpringContext(applicationContext)
+		return new SpringConfiguration(applicationContext)
 		.buildSnakerEngine();
 	}
 

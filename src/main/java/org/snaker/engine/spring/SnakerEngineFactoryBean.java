@@ -15,7 +15,6 @@
 package org.snaker.engine.spring;
 
 import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.cfg.Configuration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
@@ -30,8 +29,7 @@ public class SnakerEngineFactoryBean implements FactoryBean<SnakerEngine>, Appli
 	protected ApplicationContext applicationContext;
 	
 	public SnakerEngine getObject() throws Exception {
-		return new Configuration()
-		.initSpringContext(applicationContext)
+		return new SpringConfiguration(applicationContext)
 		.buildSnakerEngine();
 	}
 

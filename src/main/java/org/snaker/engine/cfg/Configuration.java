@@ -32,6 +32,7 @@ import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.helper.XmlHelper;
+import org.snaker.engine.impl.SimpleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,12 +50,8 @@ public class Configuration {
 	 */
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 	private final static String DEFAULT_CONFIG_FILE = "default.config.xml";
-	private final static String SPRING_CONFIG_FILE = "spring.config.xml";
+	private static final String SPRING_CONFIG_FILE = "spring.config.xml";
 	private final static String USER_CONFIG_FILE = "snaker.xml";
-	/**
-	 * 服务上下文
-	 */
-	private ServiceContext context;
 	/**
 	 * spring的application对象
 	 * 注意：这里使用Object定义，主要是考虑非spring环境的依赖库问题
@@ -89,13 +86,14 @@ public class Configuration {
 		/**
 		 * 初始化服务上下文
 		 */
-		context = ServiceContext.getContext();
+		if(ServiceContext.getContext() == null) {
+			ServiceContext.setContext(new SimpleContext());
+		}
 		parser();
-		context.put(Configuration.class.getName(), this);
 		/**
 		 * 由服务上下文返回流程引擎
 		 */
-		SnakerEngine configEngine = context.getEngine();
+		SnakerEngine configEngine = getEngine();
 		if(configEngine == null) {
 			throw new SnakerException("配置无法发现SnakerEngine的实现类");
 		}
@@ -105,6 +103,10 @@ public class Configuration {
 		return configEngine.configure(this);
 	}
 	
+	protected SnakerEngine getEngine() {
+		return ServiceContext.getEngine();
+	}
+	
 	/**
 	 * 依次解析框架固定的配置及用户自定义的配置
 	 * 固定配置文件:default.config.xml或spring.config.xml
@@ -112,7 +114,7 @@ public class Configuration {
 	 */
 	private void parser() {
 		if(log.isDebugEnabled()) {
-			log.debug("ServiceContext loading......");
+			log.debug("Service parsing start......");
 		}
 
 		//默认使用snaker.xml配置自定义的bean
@@ -121,20 +123,19 @@ public class Configuration {
 			config = USER_CONFIG_FILE;
 		}
 		parser(config);
-		
-		if(getApplicationContext() == null) {
-			parser(DEFAULT_CONFIG_FILE);
+		if (getApplicationContext() == null) {
+		    parser(DEFAULT_CONFIG_FILE);
+			if(interceptor != null) {
+				for(Entry<String, Class<?>> entry : txClass.entrySet()) {
+					ServiceContext.put(entry.getKey(), interceptor.getProxy(entry.getValue()));
+				}
+			}
 		} else {
 			parser(SPRING_CONFIG_FILE);
 		}
 		
-		if(interceptor != null) {
-			for(Entry<String, Class<?>> entry : txClass.entrySet()) {
-				context.put(entry.getKey(), interceptor.getProxy(entry.getValue()));
-			}
-		}
 		if(log.isDebugEnabled()) {
-			log.debug("ServiceContext load finish......");
+			log.debug("Service parsing finish......");
 		}
 	}
 	
@@ -163,20 +164,20 @@ public class Configuration {
 						if(StringHelper.isEmpty(name)) {
 							name = className;
 						}
-						if(context.exist(name)) {
+						if(ServiceContext.exist(name)) {
 							log.warn("Duplicate name is:" + name);
 							continue;
 						}
 						Class<?> clazz = ClassHelper.loadClass(className);
 						if(TransactionInterceptor.class.isAssignableFrom(clazz)) {
 							interceptor = (TransactionInterceptor)ClassHelper.instantiate(clazz);
-							context.put(name, interceptor);
+							ServiceContext.put(name, interceptor);
 							continue;
 						}
 						if(proxy != null && proxy.equalsIgnoreCase("transaction")) {
 							txClass.put(name, clazz);
 						} else {
-							context.put(name, ClassHelper.instantiate(clazz));
+							ServiceContext.put(name, clazz);
 						}
 					}
 				}
@@ -205,14 +206,6 @@ public class Configuration {
 	public Configuration initAccessDBObject(Object dbObject) {
 		this.accessDBObject = dbObject;
 		return this;
-	}
-	
-	/**
-	 * 返回服务上下文
-	 * @return
-	 */
-	public ServiceContext getContext() {
-		return context;
 	}
 
 	/**
