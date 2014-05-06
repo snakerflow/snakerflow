@@ -389,6 +389,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * @return
 	 */
 	private String[] getTaskActors(String assignee, Map<String, Object> args, AssignmentHandler handler, Execution execution) {
+		if(StringHelper.isEmpty(assignee)) return null;
 		Object assigneeObject = null;
 		if(StringHelper.isNotEmpty(assignee)) {
 			assigneeObject = args.get(assignee);
