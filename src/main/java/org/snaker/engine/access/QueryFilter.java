@@ -68,6 +68,10 @@ public class QueryFilter implements Serializable {
 	 */
 	private Integer state;
 	/**
+	 * 流程类型
+	 */
+	private String processType;
+	/**
 	 * exclude ids
 	 */
 	private String[] excludedIds;
@@ -230,6 +234,14 @@ public class QueryFilter implements Serializable {
 	public QueryFilter setOperateTime(String operateTime) {
 		AssertHelper.notEmpty(operateTime);
 		this.operateTime = operateTime;
+		return this;
+	}
+	public String getProcessType() {
+		return processType;
+	}
+	public QueryFilter setProcessType(String processType) {
+		AssertHelper.notEmpty(processType);
+		this.processType = processType;
 		return this;
 	}
 }

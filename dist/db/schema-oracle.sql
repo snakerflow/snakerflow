@@ -3,7 +3,7 @@ create table wf_process (
     id               varchar2(100) primary key not null,
     name             varchar2(100),
     display_Name     varchar2(200),
-    type             number(1),
+    type             varchar2(100),
     instance_Url     varchar2(200),
     state            number(1),
     content          blob,

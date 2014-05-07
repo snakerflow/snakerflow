@@ -79,6 +79,13 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	}
 	
 	/**
+	 * 更新process的类别
+	 */
+	public void updateType(String id, String type) {
+		access().updateProcessType(id, type);
+	}
+	
+	/**
 	 * 根据id获取process对象
 	 * 先通过cache获取，如果返回空，就从数据库读取并put
 	 */

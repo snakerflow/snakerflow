@@ -56,18 +56,4 @@ public abstract class AccessService {
 	public void setAccess(DBAccess access) {
 		this.access = access; 
 	}
-	/**
-	 * 获取SnakerEngine，供子类使用
-	 * @return
-	 */
-	public SnakerEngine getEngine() {
-		return engine;
-	}
-	/**
-	 * setter
-	 * @param engine
-	 */
-	public void setEngine(SnakerEngine engine) {
-		this.engine = engine;
-	}
 }

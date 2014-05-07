@@ -52,7 +52,7 @@ public class Process implements Serializable {
     /**
      * 流程定义类型（预留字段）
      */
-	private Integer type;
+	private String type;
 	/**
 	 * 当前流程的实例url（一般为流程第一步的url）
 	 * 该字段可以直接打开流程申请的表单
@@ -95,10 +95,10 @@ public class Process implements Serializable {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	public Integer getType() {
+	public String getType() {
 		return type;
 	}
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 	public Integer getState() {

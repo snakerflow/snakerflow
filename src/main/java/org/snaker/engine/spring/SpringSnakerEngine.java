@@ -14,39 +14,26 @@
  */
 package org.snaker.engine.spring;
 
-import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.SnakerEngineImpl;
-import org.snaker.engine.helper.ConfigHelper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * spring环境使用的SnakerEngine实现类，主要接收spring的applicationContext对象
  * @author yuqs
  * @version 1.0
  */
-public class SpringSnakerEngine extends SnakerEngineImpl {
+public class SpringSnakerEngine extends SnakerEngineImpl implements InitializingBean, ApplicationContextAware {
 	private ApplicationContext applicationContext;
-	/**
-	 * 根据applicatinContext上下文，查找processService、orderService、taskService服务
-	 */
-	public SnakerEngine configure(SpringConfiguration config) {
-		/**
-		 * 通过Configuration获取applicationContext对象（通过SpringHelper添加到Configuration中）
-		 */
-		applicationContext = config.getApplicationContext();
-		if(applicationContext == null) {
-			//如果不存在applicationContext，通过配置的spring属性初始化applicationContext
-			String configFile = ConfigHelper.getProperty("spring");
-			if(configFile == null || configFile.equals("")) {
-				configFile = "applicationContext.xml";
-			}
-			applicationContext = new ClassPathXmlApplicationContext(configFile);
-		}
-		/**
-		 * 调用父类configure方法
-		 */
-		super.configure(config);
-		return this;
+
+	public void afterPropertiesSet() throws Exception {
+		new SpringConfiguration(applicationContext).parser();
+	}
+
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }

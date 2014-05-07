@@ -32,6 +32,7 @@ import org.snaker.engine.helper.StringHelper;
 public class ManagerService extends AccessService implements IManagerService {
 	public void saveOrUpdate(Surrogate surrogate) {
 		AssertHelper.notNull(surrogate);
+		surrogate.setState(STATE_ACTIVE);
 		if(StringHelper.isEmpty(surrogate.getId())) {
 			surrogate.setId(StringHelper.getPrimaryKey());
 			access().saveSurrogate(surrogate);

@@ -41,6 +41,14 @@ public interface IProcessService {
 	void saveProcess(Process process);
 	
 	/**
+	 * 更新流程定义的类别
+	 * @param id 流程定义id
+	 * @param type 类别
+	 * @since 1.5
+	 */
+	void updateType(String id, String type);
+	
+	/**
 	 * 根据主键ID获取流程定义对象
 	 * @param id 流程定义id
 	 * @return Process 流程定义对象

@@ -34,6 +34,8 @@ public class TestSimple extends TestSnakerBase {
 	@Before
 	public void before() {
 		processId = engine.process().deploy(StreamHelper.getStreamFromClasspath("test/task/simple/process.snaker"));
+		engine.process().updateType(processId, "预算管理流程");
+		System.out.println(engine.process().getProcesss(new QueryFilter().setProcessType("预算管理流程")));
 	}
 	
 	@Test

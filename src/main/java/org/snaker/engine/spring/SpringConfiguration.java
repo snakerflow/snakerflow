@@ -14,10 +14,8 @@
  */
 package org.snaker.engine.spring;
 
-import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.cfg.Configuration;
-import org.snaker.engine.core.ServiceContext;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -32,21 +30,16 @@ public class SpringConfiguration extends Configuration {
 	private ApplicationContext applicationContext;
 	
 	public SpringConfiguration(ApplicationContext ctx) {
-		super.initSpringContext(ctx);
+		super(new SpringContext(ctx));
 		this.applicationContext = ctx;
 	}
 	
-	/**
-	 * 重新实现 {@link Configuration}的构建引擎方法
-	 * 设置SpringContext，并主动创建 {@link SpringSnakerEngine}对象
-	 */
-	public SnakerEngine buildSnakerEngine() throws SnakerException {
-		ServiceContext.setContext(new SpringContext(this.applicationContext));
-		return super.buildSnakerEngine();
+	public void parser() throws SnakerException {
+		super.parser();
 	}
-
-	protected SnakerEngine getEngine() {
-		return new SpringSnakerEngine();
+	
+	public boolean isCMB() {
+		return true;
 	}
 	
 	public ApplicationContext getApplicationContext() {

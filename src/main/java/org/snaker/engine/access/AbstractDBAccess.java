@@ -53,6 +53,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String PROCESS_INSERT = "insert into wf_process (id,name,display_Name,type,instance_Url,state,version,create_Time,creator) values (?,?,?,?,?,?,?,?,?)";
 	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,create_Time=?,creator=? where id=? ";
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
+	protected static final String PROCESS_UPDATE_TYPE = "update wf_process set type=? where id=?";
 	
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
 	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, version = version + 1 where id=? and version = ?";
@@ -168,6 +169,18 @@ public abstract class AbstractDBAccess implements DBAccess {
 					process.getInstanceUrl(), process.getCreateTime(), process.getCreator(), process.getId()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
+		}
+	}
+	
+	public void updateProcessType(String id, String type) {
+		if(isORM()) {
+			Process process = getProcess(id);
+			process.setType(type);
+			saveOrUpdate(buildMap(process, UPDATE));
+		} else {
+			Object[] args = new Object[]{type, id};
+			int[] types = new int[]{Types.VARCHAR, Types.VARCHAR};
+			saveOrUpdate(buildMap(PROCESS_UPDATE_TYPE, args, types));
 		}
 	}
 
@@ -439,6 +452,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(StringHelper.isNotEmpty(filter.getDisplayName())) {
 			sql.append(" and display_Name like ? ");
 			paramList.add("%" + filter.getDisplayName() + "%");
+		}
+		if(StringHelper.isNotEmpty(filter.getProcessType())) {
+			sql.append(" and type = ? ");
+			paramList.add(filter.getProcessType());
 		}
 		if(page == null) {
 			return queryList(Process.class, sql.toString(), paramList.toArray());

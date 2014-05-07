@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snaker.engine.Context;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.transaction.TransactionInterceptor;
@@ -49,14 +50,9 @@ public class Configuration {
 	 * 
 	 */
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
-	private final static String DEFAULT_CONFIG_FILE = "default.config.xml";
-	private static final String SPRING_CONFIG_FILE = "spring.config.xml";
+	private static final String BASE_CONFIG_FILE = "base.config.xml";
+	private final static String EXT_CONFIG_FILE = "ext.config.xml";
 	private final static String USER_CONFIG_FILE = "snaker.xml";
-	/**
-	 * spring的application对象
-	 * 注意：这里使用Object定义，主要是考虑非spring环境的依赖库问题
-	 */
-	private Object applicationContext;
 	/**
 	 * 访问数据库的对象，根据使用的orm框架进行设置。如果未提供此项设置，则按照默认orm加载方式初始化
 	 * jdbc:DataSource
@@ -72,28 +68,37 @@ public class Configuration {
 	 * 需要事务管理的class类型
 	 */
 	private Map<String, Class<?>> txClass = new HashMap<String, Class<?>>();
+	
+	/**
+	 * 无参构造方法，创建简单的Context实现类，并调用{@link Configuration#Configuration(Context)}
+	 */
+	public Configuration() {
+		this(new SimpleContext());
+	}
+	
+	/**
+	 * 根据服务查找实现类构造配置对象
+	 * @param context
+	 */
+	public Configuration(Context context) {
+		ServiceContext.setContext(context);
+	}
 
 	/**
-	 * 构造SnakerEngine对象，适合spring环境使用
+	 * 构造SnakerEngine对象，用于api集成
 	 * 通过SpringHelper调用
-	 * @return
+	 * @return SnakerEngine
 	 * @throws SnakerException
 	 */
 	public SnakerEngine buildSnakerEngine() throws SnakerException {
 		if(log.isInfoEnabled()) {
 			log.info("SnakerEngine start......");
 		}
-		/**
-		 * 初始化服务上下文
-		 */
-		if(ServiceContext.getContext() == null) {
-			ServiceContext.setContext(new SimpleContext());
-		}
 		parser();
 		/**
 		 * 由服务上下文返回流程引擎
 		 */
-		SnakerEngine configEngine = getEngine();
+		SnakerEngine configEngine = ServiceContext.getEngine();
 		if(configEngine == null) {
 			throw new SnakerException("配置无法发现SnakerEngine的实现类");
 		}
@@ -103,35 +108,31 @@ public class Configuration {
 		return configEngine.configure(this);
 	}
 	
-	protected SnakerEngine getEngine() {
-		return ServiceContext.getEngine();
-	}
-	
 	/**
 	 * 依次解析框架固定的配置及用户自定义的配置
-	 * 固定配置文件:default.config.xml或spring.config.xml
+	 * 固定配置文件:base.config.xml
+	 * 扩展配置文件:ext.config.xml
 	 * 用户自定义配置文件:snaker.xml
 	 */
-	private void parser() {
+	protected void parser() {
 		if(log.isDebugEnabled()) {
 			log.debug("Service parsing start......");
 		}
 
 		//默认使用snaker.xml配置自定义的bean
 		String config = ConfigHelper.getProperty("config");
-		if (config == null || config.equals("")) {
+		if (StringHelper.isEmpty(config)) {
 			config = USER_CONFIG_FILE;
 		}
 		parser(config);
-		if (getApplicationContext() == null) {
-		    parser(DEFAULT_CONFIG_FILE);
+		parser(BASE_CONFIG_FILE);
+		if (!isCMB()) {
+		    parser(EXT_CONFIG_FILE);
 			if(interceptor != null) {
 				for(Entry<String, Class<?>> entry : txClass.entrySet()) {
 					ServiceContext.put(entry.getKey(), interceptor.getProxy(entry.getValue()));
 				}
 			}
-		} else {
-			parser(SPRING_CONFIG_FILE);
 		}
 		
 		if(log.isDebugEnabled()) {
@@ -184,18 +185,8 @@ public class Configuration {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new SnakerException("资源解析失败，请检查配置文件[" + resource + "]");
+			throw new SnakerException("资源解析失败，请检查配置文件[" + resource + "]", e.getCause());
 		}
-	}
-	
-	/**
-	 * spring环境下，将applicationContext放到配置对象中
-	 * @param applicationContext
-	 * @return
-	 */
-	public Configuration initSpringContext(Object applicationContext) {
-		this.applicationContext = applicationContext;
-		return this;
 	}
 	
 	/**
@@ -207,14 +198,6 @@ public class Configuration {
 		this.accessDBObject = dbObject;
 		return this;
 	}
-
-	/**
-	 * 返回spring的applicationContext
-	 * @return
-	 */
-	public Object getApplicationContext() {
-		return applicationContext;
-	}
 	
 	/**
 	 * 返回DBAccess的数据库访问对象
@@ -222,5 +205,13 @@ public class Configuration {
 	 */
 	public Object getAccessDBObject() {
 		return accessDBObject;
+	}
+
+	/**
+	 * 返回是否容器托管的bean
+	 * @return
+	 */
+	public boolean isCMB() {
+		return false;
 	}
 }

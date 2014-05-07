@@ -3,7 +3,7 @@ create table wf_process (
     id               nvarchar(100) primary key not null,
     name             nvarchar(100),
     display_Name     nvarchar(200),
-    type             tinyint,
+    type             nvarchar(100),
     instance_Url     nvarchar(200),
     state            tinyint,
     content          varbinary(max),

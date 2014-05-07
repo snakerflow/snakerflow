@@ -12,7 +12,7 @@ CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL,
     name              VARCHAR(100),
     display_Name      VARCHAR(200),
-    type              smallint,
+    type              VARCHAR(100),
     instance_Url      VARCHAR(200),
     state             smallint,
     content           text,

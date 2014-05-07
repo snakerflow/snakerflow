@@ -83,6 +83,13 @@ public interface DBAccess {
 	public void updateProcess(Process process);
 	
 	/**
+	 * 更新流程定义类别
+	 * @param type 类别
+	 * @since 1.5
+	 */
+	public void updateProcessType(String id, String type);
+	
+	/**
 	 * 删除任务、任务参与者对象
 	 * @param task 任务对象
 	 */

@@ -3,7 +3,7 @@ CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL comment '主键ID',
     name              VARCHAR(100) comment '流程名称',
     display_Name      VARCHAR(200) comment '流程显示名称',
-    type              TINYINT(1) comment '流程类型',
+    type              VARCHAR(100) comment '流程类型',
     instance_Url      VARCHAR(200) comment '实例url',
     state             TINYINT(1) comment '流程是否可用',
     content           LONGBLOB comment '流程模型定义',

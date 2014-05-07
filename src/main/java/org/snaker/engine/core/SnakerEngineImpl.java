@@ -86,13 +86,13 @@ public class SnakerEngineImpl implements SnakerEngine {
 		orderService = ServiceContext.find(IOrderService.class);
 		taskService = ServiceContext.find(ITaskService.class);
 		managerService = ServiceContext.find(IManagerService.class);
+		
 		/*
 		 * 无spring环境，DBAccess的实现类通过服务上下文获取
 		 */
-		if(this.configuration.getApplicationContext() == null) {
+		if(!this.configuration.isCMB()) {
 			DBAccess access = ServiceContext.find(DBAccess.class);
 			AssertHelper.notNull(access);
-			
 			TransactionInterceptor interceptor = ServiceContext.find(TransactionInterceptor.class);
 			//如果初始化配置时提供了访问对象，就对DBAccess进行初始化
 			Object accessObject = this.configuration.getAccessDBObject();
@@ -124,7 +124,6 @@ public class SnakerEngineImpl implements SnakerEngine {
 		List<AccessService> services = ServiceContext.findList(AccessService.class);
 		for(AccessService service : services) {
 			service.setAccess(access);
-			service.setEngine(this);
 		}
 	}
 
@@ -383,5 +382,25 @@ public class SnakerEngineImpl implements SnakerEngine {
 		execution.setOperator(operator);
 		execution.setTask(task);
 		return execution;
+	}
+
+	public void setProcessService(IProcessService processService) {
+		this.processService = processService;
+	}
+
+	public void setOrderService(IOrderService orderService) {
+		this.orderService = orderService;
+	}
+
+	public void setTaskService(ITaskService taskService) {
+		this.taskService = taskService;
+	}
+
+	public void setQueryService(IQueryService queryService) {
+		this.queryService = queryService;
+	}
+
+	public void setManagerService(IManagerService managerService) {
+		this.managerService = managerService;
 	}
 }
