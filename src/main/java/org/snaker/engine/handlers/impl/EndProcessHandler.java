@@ -17,6 +17,7 @@ package org.snaker.engine.handlers.impl;
 import java.util.List;
 
 import org.snaker.engine.SnakerEngine;
+import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Order;
@@ -41,6 +42,7 @@ public class EndProcessHandler implements IHandler {
 		Order order = execution.getOrder();
 		List<Task> tasks = engine.query().getActiveTasks(new QueryFilter().setOrderId(order.getId()));
 		for(Task task : tasks) {
+			if(task.isMajor()) throw new SnakerException("存在未完成的主办任务,请确认.");
 			engine.task().complete(task.getId(), SnakerEngine.AUTO);
 		}
 		/**

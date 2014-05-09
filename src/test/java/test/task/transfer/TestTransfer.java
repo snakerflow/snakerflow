@@ -12,11 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.custom;
+package test.task.transfer;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,24 +25,23 @@ import org.snaker.engine.helper.StreamHelper;
 import org.snaker.engine.test.TestSnakerBase;
 
 /**
- * @author yuqs
- * @version 1.0
- */
-public class TestCustomClass extends TestSnakerBase {
+* @author yuqs
+* @version 1.0
+*/
+public class TestTransfer extends TestSnakerBase {
 	@Before
 	public void before() {
-		processId = engine.process().deploy(StreamHelper.getStreamFromClasspath("test/custom/snaker2.snaker"));
+		processId = engine.process().deploy(StreamHelper.getStreamFromClasspath("test/task/transfer/process.snaker"));
 	}
 	
 	@Test
 	public void test() {
-		Map<String, Object> args = new HashMap<String, Object>();
-		args.put("msg", "custom test");
-		Order order = engine.startInstanceById(processId, null, args);
+		Order order = engine.startInstanceByName("transfer", 0);
 		System.out.println("order=" + order);
 		List<Task> tasks = queryService.getActiveTasks(new QueryFilter().setOrderId(order.getId()));
 		for(Task task : tasks) {
-			engine.executeTask(task.getId(), null, args);
+			engine.task().createNewTask(task.getId(), 0, "test");
+			engine.task().complete(task.getId());
 		}
 	}
 }
