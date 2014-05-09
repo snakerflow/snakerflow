@@ -23,7 +23,7 @@ import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.handlers.IHandler;
-import org.snaker.engine.model.WorkModel;
+import org.snaker.engine.model.TaskModel;
 
 /**
  * 任务创建操作的处理器
@@ -35,13 +35,13 @@ public class CreateTaskHandler implements IHandler {
 	/**
 	 * 任务模型
 	 */
-	private WorkModel model;
+	private TaskModel model;
 	
 	/**
 	 * 调用者需要提供任务模型
 	 * @param model
 	 */
-	public CreateTaskHandler(WorkModel model) {
+	public CreateTaskHandler(TaskModel model) {
 		this.model = model;
 	}
 	

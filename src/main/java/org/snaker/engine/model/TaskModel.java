@@ -36,16 +36,30 @@ public class TaskModel extends WorkModel {
 	/**
 	 * 类型：普通任务
 	 */
-	public static final String TYPE_ANY = "ANY";
+	public static final String PERFORMTYPE_ANY = "ANY";
 	/**
 	 * 类型：参与者fork任务
 	 */
-	public static final String TYPE_ALL = "ALL";
+	public static final String PERFORMTYPE_ALL = "ALL";
+	/**
+	 * 类型：主办任务
+	 */
+	public static final String TASKTYPE_MAJOR = "Major";
+	/**
+	 * 类型：协办任务
+	 */
+	public static final String TASKTYPE_AIDANT = "Aidant";
 	/**
 	 * 参与类型
 	 */
 	public enum PerformType {
 		ANY, ALL;
+	}
+	/**
+	 * 任务类型(Major:主办的,Aidant:协助的)
+	 */
+	public enum TaskType {
+		Major, Aidant;
 	}
 	/**
 	 * 参与者变量名称
@@ -56,7 +70,13 @@ public class TaskModel extends WorkModel {
 	 * any：任何一个参与者处理完即执行下一步
 	 * all：所有参与者都完成，才可执行下一步
 	 */
-	private String performType;
+	private String performType = PERFORMTYPE_ANY;
+	/**
+	 * 任务类型
+	 * major：主办任务
+	 * aidant：协办任务
+	 */
+	private String taskType = TASKTYPE_MAJOR;
 	/**
 	 * 期望完成时间
 	 */
@@ -83,7 +103,7 @@ public class TaskModel extends WorkModel {
 	private AssignmentHandler assignmentHandler;
 
 	protected void exec(Execution execution) {
-		if(performType == null || performType.equalsIgnoreCase(TYPE_ANY)) {
+		if(performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
 			/**
 			 * any方式，直接执行输出变迁
 			 */
@@ -99,9 +119,18 @@ public class TaskModel extends WorkModel {
 		}
 	}
 	
+	public boolean isPerformAny() {
+		return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
+	}
+	
+	public boolean isMajor() {
+		return TASKTYPE_MAJOR.equalsIgnoreCase(this.taskType);
+	}
+	
 	public String getAssignee() {
 		return assignee;
 	}
+	
 	public void setAssignee(String assignee) {
 		this.assignee = assignee;
 	}
@@ -112,6 +141,14 @@ public class TaskModel extends WorkModel {
 
 	public void setExpireTime(String expireTime) {
 		this.expireTime = expireTime;
+	}
+
+	public String getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(String taskType) {
+		this.taskType = (StringHelper.isEmpty(taskType) ? TASKTYPE_MAJOR : taskType);
 	}
 
 	public String getPerformType() {

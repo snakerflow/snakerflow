@@ -119,7 +119,7 @@ public abstract class NodeModel extends BaseModel implements Action {
 	 * @return
 	 */
 	public boolean canRejected(NodeModel parent) {
-		if(parent instanceof TaskModel && ((TaskModel)parent).getPerformType().equals(TaskModel.TYPE_ALL)) {
+		if(parent instanceof TaskModel && !((TaskModel)parent).isPerformAny()) {
 			return false;
 		}
 		for(TransitionModel tm : parent.getOutputs()) {

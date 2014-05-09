@@ -17,6 +17,7 @@ package org.snaker.engine.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.snaker.engine.model.TaskModel.TaskType;
 import org.snaker.engine.model.WorkModel;
 
 /**
@@ -54,7 +55,7 @@ public class Task implements Serializable, Cloneable {
 	 */
 	private Integer performType;
 	/**
-	 * 任务类型
+	 * 任务类型（0：主办任务；1：协办任务）
 	 */
     private Integer taskType;
     /**
@@ -108,6 +109,10 @@ public class Task implements Serializable, Cloneable {
     
     public Task(String id) {
     	this.id = id;
+    }
+    
+    public boolean isMajor() {
+    	return this.taskType.intValue() == TaskType.Major.ordinal();
     }
     
 	public String getParentTaskId() {
@@ -221,11 +226,6 @@ public class Task implements Serializable, Cloneable {
 	public void setPerformType(Integer performType) {
 		this.performType = performType;
 	}
-	
-	
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 
 	public Integer getVersion() {
 		return version;
@@ -234,19 +234,7 @@ public class Task implements Serializable, Cloneable {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
-
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Task(id=").append(this.id);
-		sb.append(",orderId=").append(this.orderId);
-		sb.append(",taskName=").append(this.taskName);
-		sb.append(",displayName").append(this.displayName);
-		sb.append(",taskType=").append(this.taskType);
-		sb.append(",createTime=").append(this.createTime);
-		sb.append(",performType=").append(this.performType).append(")");
-		return sb.toString();
-	}
-
+	
 	public Date getExpireDate() {
 		return expireDate;
 	}
@@ -269,5 +257,21 @@ public class Task implements Serializable, Cloneable {
 
 	public void setModel(WorkModel model) {
 		this.model = model;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Task(id=").append(this.id);
+		sb.append(",orderId=").append(this.orderId);
+		sb.append(",taskName=").append(this.taskName);
+		sb.append(",displayName").append(this.displayName);
+		sb.append(",taskType=").append(this.taskType);
+		sb.append(",createTime=").append(this.createTime);
+		sb.append(",performType=").append(this.performType).append(")");
+		return sb.toString();
 	}
 }

@@ -14,6 +14,7 @@
  */
 package org.snaker.engine.core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,8 @@ import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.StartModel;
+import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TransitionModel;
-import org.snaker.engine.model.WorkModel;
 
 /**
  * 基本的流程引擎实现类
@@ -302,6 +303,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	public List<Task> executeTask(String taskId, String operator, Map<String, Object> args) {
 		//完成任务，并且构造执行对象
 		Execution execution = execute(taskId, operator, args);
+		if(execution == null) return Collections.emptyList();
 		ProcessModel model = execution.getProcess().getModel();
 		if(model != null) {
 			NodeModel nodeModel = model.getNode(execution.getTask().getTaskName());
@@ -318,6 +320,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	 */
 	public List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName) {
 		Execution execution = execute(taskId, operator, args);
+		if(execution == null) return Collections.emptyList();
 		ProcessModel model = execution.getProcess().getModel();
 		AssertHelper.notNull(model, "当前任务未找到流程定义模型");
 		if(StringHelper.isEmpty(nodeName)) {
@@ -339,7 +342,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 	/**
 	 * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
 	 */
-	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, WorkModel model) {
+	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, TaskModel model) {
 		Order order = query().getOrder(orderId);
 		AssertHelper.notNull(order, "指定的流程实例[id=" + orderId + "]已完成或不存在");
 		order.setLastUpdator(operator);
@@ -368,6 +371,10 @@ public class SnakerEngineImpl implements SnakerEngine {
 		order.setLastUpdator(operator);
 		order.setLastUpdateTime(DateHelper.getTime());
 		order().updateOrder(order);
+		//协办任务完成不产生执行对象
+		if(!task.isMajor()) {
+			return null;
+		}
 		Map<String, Object> orderMaps = order.getVariableMap();
 		if(orderMaps != null) {
 			for(Map.Entry<String, Object> entry : orderMaps.entrySet()) {

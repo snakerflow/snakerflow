@@ -37,7 +37,8 @@ public class TaskParser extends AbstractNodeParser {
 		task.setJobCallback(element.getAttribute(ATTR_CALLBACK));
 		task.setReminderTime(element.getAttribute(ATTR_REMINDERTIME));
 		task.setReminderRepeat(element.getAttribute(ATTR_REMINDERREPEAT));
-		task.setPerformType(element.getAttribute(ATTR_TYPE));
+		task.setPerformType(element.getAttribute(ATTR_PERFORMTYPE));
+		task.setTaskType(element.getAttribute(ATTR_TASKTYPE));
 		task.setAssignmentHandler(element.getAttribute(ATTR_ASSIGNEE_HANDLER));
 	}
 

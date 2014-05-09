@@ -20,7 +20,7 @@ import java.util.Map;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.model.ProcessModel;
-import org.snaker.engine.model.WorkModel;
+import org.snaker.engine.model.TaskModel;
 
 /**
  * 任务业务类，包括以下服务：
@@ -114,15 +114,27 @@ public interface ITaskService {
 	
 	/**
 	 * 根据任务模型、执行对象创建新的任务
-	 * @param workModel 工作模型
+	 * @param taskModel 任务模型
 	 * @param execution 执行对象
 	 * @return List<Task> 创建任务集合
 	 */
-	List<Task> createTask(WorkModel workModel, Execution execution);
+	List<Task> createTask(TaskModel taskModel, Execution execution);
+	
+	/**
+	 * 根据已有任务id、任务类型、参与者创建新的任务
+	 * @param taskId 主办任务id
+	 * @param taskType 任务类型
+	 * @param actors 参与者集合
+	 * @return List<Task> 创建任务集合
+	 */
+	List<Task> createNewTask(String taskId, int taskType, String... actors);
 	
 	/**
 	 * 保存任务对象
 	 * @param task 任务对象
+	 * @param performType 参与类型
+	 * @param actors 参与者
+	 * @return Task 任务对象
 	 */
-	void saveTask(Task task);
+	Task saveTask(Task task, int performType, String... actors);
 }

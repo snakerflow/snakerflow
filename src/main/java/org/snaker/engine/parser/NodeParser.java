@@ -40,7 +40,8 @@ public interface NodeParser {
 	public static final String ATTR_FORM = "form";
 	public static final String ATTR_ASSIGNEE = "assignee";
 	public static final String ATTR_ASSIGNEE_HANDLER = "assignmentHandler";
-	public static final String ATTR_TYPE = "performType";
+	public static final String ATTR_PERFORMTYPE = "performType";
+	public static final String ATTR_TASKTYPE = "taskType";
 	public static final String ATTR_TO = "to";
 	public static final String ATTR_PROCESSNAME = "processName";
 	public static final String ATTR_VERSION = "version";

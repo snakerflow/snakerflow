@@ -21,7 +21,7 @@ import org.snaker.engine.cfg.Configuration;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
-import org.snaker.engine.model.WorkModel;
+import org.snaker.engine.model.TaskModel;
 
 /**
  * 流程引擎接口
@@ -181,5 +181,5 @@ public interface SnakerEngine {
 	 * @param model 节点模型
 	 * @return List<Task> 任务集合
 	 */
-	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, WorkModel model);
+	public List<Task> createFreeTask(String orderId, String operator, Map<String, Object> args, TaskModel model);
 }
