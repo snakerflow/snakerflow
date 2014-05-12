@@ -55,7 +55,7 @@ public class ExecutorJob extends AbstractJob {
 			tasks = engine.executeTask(taskId, SnakerEngine.AUTO, data);
 			schedule().delete(IScheduler.TYPE_REMINDER + taskId);
 		}
-		callback(tm.getJobCallback(), taskId, tasks);
+		callback(tm.getCallbackObject(), taskId, tasks);
 	}
 	
 	/**

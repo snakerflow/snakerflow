@@ -120,7 +120,6 @@ public class CustomModel extends WorkModel {
 	public String getVar() {
 		return var;
 	}
-
 	public void setVar(String var) {
 		this.var = var;
 	}

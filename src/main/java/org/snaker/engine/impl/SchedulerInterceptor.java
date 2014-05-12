@@ -17,6 +17,7 @@ package org.snaker.engine.impl;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerInterceptor;
@@ -72,8 +73,8 @@ public class SchedulerInterceptor implements SnakerInterceptor {
 		    entity.setJobType(jobType);
 		    if(jobType == JobType.REMINDER.ordinal()) {
 		    	TaskModel model = (TaskModel)task.getModel();
-		    	if(model != null && model.getReminderRepeat() > 0) {
-		    		entity.setPeriod(model.getReminderRepeat());
+		    	if(model != null && NumberUtils.isNumber(model.getReminderRepeat())) {
+		    		entity.setPeriod(Integer.parseInt(model.getReminderRepeat()));
 		    	}
 		    }
 		    schedule(entity);

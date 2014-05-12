@@ -14,7 +14,6 @@
  */
 package org.snaker.engine.model;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.snaker.engine.AssignmentHandler;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.handlers.impl.MergeActorHandler;
@@ -88,19 +87,27 @@ public class TaskModel extends WorkModel {
 	/**
 	 * 提醒间隔(分钟)
 	 */
-	private int reminderRepeat = 0;
+	private String reminderRepeat;
 	/**
 	 * 是否自动执行
 	 */
 	private String autoExecute;
 	/**
-	 * 任务执行后回调方法
+	 * 任务执行后回调类
 	 */
-	private JobCallback callback;
+	private String callback;
 	/**
-	 * 分配参与者处理类
+	 * 分配参与者处理类型
 	 */
-	private AssignmentHandler assignmentHandler;
+	private String assignmentHandler;
+	/**
+	 * 任务执行后回调对象
+	 */
+	private JobCallback callbackObject;
+	/**
+	 * 分配参与者处理对象
+	 */
+	private AssignmentHandler assignmentHandlerObject;
 
 	protected void exec(Execution execution) {
 		if(performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
@@ -167,14 +174,12 @@ public class TaskModel extends WorkModel {
 		this.reminderTime = reminderTime;
 	}
 
-	public int getReminderRepeat() {
+	public String getReminderRepeat() {
 		return reminderRepeat;
 	}
 
 	public void setReminderRepeat(String reminderRepeat) {
-		if(NumberUtils.isNumber(reminderRepeat)) {
-			this.reminderRepeat = Integer.parseInt(reminderRepeat);
-		}
+		this.reminderRepeat = reminderRepeat;
 	}
 
 	public String getAutoExecute() {
@@ -185,25 +190,35 @@ public class TaskModel extends WorkModel {
 		this.autoExecute = autoExecute;
 	}
 
-	public JobCallback getJobCallback() {
-		return callback;
-	}
-
-	public void setJobCallback(String callbackStr) {
-		if(StringHelper.isNotEmpty(callbackStr)) {
-			callback = (JobCallback)ClassHelper.newInstance(callbackStr);
-			AssertHelper.notNull(callback, "回调处理类实例化失败");
-		}
-	}
-
-	public AssignmentHandler getAssignmentHandler() {
-		return assignmentHandler;
+	public AssignmentHandler getAssignmentHandlerObject() {
+		return assignmentHandlerObject;
 	}
 
 	public void setAssignmentHandler(String assignmentHandlerStr) {
 		if(StringHelper.isNotEmpty(assignmentHandlerStr)) {
-			assignmentHandler = (AssignmentHandler)ClassHelper.newInstance(assignmentHandlerStr);
-			AssertHelper.notNull(assignmentHandler, "分配参与者处理类实例化失败");
+			this.assignmentHandler = assignmentHandlerStr;
+			assignmentHandlerObject = (AssignmentHandler)ClassHelper.newInstance(assignmentHandlerStr);
+			AssertHelper.notNull(assignmentHandlerObject, "分配参与者处理类实例化失败");
+		}
+	}
+
+	public String getAssignmentHandler() {
+		return assignmentHandler;
+	}
+
+	public String getCallback() {
+		return callback;
+	}
+	
+	public JobCallback getCallbackObject() {
+		return callbackObject;
+	}
+
+	public void setCallback(String callbackStr) {
+		if(StringHelper.isNotEmpty(callbackStr)) {
+			this.callback = callbackStr;
+			callbackObject = (JobCallback)ClassHelper.newInstance(callbackStr);
+			AssertHelper.notNull(callbackObject, "回调处理类实例化失败");
 		}
 	}
 }
