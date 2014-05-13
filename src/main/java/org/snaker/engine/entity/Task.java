@@ -16,7 +16,9 @@ package org.snaker.engine.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
+import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.model.TaskModel.TaskType;
 import org.snaker.engine.model.WorkModel;
 
@@ -257,6 +259,11 @@ public class Task implements Serializable, Cloneable {
 
 	public void setModel(WorkModel model) {
 		this.model = model;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getVariableMap() {
+		return JsonHelper.fromJson(this.variable, Map.class);
 	}
 	
 	public Object clone() throws CloneNotSupportedException {

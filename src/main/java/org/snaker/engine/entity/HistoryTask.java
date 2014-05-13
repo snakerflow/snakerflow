@@ -15,6 +15,10 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.model.TaskModel.PerformType;
 
 /**
  * 历史任务实体类
@@ -143,6 +147,10 @@ public class HistoryTask implements Serializable {
     	return task;
     }
     
+    public boolean isPerformAny() {
+    	return this.performType.intValue() == PerformType.ANY.ordinal();
+    }
+    
 	public String getTaskName() {
 		return taskName;
 	}
@@ -245,6 +253,11 @@ public class HistoryTask implements Serializable {
 
 	public void setActorIds(String[] actorIds) {
 		this.actorIds = actorIds;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getVariableMap() {
+		return JsonHelper.fromJson(this.variable, Map.class);
 	}
 	
 	public String toString() {

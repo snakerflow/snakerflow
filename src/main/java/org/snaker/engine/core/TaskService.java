@@ -25,8 +25,6 @@ import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.TaskAccessStrategy;
 import org.snaker.engine.entity.HistoryTask;
-import org.snaker.engine.entity.Order;
-import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.helper.AssertHelper;
@@ -163,14 +161,10 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 撤回指定的任务
 	 */
 	public Task withdrawTask(String taskId, String operator) {
-		HistoryTask hist = engine.query().getHistTask(taskId);
+		HistoryTask hist = ServiceContext.getEngine().query().getHistTask(taskId);
 		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-		Order order = engine.query().getOrder(hist.getOrderId());
-		AssertHelper.notNull(order, "指定的流程实例[id=" + hist.getOrderId() + "]已完成或不存在");
-		Process process = ServiceContext.getEngine().process().getProcessById(order.getProcessId());
-		TaskModel histModel = (TaskModel)process.getModel().getNode(hist.getTaskName());
 		List<Task> tasks = null;
-		if(histModel.isPerformAny()) {
+		if(hist.isPerformAny()) {
 			tasks = access().getNextActiveTasks(hist.getId());
 		} else {
 			tasks = access().getNextActiveTasks(hist.getOrderId(), 
