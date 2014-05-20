@@ -274,7 +274,7 @@ public class TaskService extends AccessService implements ITaskService {
 			task = saveTask(task, PerformType.ANY.ordinal(), actors);
 			task.setRemindDate(remindDate);
 			tasks.add(task);
-		} else {
+		} else if(taskModel.isPerformAll()){
 			//任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
 			for(String actor : actors) {
 				Task singleTask = saveTask(task, PerformType.ALL.ordinal(), actor);

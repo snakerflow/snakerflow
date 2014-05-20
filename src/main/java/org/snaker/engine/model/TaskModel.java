@@ -130,6 +130,10 @@ public class TaskModel extends WorkModel {
 		return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
 	}
 	
+	public boolean isPerformAll() {
+		return PERFORMTYPE_ALL.equalsIgnoreCase(this.performType);
+	}
+	
 	public boolean isMajor() {
 		return TASKTYPE_MAJOR.equalsIgnoreCase(this.taskType);
 	}
@@ -163,7 +167,7 @@ public class TaskModel extends WorkModel {
 	}
 
 	public void setPerformType(String performType) {
-		this.performType = performType;
+		this.performType = (StringHelper.isEmpty(performType) ? PERFORMTYPE_ANY : performType);
 	}
 
 	public String getReminderTime() {
