@@ -35,6 +35,7 @@ import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.helper.ClassHelper;
+import org.snaker.engine.helper.StringHelper;
 
 /**
  * hibernate方式的数据库访问
@@ -164,7 +165,7 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
 		try {
 			String countSQL = "select count(1) from (" + sql + ") c ";
-			String querySQL = sql;
+			String querySQL = sql + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());;
 			log.info("querySQL=" + querySQL);
 			SQLQuery countQuery = getSession().createSQLQuery(countSQL);
 			SQLQuery pageQuery = getSession().createSQLQuery(querySQL);
