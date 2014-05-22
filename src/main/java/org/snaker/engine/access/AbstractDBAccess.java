@@ -457,6 +457,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and type = ? ");
 			paramList.add(filter.getProcessType());
 		}
+		if(filter.getOperators() != null && filter.getOperators().length > 0) {
+			sql.append(" and creator in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
+				sql.append("?,");
+				paramList.add(filter.getOperators()[i]);
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(") ");
+		}
 		if(page == null) {
 			return queryList(Process.class, sql.toString(), paramList.toArray());
 		} else {
