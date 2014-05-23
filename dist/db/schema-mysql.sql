@@ -7,7 +7,7 @@ CREATE TABLE wf_process (
     instance_Url      VARCHAR(200) comment '实例url',
     state             TINYINT(1) comment '流程是否可用',
     content           LONGBLOB comment '流程模型定义',
-    version           TINYINT(1) comment '版本',
+    version           INT(1) comment '版本',
     create_Time       VARCHAR(50) comment '创建时间',
     creator           VARCHAR(50) comment '创建人'
 )comment='流程定义表';
