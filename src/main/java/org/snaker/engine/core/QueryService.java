@@ -116,6 +116,11 @@ public class QueryService extends AccessService implements IQueryService {
 		AssertHelper.notNull(filter);
 		return access().getWorkItems(page, filter);
 	}
+	
+	public List<WorkItem> getCCWorks(Page<WorkItem> page, QueryFilter filter) {
+		AssertHelper.notNull(filter);
+		return access().getCCWorks(page, filter);
+	}
 
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		AssertHelper.notNull(filter);

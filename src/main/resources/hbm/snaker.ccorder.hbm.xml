@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.snaker.engine.entity.CCOrder" table="wf_cc_order">
+		<composite-id>
+		    <key-property name="orderId" column="ORDER_ID"/>
+		    <key-property name="actorId" column="ACTOR_ID"/>
+		</composite-id>
+		<property name="status" type="java.lang.Integer" column="status"/>
+    </class>
+</hibernate-mapping>

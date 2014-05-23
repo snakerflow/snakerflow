@@ -46,6 +46,14 @@ public interface IOrderService {
 	Order createOrder(Process process, String operator, Map<String, Object> args, String parentId, String parentNodeName);
 	
 	/**
+	 * 创建抄送实例
+	 * @param orderId 流程实例id
+	 * @param actorIds 参与者id
+	 * @since 1.5
+	 */
+	void createCCOrder(String orderId, String... actorIds);
+	
+	/**
 	 * 流程实例正常完成
 	 * @param orderId 流程实例id
 	 */
@@ -75,4 +83,18 @@ public interface IOrderService {
 	 * @param order 流程实例对象
 	 */
 	void updateOrder(Order order);
+	
+	/**
+	 * 更新抄送记录为已阅
+	 * @param orderId 流程实例id
+	 * @param actorId 参与者id
+	 */
+	void updateCCStatus(String orderId, String actorId);
+	
+	/**
+	 * 删除抄送记录
+	 * @param orderId 流程实例id
+	 * @param actorId 参与者id
+	 */
+	void deleteCCOrder(String orderId, String actorId);
 }

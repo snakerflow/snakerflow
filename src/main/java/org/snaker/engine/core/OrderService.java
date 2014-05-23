@@ -19,10 +19,12 @@ import java.util.Map;
 
 import org.snaker.engine.IOrderService;
 import org.snaker.engine.access.QueryFilter;
+import org.snaker.engine.entity.CCOrder;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.entity.Task;
+import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
@@ -70,6 +72,19 @@ public class OrderService extends AccessService implements IOrderService {
 	}
 	
 	/**
+	 * 创建实例的抄送
+	 */
+	public void createCCOrder(String orderId, String... actorIds) {
+		for(String actorId : actorIds) {
+			CCOrder ccorder = new CCOrder();
+			ccorder.setOrderId(orderId);
+			ccorder.setActorId(actorId);
+			ccorder.setStatus(STATE_ACTIVE);
+			access().saveCCOrder(ccorder);
+		}
+	}
+	
+	/**
 	 * 流程实例数据会保存至活动实例表、历史实例表
 	 */
 	public void saveOrder(Order order) {
@@ -84,6 +99,25 @@ public class OrderService extends AccessService implements IOrderService {
 	 */
 	public void updateOrder(Order order) {
 		access().updateOrder(order);
+	}
+	
+	/**
+	 * 更新抄送记录状态为已阅
+	 */
+	public void updateCCStatus(String orderId, String actorId) {
+		CCOrder ccorder = access().getCCOrder(orderId, actorId);
+		AssertHelper.notNull(ccorder);
+		ccorder.setStatus(STATE_FINISH);
+		access().updateCCOrder(ccorder);
+	}
+	
+	/**
+	 * 删除指定的抄送记录
+	 */
+	public void deleteCCOrder(String orderId, String actorId) {
+		CCOrder ccorder = access().getCCOrder(orderId, actorId);
+		AssertHelper.notNull(ccorder);
+		access().deleteCCOrder(ccorder);
 	}
 
 	/**

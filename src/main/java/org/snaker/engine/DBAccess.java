@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
+import org.snaker.engine.entity.CCOrder;
 import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.HistoryTaskActor;
@@ -53,6 +54,13 @@ public interface DBAccess {
 	public void saveOrder(Order order);
 	
 	/**
+	 * 保存抄送实例
+	 * @param ccorder 抄送实体
+	 * @since 1.5
+	 */
+	public void saveCCOrder(CCOrder ccorder);
+	
+	/**
 	 * 保存流程定义对象
 	 * @param process 流程定义对象
 	 */
@@ -75,6 +83,12 @@ public interface DBAccess {
 	 * @param order 流程实例对象
 	 */
 	public void updateOrder(Order order);
+	
+	/**
+	 * 更新抄送状态
+	 * @param ccorder 抄送实体对象
+	 */
+	public void updateCCOrder(CCOrder ccorder);
 	
 	/**
 	 * 更新流程定义对象
@@ -100,6 +114,12 @@ public interface DBAccess {
 	 * @param order 流程实例对象
 	 */
 	public void deleteOrder(Order order);
+	
+	/**
+	 * 删除抄送记录
+	 * @param ccorder 抄送实体对象
+	 */
+	public void deleteCCOrder(CCOrder ccorder);
 	
 	/**
 	 * 删除参与者
@@ -211,6 +231,14 @@ public interface DBAccess {
 	public Order getOrder(String orderId);
 	
 	/**
+	 * 根据流程实例id、参与者id获取抄送记录
+	 * @param orderId 活动流程实例id
+	 * @param actorId 参与者id
+	 * @return
+	 */
+	public CCOrder getCCOrder(String orderId, String actorId);
+	
+	/**
 	 * 根据流程实例ID获取历史流程实例对象
 	 * @param orderId 历史流程实例id
 	 * @return HistoryOrder 历史流程实例对象
@@ -272,12 +300,20 @@ public interface DBAccess {
 	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter);
 	
 	/**
-	 * 根据查询的参数，分页对象，返回分页后的查询结果
+	 * 根据查询的参数，分页对象，返回分页后的活动工作项
 	 * @param page 分页对象
 	 * @param filter 查询过滤器
 	 * @return List<WorkItem> 活动工作项
 	 */
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter);
+	
+	/**
+	 * 根据查询的参数，分页对象，返回分页后的抄送任务项
+	 * @param page 分页对象
+	 * @param filter 查询过滤器
+	 * @return List<WorkItem> 活动工作项
+	 */
+	public List<WorkItem> getCCWorks(Page<WorkItem> page, QueryFilter filter);
 	
 	/**
 	 * 根据流程定义ID、参与者分页查询已完成的历史任务项
@@ -286,6 +322,7 @@ public interface DBAccess {
 	 * @return List<WorkItem> 历史工作项
 	 */
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter);
+	
 	/**
 	 * 根据类型T、Sql语句、参数查询单个对象
 	 * @param T 类型
@@ -294,6 +331,7 @@ public interface DBAccess {
 	 * @return
 	 */
 	public <T> T queryObject(Class<T> T, String sql, Object... args);
+	
 	/**
 	 * 根据类型T、Sql语句、参数查询列表对象
 	 * @param T 类型

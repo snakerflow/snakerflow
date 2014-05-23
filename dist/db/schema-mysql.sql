@@ -104,9 +104,14 @@ create table wf_surrogate (
     state             TINYINT(1) COMMENT '状态'
 )COMMENT='委托代理表';
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
-/**
- * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
- */
+
+/**抄送实例表*/
+create table wf_cc_order (
+    order_Id        varchar(100) COMMENT '流程实例ID',
+    actor_Id        varchar(100) COMMENT '参与者ID',
+    status          TINYINT(1)  COMMENT '状态'
+)comment='抄送实例表';
+create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
