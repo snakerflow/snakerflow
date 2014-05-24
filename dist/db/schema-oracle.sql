@@ -188,9 +188,17 @@ comment on column wf_surrogate.edate is '结束时间';
 comment on column wf_surrogate.state is '状态';
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
-/**
- * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
- */
+/**抄送实例表*/
+create table wf_cc_order (
+    order_Id        varchar2(100),
+    actor_Id        varchar2(100),
+    status          number(1)
+);
+comment on table wf_cc_order is '抄送实例表';
+comment on column wf_cc_order.order_Id is '流程实例ID';
+comment on column wf_cc_order.actor_Id is '参与者ID';
+comment on column wf_cc_order.status is '状态';
+create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
 /**创建索引*/
 create index IDX_PROCESS_NAME on wf_process (name);

@@ -141,7 +141,7 @@ public interface IQueryService {
 	 * @param filter 查询过滤器
 	 * @return List<WorkItem> 抄送工作项集合
 	 */
-	List<WorkItem> getCCWorks(Page<WorkItem> page, QueryFilter filter);
+	List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter);
 	
 	/**
 	 * 根据filter分页查询已完成的历史任务项

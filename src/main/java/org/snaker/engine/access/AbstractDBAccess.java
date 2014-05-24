@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.access.dialect.Dialect;
 import org.snaker.engine.core.ServiceContext;
@@ -81,7 +83,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String QUERY_ORDER = "select id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,priority,order_No,variable, version from wf_order ";
 	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
 	protected static final String QUERY_TASK_ACTOR = "select task_Id, actor_Id from wf_task_actor ";
-	protected static final String QUERY_CCORDER = "select order_Id, actor_Id, status from wf_cc_order where order_Id = ? and actor_Id = ?";
+	protected static final String QUERY_CCORDER = "select order_Id, actor_Id, status from wf_cc_order ";
 	
 	protected static final String QUERY_HIST_ORDER = "select id,process_Id,order_State,priority,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable from wf_hist_order ";
 	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
@@ -455,8 +457,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryObject(Order.class, QUERY_ORDER + where, orderId);
 	}
 	
-	public CCOrder getCCOrder(String orderId, String actorId) {
-		return queryObject(CCOrder.class, QUERY_CCORDER, orderId, actorId);
+	public CCOrder getCCOrder(String orderId, String... actorIds) {
+		StringBuffer where = new StringBuffer(QUERY_CCORDER);
+		where.append(" where order_Id = ? ");
+		where.append(" and actor_Id in (");
+		where.append(StringUtils.repeat("?,", actorIds.length));
+		where.deleteCharAt(where.length() - 1);
+		where.append(") ");
+		return queryObject(CCOrder.class, where.toString(), ArrayUtils.add(actorIds, 0, orderId));
 	}
 
 	public Process getProcess(String id) {
@@ -770,13 +778,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 	
-	public List<WorkItem> getCCWorks(Page<WorkItem> page, QueryFilter filter) {
+	public List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select o.process_Id, o.id, o.id as order_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
-		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable ");
+		sql.append(" select id,process_Id,order_State,priority,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable ");
 		sql.append(" from wf_cc_order cc ");
-		sql.append(" left join wf_order o on cc.order_id = o.id ");
-		sql.append(" left join wf_process p on p.id = o.process_id ");
+		sql.append(" left join wf_hist_order o on cc.order_id = o.id ");
 		sql.append(" where 1=1 ");
 		
 		/**
@@ -784,10 +790,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		 */
 		List<Object> paramList = new ArrayList<Object>();
 		if(filter.getOperators() != null && filter.getOperators().length > 0) {
-			sql.append(" and cc.actor_Id in (");
-			for(String actor : filter.getOperators()) {
+			sql.append(" and cc.actor_Id in(");
+			for(int i = 0; i < filter.getOperators().length; i++) {
 				sql.append("?,");
-				paramList.add(actor);
+				paramList.add(filter.getOperators()[i]);
 			}
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
@@ -797,27 +803,35 @@ public abstract class AbstractDBAccess implements DBAccess {
 			paramList.add(filter.getState());
 		}
 		if(StringHelper.isNotEmpty(filter.getProcessId())) {
-			sql.append(" and o.process_Id = ?");
+			sql.append(" and process_Id = ? ");
 			paramList.add(filter.getProcessId());
 		}
-		if(StringHelper.isNotEmpty(filter.getOrderNo())) {
-			sql.append(" and o.order_No = ? ");
-			paramList.add(filter.getOrderNo());
+		if(StringHelper.isNotEmpty(filter.getParentId())) {
+			sql.append(" and parent_Id = ? ");
+			paramList.add(filter.getParentId());
 		}
 		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
-			sql.append(" and o.create_Time >= ? ");
+			sql.append(" and create_Time >= ? ");
 			paramList.add(filter.getCreateTimeStart());
 		}
 		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
-			sql.append(" and o.create_Time <= ? ");
+			sql.append(" and create_Time <= ? ");
 			paramList.add(filter.getCreateTimeEnd());
 		}
-		if(!page.isOrderBySetted()) {
-			page.setOrder(Page.DESC);
-			page.setOrderBy("o.create_Time");
+		if(StringHelper.isNotEmpty(filter.getOrderNo())) {
+			sql.append(" and order_No = ? ");
+			paramList.add(filter.getOrderNo());
 		}
-
-		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
+		if(page == null) {
+			sql.append(" order by create_Time desc ");
+			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
+		} else {
+			if(!page.isOrderBySetted()) {
+				page.setOrder(Page.DESC);
+				page.setOrderBy("create_Time");
+			}
+			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
+		}
 	}
 	
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {

@@ -233,10 +233,10 @@ public interface DBAccess {
 	/**
 	 * 根据流程实例id、参与者id获取抄送记录
 	 * @param orderId 活动流程实例id
-	 * @param actorId 参与者id
+	 * @param actorIds 参与者id
 	 * @return
 	 */
-	public CCOrder getCCOrder(String orderId, String actorId);
+	public CCOrder getCCOrder(String orderId, String... actorIds);
 	
 	/**
 	 * 根据流程实例ID获取历史流程实例对象
@@ -313,7 +313,7 @@ public interface DBAccess {
 	 * @param filter 查询过滤器
 	 * @return List<WorkItem> 活动工作项
 	 */
-	public List<WorkItem> getCCWorks(Page<WorkItem> page, QueryFilter filter);
+	public List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter);
 	
 	/**
 	 * 根据流程定义ID、参与者分页查询已完成的历史任务项

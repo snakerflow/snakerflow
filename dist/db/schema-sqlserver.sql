@@ -104,9 +104,13 @@ create table wf_surrogate (
     state             tinyint
 );
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
-/**
- * alter table WF_PROCESS add constraint U_PROCESS_NAME unique (NAME);
- */
+/**抄送实例表*/
+create table wf_cc_order (
+    order_Id        nvarchar(100),
+    actor_Id        nvarchar(100),
+    status          tinyint(1)
+);
+create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
 /**创建索引*/
 create index IDX_PROCESS_NAME on wf_process (name);

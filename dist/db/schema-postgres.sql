@@ -195,6 +195,18 @@ COMMENT on column wf_surrogate.edate is '结束时间';
 COMMENT on column wf_surrogate.state is '状态';
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
+/**抄送实例表*/
+create table wf_cc_order (
+    order_Id        VARCHAR(100) COMMENT '流程实例ID',
+    actor_Id        VARCHAR(100) COMMENT '参与者ID',
+    status          smallint(1)  COMMENT '状态'
+);
+COMMENT on table wf_cc_order is '抄送实例表';
+COMMENT on column wf_cc_order.order_Id is '流程实例ID';
+COMMENT on column wf_cc_order.actor_Id is '参与者ID';
+COMMENT on column wf_cc_order.status is '状态';
+create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
+
 /**对若干字段增加索引*/
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);

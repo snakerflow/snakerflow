@@ -3,7 +3,7 @@ package test.query;
 import org.junit.Test;
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
-import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.test.TestSnakerBase;
 
 /**
@@ -14,7 +14,7 @@ import org.snaker.engine.test.TestSnakerBase;
 public class TestQueryCCOrder extends TestSnakerBase {
 	@Test
 	public void test() {
-		Page<WorkItem> page = new Page<WorkItem>();
+		Page<HistoryOrder> page = new Page<HistoryOrder>();
 		System.out.println(engine.query().getCCWorks(page, new QueryFilter().setState(1)));
 	}
 }

@@ -87,9 +87,9 @@ public interface IOrderService {
 	/**
 	 * 更新抄送记录为已阅
 	 * @param orderId 流程实例id
-	 * @param actorId 参与者id
+	 * @param actorIds 参与者id
 	 */
-	void updateCCStatus(String orderId, String actorId);
+	void updateCCStatus(String orderId, String... actorIds);
 	
 	/**
 	 * 删除抄送记录

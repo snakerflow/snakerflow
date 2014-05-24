@@ -104,8 +104,8 @@ public class OrderService extends AccessService implements IOrderService {
 	/**
 	 * 更新抄送记录状态为已阅
 	 */
-	public void updateCCStatus(String orderId, String actorId) {
-		CCOrder ccorder = access().getCCOrder(orderId, actorId);
+	public void updateCCStatus(String orderId, String... actorIds) {
+		CCOrder ccorder = access().getCCOrder(orderId, actorIds);
 		AssertHelper.notNull(ccorder);
 		ccorder.setStatus(STATE_FINISH);
 		access().updateCCOrder(ccorder);
