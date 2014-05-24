@@ -39,6 +39,6 @@ public class TestProcess extends TestSnakerBase {
 		args.put("task1.operator", "1");
 		engine.startInstanceById(processId, "1", args);
 		engine.process().undeploy(processId);
-		engine.startInstanceById(processId, "1", args);
+		//engine.startInstanceById(processId, "1", args);
 	}
 }

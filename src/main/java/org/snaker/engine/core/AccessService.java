@@ -15,7 +15,6 @@
 package org.snaker.engine.core;
 
 import org.snaker.engine.DBAccess;
-import org.snaker.engine.SnakerEngine;
 
 /**
  * 作为抽象父类，提供给子类access实现方式
@@ -39,10 +38,6 @@ public abstract class AccessService {
 	 * 数据库的access
 	 */
 	protected DBAccess access;
-	/**
-	 * 流程引擎
-	 */
-	protected SnakerEngine engine;
 	/**
 	 * 获取DBAccess，供子类使用
 	 */

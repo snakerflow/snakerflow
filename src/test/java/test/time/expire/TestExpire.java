@@ -50,7 +50,7 @@ public class TestExpire extends TestSnakerBase {
 //			engine.executeTask(task.getId(), "1", args);
 //		}
 		try {
-			Thread.sleep(10000000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
