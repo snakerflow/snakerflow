@@ -1,18 +1,18 @@
 Introduction
 ==========
 
-Snaker¹¤×÷Á÷ÒýÇæ±¾×ÅÇáÁ¿¡¢¼òµ¥¡¢ÁéÇÉÀíÄîÉè¼Æ¡£ 
+Snakerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½òµ¥¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¡ï¿½ 
 
 Features
 -----
 
-* ÇáÁ¿
-* ¼òµ¥
-* ÁéÇÉ
+* ï¿½ï¿½ï¿½ï¿½
+* ï¿½ï¿½
+* ï¿½ï¿½ï¿½ï¿½
 
 Contact
 -----
-* QQÈº£º293568574
+* QQÈºï¿½ï¿½293568574
 * snakerflow: <snakerflow@163.com>
 
 Wiki
@@ -21,7 +21,7 @@ Wiki
 
 Example
 -----
-* snaker-demo: <https://github.com/snakerflow/snaker-demo>
+* snaker-demo: <https://github.com/snakerflow/snaker-web>
 
 License
 -----
