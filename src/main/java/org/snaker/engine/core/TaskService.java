@@ -334,8 +334,7 @@ public class TaskService extends AccessService implements ITaskService {
 		} else if(model.getAssignmentHandlerObject() != null) {
 			assigneeObject = model.getAssignmentHandlerObject().assign(execution);
 		}
-		return assigneeObject == null ? new String[]{model.getAssignee() } : 
-			getTaskActors(assigneeObject);
+		return getTaskActors(assigneeObject == null ? model.getAssignee() : assigneeObject);
 	}
 
 	/**
