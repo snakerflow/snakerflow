@@ -1,9 +1,70 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.snakerflow</groupId>
-  <artifactId>snaker-parent</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Snaker-Parent</name>
-  <description>snaker is free workflow.</description>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>snaker-core</module>
+        <module>snaker-spring</module>
+        <module>snaker-ehcache</module>
+        <module>snaker-quartz</module>
+        <module>snaker-jfinal</module>
+    </modules>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <groupId>com.github.snakerflow</groupId>
+    <artifactId>snaker-parent</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Snaker-Parent</name>
+    <url>http://snakerflow.github.io</url>
+    <inceptionYear>2013</inceptionYear>
+    <description>snaker is free workflow.</description>
+
+    <developers>
+        <developer>
+            <name>yuqs</name>
+            <url>http://www.snakerflow.com</url>
+            <email>snakerflow@163.com</email>
+            <timezone>8</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>git@github.com:snakerflow/snakerflow.git</url>
+        <connection>scm:git:git@github.com:snakerflow/snakerflow.git</connection>
+        <developerConnection>scm:git:git@github.com:snakerflow/snakerflow.git</developerConnection>
+    </scm>
+
+    <profiles>
+        <profile>
+            <id>gpg</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
