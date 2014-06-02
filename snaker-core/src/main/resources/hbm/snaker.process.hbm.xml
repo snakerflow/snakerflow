@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.snaker.engine.entity.Process" table="wf_process">
+        <id name="id" type="java.lang.String">
+            <column name="id"/>
+        </id>
+        <property name="name" type="java.lang.String" column="name"/>
+        <property name="displayName" type="java.lang.String" column="display_name"/>
+        <property name="instanceUrl" type="java.lang.String" column="instance_Url"/>
+        <property name="type" type="java.lang.Integer" column="type"/>
+        <property name="state" type="java.lang.Integer" column="state"/>
+        <property name="content" type="java.sql.Blob" column="content"/>
+        <property name="version" type="java.lang.Integer" column="version"/>
+        <property name="createTime" type="java.lang.String" column="create_Time"/>
+        <property name="creator" type="java.lang.String" column="creator"/>
+    </class>
+</hibernate-mapping>

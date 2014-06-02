@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process displayName="转派任务测试" name="transfer">
+<start displayName="start1" layout="54,128,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<end displayName="end1" layout="486,128,-1,-1" name="end1"/>
+<task autoExecute="Y" displayName="task1" layout="173,126,-1,-1" name="task1" performType="ANY" taskType="Major">
+<transition g="" name="transition2" offset="0,0" to="task2"/>
+</task>
+<task autoExecute="Y" displayName="task2" layout="311,126,-1,-1" name="task2" performType="ANY" taskType="Major">
+<transition g="" name="transition3" offset="0,0" to="end1"/>
+</task>
+</process>

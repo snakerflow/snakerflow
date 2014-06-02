@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.snaker.engine.entity.TaskActor" table="wf_task_actor">
+		<composite-id>
+		    <key-property name="taskId" column="TASK_ID"/>
+		    <key-property name="actorId" column="ACTOR_ID"/>
+		</composite-id>
+    </class>
+    
+    <class name="org.snaker.engine.entity.HistoryTaskActor" table="wf_hist_task_actor">
+		<composite-id>
+		    <key-property name="taskId" column="TASK_ID"/>
+		    <key-property name="actorId" column="ACTOR_ID"/>
+		</composite-id>
+    </class>
+</hibernate-mapping>
