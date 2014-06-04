@@ -29,12 +29,4 @@ public interface Dialect {
 	 * @return
 	 */
 	String getPageSql(String sql, Page<?> page);
-	
-	/**
-	 * 根据分页对象获取排序语句
-	 * @param sql 未分页sql语句
-	 * @param page 分页对象
-	 * @return
-	 */
-	String getOrderby(String sql, Page<?> page);
 }

@@ -16,7 +16,6 @@ package org.snaker.engine.access;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.snaker.engine.helper.ConfigHelper;
 
@@ -27,8 +26,6 @@ import org.snaker.engine.helper.ConfigHelper;
  * @version 1.0
  */
 public class Page<T> {
-	public static final String ASC = "asc";
-	public static final String DESC = "desc";
 	public static final int NON_PAGE = -1;
 	public static final int PAGE_SIZE = 15;
 
@@ -36,10 +33,6 @@ public class Page<T> {
 	private int pageNo = 1;
 	//每页记录数
 	private int pageSize = -1;
-	//排序类型ASC/DESC
-	private String orderBy;
-	//排序字段
-	private String order;
 	//总记录数
 	private long totalCount = 0;
 	//查询结果集
@@ -99,66 +92,6 @@ public class Page<T> {
 	public Page<T> pageSize(int thePageSize) {
 		setPageSize(thePageSize);
 		return this;
-	}
-
-	/**
-	 * 获得排序字段,多个排序字段时用','分隔.
-	 */
-	public String getOrderBy() {
-		return orderBy;
-	}
-
-	/**
-	 * 设置排序字段,多个排序字段时用','分隔.
-	 */
-	public void setOrderBy(String orderBy) {
-		this.orderBy = orderBy;
-	}
-
-	/**
-	 * 返回Page对象自身的setOrderBy函数,可用于连续设置。
-	 */
-	public Page<T> orderBy(String theOrderBy) {
-		setOrderBy(theOrderBy);
-		return this;
-	}
-
-	/**
-	 * 获得排序类型.
-	 */
-	public String getOrder() {
-		return order;
-	}
-
-	/**
-	 * 设置排序类型.
-	 * @param order 可选值为desc或asc,多个排序字段时用','分隔.
-	 */
-	public void setOrder(String order) {
-		String lowcaseOrder = StringUtils.lowerCase(order);
-		//检查order字符串的合法值
-		String[] orders = StringUtils.split(lowcaseOrder, ',');
-		for (String orderStr : orders) {
-			if (!StringUtils.equals(DESC, orderStr) && !StringUtils.equals(ASC, orderStr)) {
-				throw new IllegalArgumentException("排序类型[" + orderStr + "]不是合法值");
-			}
-		}
-		this.order = lowcaseOrder;
-	}
-
-	/**
-	 * 返回Page对象自身的setOrder函数,可用于连续设置。
-	 */
-	public Page<T> order(String theOrder) {
-		setOrder(theOrder);
-		return this;
-	}
-
-	/**
-	 * 是否已设置排序字段,无默认值.
-	 */
-	public boolean isOrderBySetted() {
-		return (StringUtils.isNotBlank(orderBy) && StringUtils.isNotBlank(order));
 	}
 
 	/**
@@ -241,7 +174,7 @@ public class Page<T> {
 			return pageNo;
 		}
 	}
-	
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

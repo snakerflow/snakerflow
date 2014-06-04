@@ -15,13 +15,12 @@
 package org.snaker.engine.access;
 
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.access.dialect.Dialect;
 import org.snaker.engine.core.ServiceContext;
@@ -35,6 +34,7 @@ import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
@@ -44,7 +44,8 @@ import org.snaker.engine.helper.StringHelper;
  * @version 1.0
  */
 public abstract class AbstractDBAccess implements DBAccess {
-	protected static final String KEY_SQL = "SQL";
+    private static final Logger log = LoggerFactory.getLogger(AbstractDBAccess.class);
+    protected static final String KEY_SQL = "SQL";
 	protected static final String KEY_ARGS = "ARGS";
 	protected static final String KEY_TYPE = "TYPE";
 	protected static final String KEY_ENTITY = "ENTITY";
@@ -407,11 +408,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			paramList.add(filter.getOperateTime());
 			paramList.add(filter.getOperateTime());
 		}
-		if(page == null) {
-			return queryList(Surrogate.class, sql.toString(), paramList.toArray());
-		} else {
-			return queryList(page, Surrogate.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("sdate");
+        }
+        return queryList(page, filter, Surrogate.class, sql.toString(), paramList.toArray());
 	}
 
 	public Task getTask(String taskId) {
@@ -510,11 +511,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.deleteCharAt(sql.length() - 1);
 			sql.append(") ");
 		}
-		if(page == null) {
-			return queryList(Process.class, sql.toString(), paramList.toArray());
-		} else {
-			return queryList(page, Process.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.ASC);
+            filter.setOrderBy("name");
+        }
+
+		return queryList(page, filter, Process.class, sql.toString(), paramList.toArray());
 	}
 
 	public List<Order> getActiveOrders(Page<Order> page, QueryFilter filter) {
@@ -558,17 +560,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and order_No = ? ");
 			paramList.add(filter.getOrderNo());
 		}
-		
-		if(page == null) {
-			sql.append(" order by create_Time desc ");
-			return queryList(Order.class, sql.toString(), paramList.toArray());
-		} else {
-			if(!page.isOrderBySetted()) {
-				page.setOrder(Page.DESC);
-				page.setOrderBy("create_Time");
-			}
-			return queryList(page, Order.class, sql.toString(), paramList.toArray());
-		}
+
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("create_Time");
+        }
+        return queryList(page, filter, Order.class, sql.toString(), paramList.toArray());
 	}
 
 	public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
@@ -618,16 +615,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and create_Time <= ? ");
 			paramList.add(filter.getCreateTimeEnd());
 		}
-		if(page == null) {
-			sql.append(" order by create_Time desc ");
-			return queryList(Task.class, sql.toString(), paramList.toArray());
-		} else {
-			if(!page.isOrderBySetted()) {
-				page.setOrder(Page.DESC);
-				page.setOrderBy("create_Time");
-			}
-			return queryList(page, Task.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("create_Time");
+        }
+        return queryList(page, filter, Task.class, sql.toString(), paramList.toArray());
 	}
 
 	public List<HistoryOrder> getHistoryOrders(Page<HistoryOrder> page, QueryFilter filter) {
@@ -663,16 +655,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and order_No = ? ");
 			paramList.add(filter.getOrderNo());
 		}
-		if(page == null) {
-			sql.append(" order by create_Time desc ");
-			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
-		} else {
-			if(!page.isOrderBySetted()) {
-				page.setOrder(Page.DESC);
-				page.setOrderBy("create_Time");
-			}
-			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("create_Time");
+        }
+        return queryList(page, filter, HistoryOrder.class, sql.toString(), paramList.toArray());
 	}
 	
 	public List<HistoryTask> getHistoryTasks(Page<HistoryTask> page, QueryFilter filter) {
@@ -713,11 +700,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and create_Time <= ? ");
 			paramList.add(filter.getCreateTimeEnd());
 		}
-		if(page == null) {
-			return queryList(HistoryTask.class, sql.toString(), paramList.toArray());
-		} else {
-			return queryList(page, HistoryTask.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("finish_Time");
+        }
+		return queryList(page, filter, HistoryTask.class, sql.toString(), paramList.toArray());
 	}
 	
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
@@ -770,12 +757,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and t.create_Time <= ? ");
 			paramList.add(filter.getCreateTimeEnd());
 		}
-		if(!page.isOrderBySetted()) {
-			page.setOrder(Page.DESC);
-			page.setOrderBy("t.create_Time");
+		if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("t.create_Time");
 		}
 
-		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
+		return queryList(page, filter, WorkItem.class, sql.toString(), paramList.toArray());
 	}
 	
 	public List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter) {
@@ -822,16 +809,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			sql.append(" and order_No = ? ");
 			paramList.add(filter.getOrderNo());
 		}
-		if(page == null) {
-			sql.append(" order by create_Time desc ");
-			return queryList(HistoryOrder.class, sql.toString(), paramList.toArray());
-		} else {
-			if(!page.isOrderBySetted()) {
-				page.setOrder(Page.DESC);
-				page.setOrderBy("create_Time");
-			}
-			return queryList(page, HistoryOrder.class, sql.toString(), paramList.toArray());
-		}
+        if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("create_Time");
+        }
+        return queryList(page, filter, HistoryOrder.class, sql.toString(), paramList.toArray());
 	}
 	
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
@@ -884,10 +866,43 @@ public abstract class AbstractDBAccess implements DBAccess {
 			paramList.add(filter.getCreateTimeEnd());
 		}
 		
-		if(!page.isOrderBySetted()) {
-			page.setOrder(Page.DESC);
-			page.setOrderBy("t.create_Time");
+		if(!filter.isOrderBySetted()) {
+            filter.setOrder(QueryFilter.DESC);
+            filter.setOrderBy("t.create_Time");
 		}
-		return queryList(page, WorkItem.class, sql.toString(), paramList.toArray());
+		return queryList(page, filter, WorkItem.class, sql.toString(), paramList.toArray());
 	}
+
+    public <T> List<T> queryList(Page<T> page, QueryFilter filter, Class<T> clazz, String sql, Object... args) {
+        String orderby = StringHelper.buildPageOrder(filter.getOrder(), filter.getOrderBy());
+        String querySQL = sql + orderby;
+        if(page == null) {
+            return queryList(clazz, querySQL, args);
+        }
+        String countSQL = "select count(1) from (" + sql + ") c ";
+        querySQL = getDialect().getPageSql(querySQL, page);
+        if(log.isDebugEnabled()) {
+            log.debug("查询分页countSQL=\n" + countSQL);
+            log.debug("查询分页querySQL=\n" + querySQL);
+        }
+        try {
+            Object count = queryCount(countSQL, args);
+            List<T> list = queryList(clazz, sql, args);
+            if(list == null) list = Collections.emptyList();
+            page.setResult(list);
+            page.setTotalCount(ClassHelper.castLong(count));
+            return list;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 分页查询时，符合条件的总记录数
+     * @param sql sql语句
+     * @param args 参数数组
+     * @return 总记录数
+     */
+    protected abstract Object queryCount(String sql, Object... args);
 }

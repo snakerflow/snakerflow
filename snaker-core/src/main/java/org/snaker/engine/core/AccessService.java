@@ -33,7 +33,7 @@ public abstract class AccessService {
 	/**
 	 * 状态：终止状态
 	 */
-	public static final Integer STATE_TERMINATION = -1;
+	public static final Integer STATE_TERMINATION = 2;
 	/**
 	 * 数据库的access
 	 */

@@ -17,7 +17,6 @@ package org.snaker.engine.spring;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,10 +25,8 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.access.AbstractDBAccess;
-import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.Process;
-import org.snaker.engine.helper.ClassHelper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -104,12 +101,12 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T queryObject(Class<T> T, String sql, Object... args) {
+	public <T> T queryObject(Class<T> clazz, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询单条数据=\n" + sql);
 		}
 		try {
-			return (T)template.queryForObject(sql, args, new BeanPropertyRowMapper(T));
+			return (T)template.queryForObject(sql, args, new BeanPropertyRowMapper(clazz));
 		} catch(Exception e) {
 			log.error("查询单条数据=\n" + e.getMessage());
 			return null;
@@ -117,40 +114,16 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
+	public <T> List<T> queryList(Class<T> clazz, String sql, Object... args) {
 		if(log.isDebugEnabled()) {
 			log.debug("查询多条数据=\n" + sql);
 		}
-		return (List<T>)template.query(sql, args, new BeanPropertyRowMapper(T));
+		return (List<T>)template.query(sql, args, new BeanPropertyRowMapper(clazz));
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
-		String countSQL = "select count(1) from (" + sql + ") c ";
-		String querySQL = sql;
-		//判断是否需要分页（根据pageSize判断）
-		if(page.getPageSize() != Page.NON_PAGE) {
-			querySQL = getDialect().getPageSql(querySQL, page);
-		}
-		if(log.isDebugEnabled()) {
-			log.debug("查询分页countSQL=\n" + countSQL);
-			log.debug("查询分页querySQL=\n" + querySQL);
-		}
-
-		List<T> tasks = null;
-		long count = 0L;
-		try {
-			count = template.queryForLong(countSQL, args);
-			tasks = template.query(querySQL, args, new BeanPropertyRowMapper(T));
-			if(tasks == null) tasks = Collections.emptyList();
-			page.setResult(tasks);
-			page.setTotalCount(ClassHelper.castLong(count));
-			return page.getResult();
-		} catch(RuntimeException e) {
-			log.error("查询失败" + e.getMessage());
-			return Collections.emptyList();
-		}
-	}
+    public Object queryCount(String sql, Object... args) {
+        return template.queryForLong(sql, args);
+    }
 	
 	public void setLobHandler(LobHandler lobHandler) {
 		this.lobHandler = lobHandler;

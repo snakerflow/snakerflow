@@ -16,6 +16,7 @@ package org.snaker.engine.access;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
 import org.snaker.engine.helper.AssertHelper;
 
 /**
@@ -28,6 +29,14 @@ public class QueryFilter implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8155136377911571881L;
+    public static final String ASC = "asc";
+    public static final String DESC = "desc";
+
+    //排序字段
+    private String orderBy;
+    //排序类型ASC/DESC
+    private String order;
+
 	/*********common parameters***********/
 	/**
 	 * 流程定义id
@@ -244,4 +253,42 @@ public class QueryFilter implements Serializable {
 		this.processType = processType;
 		return this;
 	}
+    public String getOrderBy() {
+        return orderBy;
+    }
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+    public QueryFilter orderBy(String theOrderBy) {
+        setOrderBy(theOrderBy);
+        return this;
+    }
+    public String getOrder() {
+        return order;
+    }
+    /**
+     * 设置排序类型.
+     * @param order 可选值为desc或asc,多个排序字段时用','分隔.
+     */
+    public void setOrder(String order) {
+        String lowcaseOrder = StringUtils.lowerCase(order);
+        //检查order字符串的合法值
+        String[] orders = StringUtils.split(lowcaseOrder, ',');
+        for (String orderStr : orders) {
+            if (!StringUtils.equals(DESC, orderStr) && !StringUtils.equals(ASC, orderStr)) {
+                throw new IllegalArgumentException("排序类型[" + orderStr + "]不是合法值");
+            }
+        }
+        this.order = lowcaseOrder;
+    }
+    public QueryFilter order(String theOrder) {
+        setOrder(theOrder);
+        return this;
+    }
+    /**
+     * 是否已设置排序字段,无默认值.
+     */
+    public boolean isOrderBySetted() {
+        return (StringUtils.isNotBlank(orderBy) && StringUtils.isNotBlank(order));
+    }
 }

@@ -15,7 +15,6 @@
 package org.snaker.engine.access.dialect;
 
 import org.apache.commons.lang.StringUtils;
-import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.Page;
 import org.snaker.engine.helper.StringHelper;
 
@@ -24,18 +23,22 @@ import org.snaker.engine.helper.StringHelper;
  * @author yuqs
  * @version 1.0
  */
-public class SQLServerDialect extends AbstractDialect {
+public class SQLServerDialect implements Dialect {
+    private static final String STR_ORDERBY = " order by ";
+
 	public String getPageSql(String sql, Page<?> page) {
-		int orderIdx = sql.indexOf(" order by ");
+		int orderIdx = sql.indexOf(STR_ORDERBY);
+        String orderStr = null;
 		if(orderIdx != -1) {
+            orderStr = sql.substring(orderIdx + 10);
 			sql = sql.substring(0, orderIdx);
 		}
 		StringBuffer pageSql = new StringBuffer();
 		pageSql.append("select top ");
 		pageSql.append(page.getPageSize());
 		pageSql.append(" * from (select row_number() over (");
-		String orderby = getOrderby(sql, page);
-		pageSql.append(StringHelper.isEmpty(orderby) ? " order by id desc " : orderby);
+		String orderBy = getOrderBy(sql, orderStr);
+		pageSql.append(orderBy);
 		pageSql.append(") row_number, * from (");
 		pageSql.append(sql);
 		int start = (page.getPageNo() - 1) * page.getPageSize();
@@ -45,29 +48,39 @@ public class SQLServerDialect extends AbstractDialect {
 		return pageSql.toString();
 	}
 
-	@Override
-	public String getOrderby(String sql, Page<?> page) {
-		String orderby = page.getOrderBy();
-		String order = page.getOrder();
-		if(StringHelper.isEmpty(orderby) || StringHelper.isEmpty(order)) return "";
-		String[] orderByArray = StringUtils.split(orderby, ',');
-		String[] orderArray = StringUtils.split(order, ',');
-		if(orderArray.length != orderByArray.length) throw new SnakerException("分页多重排序参数中,排序字段与排序方向的个数不相等");
-		StringBuffer orderStr = new StringBuffer(30);
-		orderStr.append(" order by ");
+    public String getOrderBy(String sql, String orderBy) {
+        if(StringHelper.isEmpty(orderBy)) {
+            return STR_ORDERBY + " id desc ";
+        }
+        StringBuffer orderBuffer = new StringBuffer(30);
+        String[] orderByArray = StringUtils.split(orderBy, ',');
+        for (int i = 0; i < orderByArray.length; i++) {
+            String orderByItem = orderByArray[i].trim();
+            String orderByName = null;
+            String orderByDirect = "";
+            if(orderByItem.indexOf(" ") == -1) {
+                orderByName = orderByItem;
+            } else {
+                orderByName = orderByItem.substring(0, orderByItem.indexOf(" "));
+                orderByDirect = orderByItem.substring(orderByItem.indexOf(" ") + 1);
+            }
 
-		for (int i = 0; i < orderByArray.length; i++) {
-			String aliasColumn = orderByArray[i] + " as ";
-			int orderbyIdx = sql.indexOf(aliasColumn);
-			if(orderbyIdx != -1) {
-				String after = sql.substring(orderbyIdx + aliasColumn.length());
-				String aliasName = after.substring(0, after.indexOf(","));
-				orderStr.append(aliasName).append(" ").append(orderArray[i]).append(" ,");
-			} else {
-				orderStr.append(orderByArray[i]).append(" ").append(orderArray[i]).append(" ,");
-			}
-		}
-		orderStr.deleteCharAt(orderStr.length() - 1);
-		return orderStr.toString();
-	}
+            String columnAlias = orderByName + " as ";
+            int columnIndex = sql.indexOf(columnAlias);
+            if(columnIndex == -1) {
+                orderBuffer.append(orderByName).append(" ").append(orderByDirect).append(" ,");
+            } else {
+                String after = sql.substring(columnIndex + columnAlias.length());
+                String aliasName = null;
+                if(after.indexOf(",") != -1 && after.indexOf(" from") > after.indexOf(",")) {
+                    aliasName = after.substring(0, after.indexOf(","));
+                } else {
+                    aliasName = after.substring(0, after.indexOf(" "));
+                }
+                orderBuffer.append(aliasName).append(" ").append(orderByDirect).append(" ,");
+            }
+        }
+        orderBuffer.deleteCharAt(orderBuffer.length() - 1);
+        return STR_ORDERBY + orderBuffer.toString();
+    }
 }

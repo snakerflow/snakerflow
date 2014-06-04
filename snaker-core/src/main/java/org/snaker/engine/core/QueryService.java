@@ -143,6 +143,6 @@ public class QueryService extends AccessService implements IQueryService {
 			Object... args) {
 		AssertHelper.notEmpty(sql);
 		AssertHelper.notNull(T);
-		return access().queryList(page, T, sql, args);
+		return access().queryList(page, new QueryFilter(), T, sql, args);
 	}
 }

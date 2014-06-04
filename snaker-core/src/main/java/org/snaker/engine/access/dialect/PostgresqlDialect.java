@@ -21,7 +21,7 @@ import org.snaker.engine.access.Page;
  * @author yuqs
  * @since 1.3
  */
-public class PostgresqlDialect extends AbstractDialect {
+public class PostgresqlDialect implements Dialect {
 	/**
 	 * Postgresql分页通过limit实现
 	 */

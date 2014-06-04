@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.AbstractDBAccess;
-import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.ClassHelper;
@@ -199,27 +198,8 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
             return Collections.emptyList();
         }
 	}
-	
-	public <T> List<T> queryList(Page<T> page, Class<T> clazz, String sql, Object... args) {
-		String countSQL = "select count(1) from (" + sql + ") c ";
-		String querySQL = sql;
-		//判断是否需要分页（根据pageSize判断）
-		if(page.getPageSize() != Page.NON_PAGE) {
-			querySQL = getDialect().getPageSql(querySQL, page);
-		}
-		try {
-        	if(log.isDebugEnabled()) {
-        		log.debug("分页查询多条数据=\n" + querySQL);
-        	}
-			Object count = query(1, countSQL, args);
-			List<T> list = runner.query(getConnection(), querySQL, new BeanPropertyHandler<T>(clazz), args);
-			if(list == null) list = Collections.emptyList();
-			page.setResult(list);
-			page.setTotalCount(ClassHelper.castLong(count));
-			return list;
-		} catch(Exception e) {
-			log.error(e.getMessage(), e);
-			return Collections.emptyList();
-		}
-	}
+
+    public Object queryCount(String sql, Object... args) {
+        return query(1, sql, args);
+    }
 }

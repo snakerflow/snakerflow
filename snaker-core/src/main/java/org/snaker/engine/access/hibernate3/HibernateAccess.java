@@ -15,7 +15,6 @@
 package org.snaker.engine.access.hibernate3;
 
 import java.sql.Blob;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.AbstractDBAccess;
-import org.snaker.engine.access.Page;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.entity.CCOrder;
 import org.snaker.engine.entity.Order;
@@ -36,7 +34,6 @@ import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.helper.ClassHelper;
-import org.snaker.engine.helper.StringHelper;
 
 /**
  * hibernate方式的数据库访问
@@ -157,43 +154,22 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> queryList(Class<T> T, String sql, Object... args) {
+	public <T> List<T> queryList(Class<T> clazz, String sql, Object... args) {
 		SQLQuery query = getSession().createSQLQuery(sql);
-		query.addEntity(T);
+		query.addEntity(clazz);
 		for(int i = 0; i < args.length; i++) {
 			query.setParameter(i, args[i]);
 		}
 		return (List<T>)query.list();
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> queryList(Page<T> page, Class<T> T, String sql, Object... args) {
-		try {
-			String countSQL = "select count(1) from (" + sql + ") c ";
-			String querySQL = sql + StringHelper.buildPageOrder(page.getOrder(), page.getOrderBy());;
-			log.info("querySQL=" + querySQL);
-			SQLQuery countQuery = getSession().createSQLQuery(countSQL);
-			SQLQuery pageQuery = getSession().createSQLQuery(querySQL);
-			pageQuery.addEntity(T);
-			if(args.length > 0) {
-				for (int i = 0; i < args.length; i++) {
-					pageQuery.setParameter(i, args[i]);
-					countQuery.setParameter(i, args[i]);
-				}
-			}
-			//判断是否需要分页（根据pageSize判断）
-			if(page.getPageSize() != Page.NON_PAGE) {
-				pageQuery.setFirstResult((page.getPageNo() - 1) * page.getPageSize());
-				pageQuery.setMaxResults(page.getPageSize());
-			}
-			List<T> list = pageQuery.list();
-			Object total = countQuery.uniqueResult();
-			page.setResult(list);
-			page.setTotalCount(ClassHelper.castLong(total));
-			return list;
-		} catch(RuntimeException e) {
-			log.error(e.getMessage(), e);
-			return Collections.emptyList();
-		}
-	}
+
+    public Object queryCount(String sql, Object... args) {
+        SQLQuery countQuery = getSession().createSQLQuery(sql);
+        if(args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                countQuery.setParameter(i, args[i]);
+            }
+        }
+        return countQuery.uniqueResult();
+    }
 }
