@@ -15,9 +15,11 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.ServiceContext;
+import org.snaker.engine.helper.JsonHelper;
 
 /**
  * 历史流程实例实体类
@@ -178,6 +180,11 @@ public class HistoryOrder implements Serializable {
 	public void setVariable(String variable) {
 		this.variable = variable;
 	}
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getVariableMap() {
+        return JsonHelper.fromJson(this.variable, Map.class);
+    }
 	
 	public String getProcessName() {
 		SnakerEngine engine = ServiceContext.getEngine();

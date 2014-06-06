@@ -14,7 +14,10 @@
  */
 package org.snaker.engine.entity;
 
+import org.snaker.engine.helper.JsonHelper;
+
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 工作项（待办、已处理任务的查询结果实体）
@@ -258,7 +261,14 @@ public class WorkItem implements Serializable {
 	public void setTaskVariable(String taskVariable) {
 		this.taskVariable = taskVariable;
 	}
-	
+    @SuppressWarnings("unchecked")
+         public Map<String, Object> getOrderVariableMap() {
+        return JsonHelper.fromJson(this.orderVariable, Map.class);
+    }
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getTaskVariableMap() {
+        return JsonHelper.fromJson(this.taskVariable, Map.class);
+    }
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("WorkItem(processId=").append(this.processId);
