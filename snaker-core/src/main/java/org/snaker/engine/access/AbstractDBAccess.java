@@ -324,12 +324,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 	public void saveHistory(HistoryTask task) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, SAVE));
-			for(String actorId : task.getActorIds()) {
-				HistoryTaskActor hist = new HistoryTaskActor();
-				hist.setActorId(actorId);
-				hist.setTaskId(task.getId());
-				saveOrUpdate(buildMap(hist, SAVE));
-			}
+            if(task.getActorIds() != null) {
+                for(String actorId : task.getActorIds()) {
+                    if(StringHelper.isEmpty(actorId)) continue;
+                    HistoryTaskActor hist = new HistoryTaskActor();
+                    hist.setActorId(actorId);
+                    hist.setTaskId(task.getId());
+                    saveOrUpdate(buildMap(hist, SAVE));
+                }
+            }
 		} else {
 			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
 					task.getPerformType(), task.getTaskState(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
@@ -337,9 +340,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
 					Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_HISTORY_INSERT, args, type));
-			for(String actorId : task.getActorIds()) {
-				saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
-			}
+            if(task.getActorIds() != null) {
+                for(String actorId : task.getActorIds()) {
+                    if(StringHelper.isEmpty(actorId)) continue;
+                    saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
+                }
+            }
 		}
 	}
 	
