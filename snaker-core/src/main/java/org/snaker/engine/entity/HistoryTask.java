@@ -15,6 +15,7 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.snaker.engine.helper.JsonHelper;
@@ -256,7 +257,9 @@ public class HistoryTask implements Serializable {
 	
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getVariableMap() {
-		return JsonHelper.fromJson(this.variable, Map.class);
+        Map<String, Object> map = JsonHelper.fromJson(this.variable, Map.class);
+        if(map == null) return Collections.emptyMap();
+        return map;
 	}
 	
 	public String toString() {

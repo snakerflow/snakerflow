@@ -17,6 +17,7 @@ package org.snaker.engine.entity;
 import org.snaker.engine.helper.JsonHelper;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -262,12 +263,16 @@ public class WorkItem implements Serializable {
 		this.taskVariable = taskVariable;
 	}
     @SuppressWarnings("unchecked")
-         public Map<String, Object> getOrderVariableMap() {
-        return JsonHelper.fromJson(this.orderVariable, Map.class);
+    public Map<String, Object> getOrderVariableMap() {
+        Map<String, Object> map = JsonHelper.fromJson(this.orderVariable, Map.class);
+        if(map == null) return Collections.emptyMap();
+        return map;
     }
     @SuppressWarnings("unchecked")
     public Map<String, Object> getTaskVariableMap() {
-        return JsonHelper.fromJson(this.taskVariable, Map.class);
+        Map<String, Object> map = JsonHelper.fromJson(this.taskVariable, Map.class);
+        if(map == null) return Collections.emptyMap();
+        return map;
     }
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

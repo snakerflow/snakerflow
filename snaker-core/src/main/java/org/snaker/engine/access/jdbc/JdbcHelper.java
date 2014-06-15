@@ -58,8 +58,12 @@ public abstract class JdbcHelper {
 		ds.setUrl(url);
 		ds.setUsername(username);
 		ds.setPassword(password);
-		ds.setMaxActive(maxActive);
-		ds.setMaxIdle(maxIdle);
+        if(maxActive != 0) {
+		    ds.setMaxActive(maxActive);
+        }
+        if(maxIdle != 0) {
+		    ds.setMaxIdle(maxIdle);
+        }
 		dataSource = ds;
 	}
 	
