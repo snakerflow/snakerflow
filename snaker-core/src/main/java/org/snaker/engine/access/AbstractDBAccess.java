@@ -464,14 +464,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 		return queryObject(Order.class, QUERY_ORDER + where, orderId);
 	}
 	
-	public CCOrder getCCOrder(String orderId, String... actorIds) {
+	public List<CCOrder> getCCOrder(String orderId, String... actorIds) {
 		StringBuffer where = new StringBuffer(QUERY_CCORDER);
 		where.append(" where order_Id = ? ");
 		where.append(" and actor_Id in (");
 		where.append(StringUtils.repeat("?,", actorIds.length));
 		where.deleteCharAt(where.length() - 1);
 		where.append(") ");
-		return queryObject(CCOrder.class, where.toString(), ArrayUtils.add(actorIds, 0, orderId));
+		return queryList(CCOrder.class, where.toString(), ArrayUtils.add(actorIds, 0, orderId));
 	}
 
 	public Process getProcess(String id) {

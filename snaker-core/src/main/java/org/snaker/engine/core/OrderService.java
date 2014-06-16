@@ -106,19 +106,23 @@ public class OrderService extends AccessService implements IOrderService {
 	 * 更新抄送记录状态为已阅
 	 */
 	public void updateCCStatus(String orderId, String... actorIds) {
-		CCOrder ccorder = access().getCCOrder(orderId, actorIds);
-		AssertHelper.notNull(ccorder);
-		ccorder.setStatus(STATE_FINISH);
-		access().updateCCOrder(ccorder);
+        List<CCOrder> ccorders = access().getCCOrder(orderId, actorIds);
+        AssertHelper.notNull(ccorders);
+        for(CCOrder ccorder : ccorders) {
+            ccorder.setStatus(STATE_FINISH);
+            access().updateCCOrder(ccorder);
+        }
 	}
 	
 	/**
 	 * 删除指定的抄送记录
 	 */
 	public void deleteCCOrder(String orderId, String actorId) {
-		CCOrder ccorder = access().getCCOrder(orderId, actorId);
-		AssertHelper.notNull(ccorder);
-		access().deleteCCOrder(ccorder);
+        List<CCOrder> ccorders = access().getCCOrder(orderId, actorId);
+		AssertHelper.notNull(ccorders);
+        for(CCOrder ccorder : ccorders) {
+		    access().deleteCCOrder(ccorder);
+        }
 	}
 
 	/**

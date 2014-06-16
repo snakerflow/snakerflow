@@ -236,7 +236,7 @@ public interface DBAccess {
 	 * @param actorIds 参与者id
 	 * @return
 	 */
-	public CCOrder getCCOrder(String orderId, String... actorIds);
+	public List<CCOrder> getCCOrder(String orderId, String... actorIds);
 	
 	/**
 	 * 根据流程实例ID获取历史流程实例对象

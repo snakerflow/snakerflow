@@ -12,7 +12,7 @@
         <property name="name" type="java.lang.String" column="name"/>
         <property name="displayName" type="java.lang.String" column="display_name"/>
         <property name="instanceUrl" type="java.lang.String" column="instance_Url"/>
-        <property name="type" type="java.lang.Integer" column="type"/>
+        <property name="type" type="java.lang.String" column="type"/>
         <property name="state" type="java.lang.Integer" column="state"/>
         <property name="content" type="java.sql.Blob" column="content"/>
         <property name="version" type="java.lang.Integer" column="version"/>
