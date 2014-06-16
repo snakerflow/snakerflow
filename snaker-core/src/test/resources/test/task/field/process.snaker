@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process displayName="测试字段模型" name="field">
+<start displayName="start1" layout="64,83,-1,-1" name="start1">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
+</start>
+<task assignee="task1.operator" displayName="task1" layout="213,80,-1,-1" name="task1" performType="ANY">
+    <field displayName="申请人" layout="230,51,201,22" name="applyUser" type="String">
+        <attr name="defaultValue" value=""/>
+        <attr name="controlType" value="TextField"/>
+        <attr name="lineBR" value="false"/>
+        <attr name="placeholder" value="1"/>
+        <attr name="isHref" value="false"/>
+        <attr name="readonly" value="false"/>
+        <attr name="isNeed" value="false"/>
+        <attr name="isKey" value="false"/>
+        <attr name="visible" value="true"/>
+    </field>
+    <transition g="" name="transition2" offset="0,0" to="end1"/>
+</task>
+<end displayName="end1" layout="454,82,-1,-1" name="end1"/>
+</process>

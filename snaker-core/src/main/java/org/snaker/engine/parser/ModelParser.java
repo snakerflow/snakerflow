@@ -102,7 +102,7 @@ public class ModelParser {
 			nodeParser.parse(element);
 			return nodeParser.getModel();
 		} catch (RuntimeException e) {
-			throw new SnakerException(e.getMessage(), e.getCause());
+			throw new SnakerException(e);
 		}
 	}
 }

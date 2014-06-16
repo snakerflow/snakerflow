@@ -22,6 +22,8 @@ import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.scheduling.JobCallback;
 
+import java.util.List;
+
 /**
  * 任务定义task元素
  * @author yuqs
@@ -108,6 +110,10 @@ public class TaskModel extends WorkModel {
 	 * 分配参与者处理对象
 	 */
 	private AssignmentHandler assignmentHandlerObject;
+    /**
+     * 字段模型集合
+     */
+    private List<FieldModel> fields = null;
 
 	protected void exec(Execution execution) {
 		if(performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
@@ -225,4 +231,12 @@ public class TaskModel extends WorkModel {
 			AssertHelper.notNull(callbackObject, "回调处理类实例化失败");
 		}
 	}
+
+    public List<FieldModel> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<FieldModel> fields) {
+        this.fields = fields;
+    }
 }

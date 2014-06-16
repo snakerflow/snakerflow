@@ -38,6 +38,10 @@ public interface NodeParser {
 	public static final String ATTR_EXPR = "expr";
 	public static final String ATTR_HANDLECLASS = "handleClass";
 	public static final String ATTR_FORM = "form";
+    public static final String ATTR_FIELD = "field";
+    public static final String ATTR_VALUE = "value";
+    public static final String ATTR_ATTR = "attr";
+    public static final String ATTR_TYPE= "type";
 	public static final String ATTR_ASSIGNEE = "assignee";
 	public static final String ATTR_ASSIGNEE_HANDLER = "assignmentHandler";
 	public static final String ATTR_PERFORMTYPE = "performType";
@@ -45,7 +49,6 @@ public interface NodeParser {
 	public static final String ATTR_TO = "to";
 	public static final String ATTR_PROCESSNAME = "processName";
 	public static final String ATTR_VERSION = "version";
-	public static final String ATTR_URL = "url";
 	public static final String ATTR_EXPIRETIME = "expireTime";
 	public static final String ATTR_AUTOEXECUTE = "autoExecute";
 	public static final String ATTR_CALLBACK = "callback";
@@ -63,13 +66,13 @@ public interface NodeParser {
 	
 	/**
 	 * 节点dom元素解析方法，由实现类完成解析
-	 * @param element
+	 * @param element dom元素
 	 */
 	public void parse(Element element);
 	
 	/**
 	 * 解析成功后，提供返回NodeModel模型对象
-	 * @return
+	 * @return 节点模型
 	 */
 	public NodeModel getModel();
 }
