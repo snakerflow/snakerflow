@@ -9,6 +9,7 @@
         <module>snaker-ehcache</module>
         <module>snaker-quartz</module>
         <module>snaker-jfinal</module>
+        <module>snaker-nutz</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
