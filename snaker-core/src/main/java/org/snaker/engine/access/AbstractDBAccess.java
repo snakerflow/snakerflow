@@ -466,7 +466,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<CCOrder> getCCOrder(String orderId, String... actorIds) {
 		StringBuffer where = new StringBuffer(QUERY_CCORDER);
-		where.append(" where order_Id = ? ");
+		where.append(" where status = 1 and order_Id = ? ");
 		where.append(" and actor_Id in (");
 		where.append(StringUtils.repeat("?,", actorIds.length));
 		where.deleteCharAt(where.length() - 1);
@@ -893,7 +893,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
         try {
             Object count = queryCount(countSQL, args);
-            List<T> list = queryList(clazz, sql, args);
+            List<T> list = queryList(clazz, querySQL, args);
             if(list == null) list = Collections.emptyList();
             page.setResult(list);
             page.setTotalCount(ClassHelper.castLong(count));

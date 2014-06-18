@@ -43,7 +43,7 @@ import org.w3c.dom.NodeList;
  * 只允许应用程序存在一个Configuration实例
  * 初始化服务上下文，查找流程引擎实现类并初始化依赖的服务
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class Configuration {
 	/**
@@ -78,7 +78,7 @@ public class Configuration {
 	
 	/**
 	 * 根据服务查找实现类构造配置对象
-	 * @param context
+	 * @param context 上下文实现
 	 */
 	public Configuration(Context context) {
 		ServiceContext.setContext(context);
@@ -146,7 +146,7 @@ public class Configuration {
 	
 	/**
 	 * 解析给定resource配置，并注册到ServiceContext上下文中
-	 * @param resource
+	 * @param resource 资源
 	 */
 	private void parser(String resource) {
 		//解析所有配置节点，并实例化class指定的类
@@ -195,8 +195,8 @@ public class Configuration {
 	
 	/**
 	 * 初始化DBAccess的数据库访问对象
-	 * @param dbObject
-	 * @return
+	 * @param dbObject 数据访问对象
+	 * @return Configuration
 	 */
 	public Configuration initAccessDBObject(Object dbObject) {
 		this.accessDBObject = dbObject;
@@ -205,7 +205,7 @@ public class Configuration {
 	
 	/**
 	 * 返回DBAccess的数据库访问对象
-	 * @return
+	 * @return 数据访问对象
 	 */
 	public Object getAccessDBObject() {
 		return accessDBObject;
@@ -213,7 +213,7 @@ public class Configuration {
 
 	/**
 	 * 返回是否容器托管的bean
-	 * @return
+	 * @return 是否容器托管
 	 */
 	public boolean isCMB() {
 		return false;
