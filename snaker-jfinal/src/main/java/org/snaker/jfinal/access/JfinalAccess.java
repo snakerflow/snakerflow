@@ -48,6 +48,7 @@ public class JfinalAccess extends JdbcAccess {
 		Connection conn = config.getThreadLocalConnection();
 		if(conn == null) {
 			conn = config.getConnection();
+            conn.setAutoCommit(true);
 		}
 		return conn;
 	}
