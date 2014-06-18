@@ -50,7 +50,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	/**
 	 * jdbc的数据源
 	 */
-    private DataSource dataSource;
+    protected DataSource dataSource;
 	
 	/**
 	 * setter
