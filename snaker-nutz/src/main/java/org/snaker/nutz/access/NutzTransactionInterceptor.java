@@ -40,7 +40,6 @@ public class NutzTransactionInterceptor extends TransactionInterceptor {
         try {
             boolean isNew = false;
             if(Trans.get() == null) {
-                
                 Trans.begin(Connection.TRANSACTION_REPEATABLE_READ);
                 isNew = true;
             }
