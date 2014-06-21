@@ -20,9 +20,7 @@ import java.sql.SQLException;
 import com.jfinal.plugin.activerecord.Config;
 import org.snaker.engine.access.jdbc.JdbcAccess;
 
-import com.jfinal.plugin.activerecord.DbKit;
-import org.snaker.engine.helper.ConfigHelper;
-import org.snaker.engine.helper.StringHelper;
+import org.snaker.jfinal.JfinalHelper;
 
 /**
  * jfinal的数据访问实现类
@@ -32,19 +30,11 @@ import org.snaker.engine.helper.StringHelper;
  * @since 2.0
  */
 public class JfinalAccess extends JdbcAccess {
-    private static final String CONFIG_NAME = "jfinal.configName";
 	/**
 	 * 从jfinal的threadlocal中获取数据库连接
 	 */
 	protected Connection getConnection() throws SQLException {
-        String configName = ConfigHelper.getProperty(CONFIG_NAME);
-        Config config = null;
-        if(StringHelper.isNotEmpty(configName)) {
-            config = DbKit.getConfig(configName);
-        }
-        if(config == null) {
-            config = DbKit.getConfig();
-        }
+        Config config = JfinalHelper.getConfig();
 		Connection conn = config.getThreadLocalConnection();
 		if(conn == null) {
 			conn = config.getConnection();
