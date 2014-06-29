@@ -14,6 +14,7 @@
  */
 package org.snaker.engine.spring;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -138,4 +139,8 @@ public class SpringJdbcAccess extends AbstractDBAccess implements DBAccess {
 			this.template = new JdbcTemplate(dataSource);
 		}
 	}
+
+    protected Connection getConnection() throws SQLException {
+        return getDataSource().getConnection();
+    }
 }

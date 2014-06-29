@@ -351,4 +351,10 @@ public interface DBAccess {
 	 * @return
 	 */
 	public <T> List<T> queryList(Page<T> page, QueryFilter filter, Class<T> clazz, String sql, Object... args);
+
+    /**
+     * 运行脚本文件
+     * @param resource 资源位置
+     */
+    public void runScript(String resource);
 }

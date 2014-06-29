@@ -14,6 +14,8 @@
  */
 package org.snaker.engine.access;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
@@ -22,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snaker.engine.DBAccess;
+import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.dialect.Dialect;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.CCOrder;
@@ -905,10 +908,30 @@ public abstract class AbstractDBAccess implements DBAccess {
     }
 
     /**
+     * 运行脚本
+     * @param resource 资源位置
+     */
+    public void runScript(String resource) {
+        try {
+            Connection conn = getConnection();
+            ScriptRunner runner = new ScriptRunner(conn, true);
+            runner.runScript(resource);
+        } catch (Exception e) {
+            throw new SnakerException(e);
+        }
+    }
+
+    /**
      * 分页查询时，符合条件的总记录数
      * @param sql sql语句
      * @param args 参数数组
      * @return 总记录数
      */
     protected abstract Object queryCount(String sql, Object... args);
+
+    /**
+     * 获取数据库连接
+     * @return Connection
+     */
+    protected abstract Connection getConnection() throws SQLException;
 }

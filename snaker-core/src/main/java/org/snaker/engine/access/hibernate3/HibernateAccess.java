@@ -15,9 +15,13 @@
 package org.snaker.engine.access.hibernate3;
 
 import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.connection.ConnectionProvider;
+import org.hibernate.engine.SessionFactoryImplementor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.hibernate.Hibernate;
@@ -70,8 +74,19 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	public Session getSession() {
 		return Hibernate3Helper.getSession(sessionFactory);
 	}
-	
-	@SuppressWarnings("deprecation")
+
+    /**
+     * 取得hibernate的connection对象
+     */
+    protected Connection getConnection() throws SQLException {
+        if (sessionFactory instanceof SessionFactoryImplementor) {
+            ConnectionProvider cp = ((SessionFactoryImplementor) sessionFactory).getConnectionProvider();
+            return cp.getConnection();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
 	public void updateProcess(Process process) {
 		try {
 			if(process.getBytes() != null) {
