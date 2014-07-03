@@ -55,4 +55,16 @@ public class JfinalTransactionInterceptor extends DataSourceTransactionIntercept
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    protected void commit(TransactionStatus status) {
+        super.commit(status);
+        Config config = JfinalHelper.getConfig();
+        config.removeThreadLocalConnection();
+    }
+
+    protected void rollback(TransactionStatus status) {
+        super.rollback(status);
+        Config config = JfinalHelper.getConfig();
+        config.removeThreadLocalConnection();
+    }
 }

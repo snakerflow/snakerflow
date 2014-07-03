@@ -1,18 +1,32 @@
-/* Copyright 2013-2014 the original author or authors.
+/*
+ *  Copyright 2013-2014 the original author or authors.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
-package org.snaker.engine.access.hibernate3;
+package org.snaker.engine.access.hibernate;
+
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.snaker.engine.DBAccess;
+import org.snaker.engine.SnakerException;
+import org.snaker.engine.access.AbstractDBAccess;
+import org.snaker.engine.entity.*;
+import org.snaker.engine.entity.Process;
+import org.snaker.engine.helper.ClassHelper;
 
 import java.sql.Blob;
 import java.sql.Connection;
@@ -20,38 +34,19 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.engine.SessionFactoryImplementor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.hibernate.Hibernate;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.snaker.engine.SnakerException;
-import org.snaker.engine.access.AbstractDBAccess;
-import org.snaker.engine.DBAccess;
-import org.snaker.engine.entity.CCOrder;
-import org.snaker.engine.entity.Order;
-import org.snaker.engine.entity.Process;
-import org.snaker.engine.entity.Surrogate;
-import org.snaker.engine.entity.Task;
-import org.snaker.engine.entity.TaskActor;
-import org.snaker.engine.helper.ClassHelper;
-
 /**
  * hibernate方式的数据库访问
  * 在无事务控制的情况下，使用cglib的拦截器+ThreadLocale控制
- * @see org.snaker.engine.access.transaction.Hibernate3TransactionInterceptor
+ * @see org.snaker.engine.access.hibernate.HibernateTransactionInterceptor
  * @author yuqs
  * @version 1.0
  */
-public class HibernateAccess extends AbstractDBAccess implements DBAccess {
+public abstract class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	private static final Logger log = LoggerFactory.getLogger(HibernateAccess.class);
 	/**
 	 * hibernate的session工厂
 	 */
-	private SessionFactory sessionFactory;
+	protected SessionFactory sessionFactory;
 	
 	/**
 	 * setter
@@ -72,17 +67,13 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	 * 取得hibernate当前Session对象
 	 */
 	public Session getSession() {
-		return Hibernate3Helper.getSession(sessionFactory);
+		return HibernateHelper.getSession(sessionFactory);
 	}
 
     /**
      * 取得hibernate的connection对象
      */
     protected Connection getConnection() throws SQLException {
-        if (sessionFactory instanceof SessionFactoryImplementor) {
-            ConnectionProvider cp = ((SessionFactoryImplementor) sessionFactory).getConnectionProvider();
-            return cp.getConnection();
-        }
         return null;
     }
 
@@ -90,7 +81,7 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	public void updateProcess(Process process) {
 		try {
 			if(process.getBytes() != null) {
-				Blob blob = Hibernate.createBlob(process.getBytes());
+				Blob blob = createBlob(process.getBytes());
 				process.setContent(blob);
 			}
 		} catch (Exception e) {
@@ -103,7 +94,7 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
 	public void saveProcess(Process process) {
 		try {
 			if(process.getBytes() != null) {
-				Blob blob = Hibernate.createBlob(process.getBytes());
+				Blob blob = createBlob(process.getBytes());
 				process.setContent(blob);
 			}
 		} catch (Exception e) {
@@ -187,4 +178,6 @@ public class HibernateAccess extends AbstractDBAccess implements DBAccess {
         }
         return countQuery.uniqueResult();
     }
+
+    public abstract Blob createBlob(byte[] bytes);
 }

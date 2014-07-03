@@ -51,7 +51,7 @@ public class ScriptRunner {
     public void runScript(String resource) throws IOException, SQLException {
         AssertHelper.notNull(resource);
         InputStream input = StreamHelper.getStreamFromClasspath(resource);
-        Reader reader = new InputStreamReader(input);
+        Reader reader = new InputStreamReader(input, "UTF-8");
         runScript(reader);
     }
 

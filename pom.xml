@@ -10,6 +10,8 @@
         <module>snaker-quartz</module>
         <module>snaker-jfinal</module>
         <module>snaker-nutz</module>
+        <module>snaker-mybatis</module>
+        <module>snaker-hibernate</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
