@@ -102,9 +102,9 @@ public class SnakerEngineImpl implements SnakerEngine {
 					interceptor.initialize(accessObject);
 				}
 				access.initialize(accessObject);
-                access.runScript();
 			}
 			setDBAccess(access);
+            access.runScript();
 		}
 		CacheManager cacheManager = ServiceContext.find(CacheManager.class);
 		if(cacheManager == null) {

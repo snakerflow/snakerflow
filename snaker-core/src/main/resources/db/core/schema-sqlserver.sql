@@ -1,4 +1,4 @@
-/**流程定义表*/
+//流程定义表
 create table wf_process (
     id               nvarchar(100) primary key not null,
     name             nvarchar(100),
@@ -12,7 +12,7 @@ create table wf_process (
     creator          nvarchar(50)
 );
 
-/**流程实例表*/
+//流程实例表
 create table wf_order (
     id               nvarchar(100) not null primary key,
     process_Id       nvarchar(100) not null,
@@ -29,7 +29,7 @@ create table wf_order (
     version          tinyint
 );
 
-/**任务表*/
+//任务表
 create table wf_task (
     id               nvarchar(100) not null primary key,
     order_Id         nvarchar(100) not null,
@@ -47,13 +47,13 @@ create table wf_task (
     version          tinyint
 );
 
-/**任务参与者表*/
+//任务参与者表
 create table wf_task_actor (
     task_Id          nvarchar(100) not null,
     actor_Id         nvarchar(100) not null
 );
 
-/**历史流程实例表*/
+//历史流程实例表
 create table wf_hist_order (
     id               nvarchar(100) not null primary key,
     process_Id       nvarchar(100) not null,
@@ -68,7 +68,7 @@ create table wf_hist_order (
     variable         nvarchar(2000)
 );
 
-/**历史任务表*/
+//历史任务表
 create table wf_hist_task (
     id               nvarchar(100) not null primary key,
     order_Id         nvarchar(100) not null,
@@ -86,13 +86,13 @@ create table wf_hist_task (
     variable         nvarchar(2000)
 );
 
-/**历史任务参与者表*/
+//历史任务参与者表
 create table wf_hist_task_actor (
     task_Id          nvarchar(100) not null,
     actor_Id         nvarchar(100) not null
 );
 
-/**委托代理表*/
+//委托代理表
 create table wf_surrogate (
     id                nvarchar(100) not null primary key,
     process_Name      nvarchar(100),
@@ -104,7 +104,7 @@ create table wf_surrogate (
     state             tinyint
 );
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
-/**抄送实例表*/
+//抄送实例表
 create table wf_cc_order (
     order_Id        nvarchar(100),
     actor_Id        nvarchar(100),
@@ -112,7 +112,7 @@ create table wf_cc_order (
 );
 create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
-/**创建索引*/
+//创建索引
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);
 create index IDX_ORDER_NO on wf_order (order_No);
@@ -127,7 +127,7 @@ create index IDX_HIST_TASK_TASKNAME on wf_hist_task (task_Name);
 create index IDX_HIST_TASK_PARENTTASK on wf_hist_task (parent_Task_Id);
 create index IDX_HIST_TASKACTOR_TASK on wf_hist_task_actor (task_Id);
 
-/**增加外键关联*/
+//增加外键关联
 alter table WF_TASK_ACTOR
   add constraint FK_TASK_ACTOR_TASKID foreign key (TASK_ID)
   references WF_TASK (ID);

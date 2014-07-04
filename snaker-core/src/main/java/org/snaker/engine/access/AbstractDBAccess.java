@@ -925,7 +925,7 @@ public abstract class AbstractDBAccess implements DBAccess {
                 return;
             }
             String databaseType = JdbcHelper.getDatabaseType(conn);
-            String schema = "db/schema-" + databaseType + ".sql";
+            String schema = "db/core/schema-" + databaseType + ".sql";
             ScriptRunner runner = new ScriptRunner(conn, true);
             runner.runScript(schema);
         } catch (Exception e) {

@@ -1,13 +1,4 @@
-/**删除相关表*/
-drop table if exists wf_task_actor;
-drop table if exists wf_task;
-drop table if exists wf_order;
-drop table if exists wf_hist_task_actor;
-drop table if exists wf_hist_task;
-drop table if exists wf_hist_order;
-drop table if exists wf_process;
-
-/**流程定义表*/
+//流程定义表
 CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL,
     name              VARCHAR(100),
@@ -30,7 +21,7 @@ COMMENT ON COLUMN wf_process.state IS '流程是否可用';
 COMMENT ON COLUMN wf_process.content IS '流程模型定义';
 COMMENT ON COLUMN wf_process.version IS '版本';
 
-/**流程实例表*/
+//流程实例表
 CREATE TABLE wf_order (
     id                VARCHAR(100) NOT NULL PRIMARY KEY,
     parent_Id         VARCHAR(100),
@@ -61,7 +52,7 @@ COMMENT ON COLUMN wf_order.order_No IS '流程实例编号';
 COMMENT ON COLUMN wf_order.variable IS '附属变量json存储';
 COMMENT ON COLUMN wf_order.version IS '版本';
 
-/**任务表*/
+//任务表
 CREATE TABLE wf_task (
     id                VARCHAR(100) NOT NULL PRIMARY KEY,
     order_Id          VARCHAR(100) NOT NULL,
@@ -94,7 +85,7 @@ COMMENT ON COLUMN wf_task.parent_Task_Id IS '父任务ID';
 COMMENT ON COLUMN wf_task.variable IS '附属变量json存储';
 COMMENT ON COLUMN wf_task.version IS '版本';
 
-/**任务参与者表*/
+//任务参与者表
 CREATE TABLE wf_task_actor (
     task_Id           VARCHAR(100) not null,
     actor_Id          VARCHAR(100) not null
@@ -103,7 +94,7 @@ COMMENT ON TABLE wf_task_actor IS '任务参与者表';
 COMMENT ON COLUMN wf_task_actor.task_Id IS '任务ID';
 COMMENT ON COLUMN wf_task_actor.actor_Id IS '参与者ID';
 
-/**历史流程实例表*/
+//历史流程实例表
 create table wf_hist_order (
     id                VARCHAR(100) not null primary key,
     process_Id        VARCHAR(100) not null,
@@ -131,7 +122,7 @@ COMMENT ON COLUMN wf_hist_order.order_No IS '流程实例编号';
 COMMENT ON COLUMN wf_hist_order.variable IS '附属变量json存储';
 
 
-/**历史任务表*/
+//历史任务表
 create table wf_hist_task (
     id                VARCHAR(100) not null primary key,
     order_Id          VARCHAR(100) not null,
@@ -164,7 +155,7 @@ COMMENT ON COLUMN wf_hist_task.action_Url IS '任务处理url';
 COMMENT ON COLUMN wf_hist_task.parent_Task_Id IS '父任务ID';
 COMMENT ON COLUMN wf_hist_task.variable IS '附属变量json存储';
 
-/**历史任务参与者表*/
+//历史任务参与者表
 create table wf_hist_task_actor (
     task_Id           VARCHAR(100) not null,
     actor_Id          VARCHAR(100) not null
@@ -173,7 +164,7 @@ COMMENT ON TABLE wf_hist_task_actor IS '历史任务参与者表';
 COMMENT ON COLUMN wf_hist_task_actor.task_Id IS '任务ID';
 COMMENT ON COLUMN wf_hist_task_actor.actor_Id IS '参与者ID';
 
-/**委托代理表*/
+//委托代理表
 create table wf_surrogate (
     id                VARCHAR(100) not null primary key,
     process_Name      VARCHAR(100),
@@ -195,7 +186,7 @@ COMMENT on column wf_surrogate.edate is '结束时间';
 COMMENT on column wf_surrogate.state is '状态';
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
-/**抄送实例表*/
+//抄送实例表
 create table wf_cc_order (
     order_Id        VARCHAR(100) COMMENT '流程实例ID',
     actor_Id        VARCHAR(100) COMMENT '参与者ID',
@@ -207,7 +198,7 @@ COMMENT on column wf_cc_order.actor_Id is '参与者ID';
 COMMENT on column wf_cc_order.status is '状态';
 create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
-/**对若干字段增加索引*/
+//对若干字段增加索引
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);
 create index IDX_ORDER_NO on wf_order (order_No);
@@ -222,7 +213,7 @@ create index IDX_HIST_TASK_TASKNAME on wf_hist_task (task_Name);
 create index IDX_HIST_TASK_PARENTTASK on wf_hist_task (parent_Task_Id);
 create index IDX_HIST_TASKACTOR_TASK on wf_hist_task_actor (task_Id);
 
-/**增加外键关联约束*/
+//增加外键关联约束
 alter table WF_TASK_ACTOR
   add constraint FK_TASK_ACTOR_TASKID foreign key (TASK_ID)
   references WF_TASK (ID);
