@@ -354,7 +354,6 @@ public interface DBAccess {
 
     /**
      * 运行脚本文件
-     * @param resource 资源位置
      */
-    public void runScript(String resource);
+    public void runScript();
 }

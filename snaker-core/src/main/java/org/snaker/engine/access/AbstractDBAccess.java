@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.dialect.Dialect;
+import org.snaker.engine.access.jdbc.JdbcHelper;
 import org.snaker.engine.core.ServiceContext;
 import org.snaker.engine.entity.CCOrder;
 import org.snaker.engine.entity.HistoryOrder;
@@ -38,6 +39,7 @@ import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
 import org.snaker.engine.helper.ClassHelper;
+import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StringHelper;
 
 /**
@@ -909,15 +911,31 @@ public abstract class AbstractDBAccess implements DBAccess {
 
     /**
      * 运行脚本
-     * @param resource 资源位置
      */
-    public void runScript(String resource) {
+    public void runScript() {
+        String autoStr = ConfigHelper.getProperty("schema.auto");
+        if(autoStr == null || !autoStr.equalsIgnoreCase("true")) {
+            return;
+        }
+        Connection conn = null;
         try {
-            Connection conn = getConnection();
+            conn = getConnection();
+            if(JdbcHelper.isExec(conn)) {
+                log.info("script has completed execution.skip this step");
+                return;
+            }
+            String databaseType = JdbcHelper.getDatabaseType(conn);
+            String schema = "db/schema-" + databaseType + ".sql";
             ScriptRunner runner = new ScriptRunner(conn, true);
-            runner.runScript(resource);
+            runner.runScript(schema);
         } catch (Exception e) {
             throw new SnakerException(e);
+        } finally {
+            try {
+                JdbcHelper.close(conn);
+            } catch (SQLException e) {
+                //ignore
+            }
         }
     }
 

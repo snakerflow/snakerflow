@@ -20,6 +20,7 @@ import org.snaker.engine.DBAccess;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.ScriptRunner;
 import org.snaker.engine.access.hibernate.HibernateAccess;
+import org.snaker.engine.access.jdbc.JdbcHelper;
 
 import java.io.IOException;
 import java.sql.Blob;
@@ -43,13 +44,18 @@ public class Hibernate4Access extends HibernateAccess implements DBAccess {
         return getSession().getLobHelper().createBlob(bytes);
     }
 
-    public void runScript(final String resource) {
+    public void runScript() {
         getSession().doWork(new Work() {
             public void execute(Connection conn) throws SQLException {
-                ScriptRunner runner = new ScriptRunner(conn, true);
+                if(JdbcHelper.isExec(conn)) {
+                    return;
+                }
                 try {
-                    runner.runScript(resource);
-                } catch (IOException e) {
+                    String databaseType = JdbcHelper.getDatabaseType(conn);
+                    String schema = "db/schema-" + databaseType + ".sql";
+                    ScriptRunner runner = new ScriptRunner(conn, true);
+                    runner.runScript(schema);
+                } catch (Exception e) {
                     throw new SnakerException(e);
                 }
             }

@@ -102,6 +102,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 					interceptor.initialize(accessObject);
 				}
 				access.initialize(accessObject);
+                access.runScript();
 			}
 			setDBAccess(access);
 		}

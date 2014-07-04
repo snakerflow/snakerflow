@@ -15,14 +15,9 @@
 package org.snaker.engine.access.jdbc;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -30,6 +25,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.snaker.engine.access.transaction.TransactionObjectHolder;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.ConfigHelper;
+import org.snaker.engine.helper.StringHelper;
 
 /**
  * Jdbc操作帮助类
@@ -38,6 +34,38 @@ import org.snaker.engine.helper.ConfigHelper;
  */
 public abstract class JdbcHelper {
 	private static DataSource dataSource = null;
+
+    private static Properties databaseTypeMappings = getDefaultDatabaseTypeMappings();
+
+    private static Properties getDefaultDatabaseTypeMappings() {
+        Properties databaseTypeMappings = new Properties();
+        databaseTypeMappings.setProperty("H2","h2");
+        databaseTypeMappings.setProperty("MySQL","mysql");
+        databaseTypeMappings.setProperty("Oracle","oracle");
+        databaseTypeMappings.setProperty("PostgreSQL","postgres");
+        databaseTypeMappings.setProperty("Microsoft SQL Server","mssql");
+        databaseTypeMappings.setProperty("DB2","db2");
+        databaseTypeMappings.setProperty("DB2","db2");
+        databaseTypeMappings.setProperty("DB2/NT","db2");
+        databaseTypeMappings.setProperty("DB2/NT64","db2");
+        databaseTypeMappings.setProperty("DB2 UDP","db2");
+        databaseTypeMappings.setProperty("DB2/LINUX","db2");
+        databaseTypeMappings.setProperty("DB2/LINUX390","db2");
+        databaseTypeMappings.setProperty("DB2/LINUXX8664","db2");
+        databaseTypeMappings.setProperty("DB2/LINUXZ64","db2");
+        databaseTypeMappings.setProperty("DB2/400 SQL","db2");
+        databaseTypeMappings.setProperty("DB2/6000","db2");
+        databaseTypeMappings.setProperty("DB2 UDB iSeries","db2");
+        databaseTypeMappings.setProperty("DB2/AIX64","db2");
+        databaseTypeMappings.setProperty("DB2/HPUX","db2");
+        databaseTypeMappings.setProperty("DB2/HP64","db2");
+        databaseTypeMappings.setProperty("DB2/SUN","db2");
+        databaseTypeMappings.setProperty("DB2/SUN64","db2");
+        databaseTypeMappings.setProperty("DB2/PTX","db2");
+        databaseTypeMappings.setProperty("DB2/2","db2");
+        return databaseTypeMappings;
+    }
+
 	/**
 	 * 在没有任何dataSource注入的情况下，默认使用dbcp数据源
 	 */
@@ -276,6 +304,44 @@ public abstract class JdbcHelper {
     public static void close(Statement stmt) throws SQLException {
         if (stmt != null) {
             stmt.close();
+        }
+    }
+
+    /**
+     * 根据连接对象获取数据库类型
+     * @param conn 数据库连接
+     * @return 类型
+     * @throws Exception
+     */
+    public static String getDatabaseType(Connection conn) throws Exception {
+        DatabaseMetaData databaseMetaData = conn.getMetaData();
+        String databaseProductName = databaseMetaData.getDatabaseProductName();
+        return databaseTypeMappings.getProperty(databaseProductName);
+    }
+
+    /**
+     * 判断是否已经执行过脚本[暂时根据菜单表是否有数据]
+     * @param conn 数据库连接
+     * @return
+     */
+    public static boolean isExec(Connection conn) {
+        Statement stmt = null;
+        try {
+            String sql = ConfigHelper.getProperty("schema.test");
+            if(StringHelper.isEmpty(sql)) {
+                sql = "select * from wf_process";
+            }
+            stmt = conn.createStatement();
+            stmt.execute(sql);
+            return true;
+        } catch(Exception e) {
+            return false;
+        } finally {
+            try {
+                JdbcHelper.close(stmt);
+            } catch (SQLException e) {
+                //ignore
+            }
         }
     }
 }
