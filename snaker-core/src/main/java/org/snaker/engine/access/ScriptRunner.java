@@ -110,8 +110,6 @@ public class ScriptRunner {
                     Statement statement = conn.createStatement();
 
                     log.info(command.toString());
-
-                    boolean hasResults = false;
                     try {
                         statement.execute(command.toString());
                     } catch (SQLException e) {
@@ -122,30 +120,11 @@ public class ScriptRunner {
                     if (autoCommit && !conn.getAutoCommit()) {
                         conn.commit();
                     }
-
-                    ResultSet rs = statement.getResultSet();
-                    if (hasResults && rs != null) {
-                        ResultSetMetaData md = rs.getMetaData();
-                        int cols = md.getColumnCount();
-                        for (int i = 0; i < cols; i++) {
-                            String name = md.getColumnLabel(i);
-                            log.info(name + "\t");
-                        }
-                        log.info("");
-                        while (rs.next()) {
-                            for (int i = 0; i < cols; i++) {
-                                String value = rs.getString(i);
-                                log.info(value + "\t");
-                            }
-                            log.info("");
-                        }
-                    }
-
                     command = null;
                     try {
                         statement.close();
                     } catch (Exception e) {
-                        // Ignore to workaround a bug in Jakarta DBCP
+                        //ignore
                     }
                     Thread.yield();
                 } else {

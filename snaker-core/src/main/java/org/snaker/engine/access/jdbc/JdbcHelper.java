@@ -320,7 +320,7 @@ public abstract class JdbcHelper {
     }
 
     /**
-     * 判断是否已经执行过脚本[暂时根据菜单表是否有数据]
+     * 判断是否已经执行过脚本[暂时根据wf_process表是否有数据]
      * @param conn 数据库连接
      * @return
      */
