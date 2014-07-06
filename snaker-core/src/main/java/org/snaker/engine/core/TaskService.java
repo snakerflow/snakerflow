@@ -24,9 +24,8 @@ import org.snaker.engine.ITaskService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.TaskAccessStrategy;
-import org.snaker.engine.entity.HistoryTask;
-import org.snaker.engine.entity.Task;
-import org.snaker.engine.entity.TaskActor;
+import org.snaker.engine.entity.*;
+import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
@@ -161,7 +160,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 撤回指定的任务
 	 */
 	public Task withdrawTask(String taskId, String operator) {
-		HistoryTask hist = ServiceContext.getEngine().query().getHistTask(taskId);
+		HistoryTask hist = access().getHistTask(taskId);
 		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
 		List<Task> tasks = null;
 		if(hist.isPerformAny()) {
@@ -245,8 +244,29 @@ public class TaskService extends AccessService implements ITaskService {
 		}
 		return tasks;
 	}
-	
-	/**
+
+    /**
+     * 获取任务模型
+     * @param taskId 任务id
+     * @return TaskModel
+     */
+    public TaskModel getTaskModel(String taskId) {
+        Task task = access().getTask(taskId);
+        AssertHelper.notNull(task);
+        Order order = access().getOrder(task.getOrderId());
+        AssertHelper.notNull(order);
+        Process process = ServiceContext.getEngine().process().getProcessById(order.getProcessId());
+        ProcessModel model = process.getModel();
+        NodeModel nodeModel = model.getNode(task.getTaskName());
+        AssertHelper.notNull(nodeModel, "任务id无法找到节点模型.");
+        if(nodeModel instanceof TaskModel) {
+            return (TaskModel)nodeModel;
+        } else {
+            throw new IllegalArgumentException("任务id找到的节点模型不匹配");
+        }
+    }
+
+    /**
 	 * 由DBAccess实现类创建task，并根据model类型决定是否分配参与者
 	 * @param taskModel 模型
 	 * @param execution 执行对象
@@ -267,7 +287,7 @@ public class TaskService extends AccessService implements ITaskService {
 		task.setActionUrl(actionUrl);
 		task.setExpireDate(expireDate);
 		task.setExpireTime(DateHelper.parseTime(expireDate));
-		task.setVariable(StringHelper.getStringByArray(actors));
+        task.setVariable(JsonHelper.toJson(args));
 		
 		if(taskModel.isPerformAny()) {
 			//任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
@@ -311,7 +331,7 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 由DBAccess实现类持久化task对象
 	 */
-	public Task saveTask(Task task, int performType, String... actors) {
+	private Task saveTask(Task task, int performType, String... actors) {
 		task.setId(StringHelper.getPrimaryKey());
 		task.setPerformType(PerformType.ANY.ordinal());
 		access().saveTask(task);

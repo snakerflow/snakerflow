@@ -128,13 +128,11 @@ public interface ITaskService {
 	 * @return List<Task> 创建任务集合
 	 */
 	List<Task> createNewTask(String taskId, int taskType, String... actors);
-	
-	/**
-	 * 保存任务对象
-	 * @param task 任务对象
-	 * @param performType 参与类型
-	 * @param actors 参与者
-	 * @return Task 任务对象
-	 */
-	Task saveTask(Task task, int performType, String... actors);
+
+    /**
+     * 根据任务id获取任务模型
+     * @param taskId 任务id
+     * @return
+     */
+    TaskModel getTaskModel(String taskId);
 }
