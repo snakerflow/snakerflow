@@ -82,7 +82,10 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * 更新process的类别
 	 */
 	public void updateType(String id, String type) {
+        Process entity = getProcessById(id);
+        entity.setType(type);
 		access().updateProcessType(id, type);
+        cache(entity);
 	}
 	
 	/**
