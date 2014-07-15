@@ -15,7 +15,7 @@ public class TestQueryHistOrder extends TestSnakerBase {
 	@Test
 	public void test() {
 		System.out.println(engine.query().getHistoryOrders(
-				new QueryFilter().setCreateTimeStart("2014-01-01")));
+				new QueryFilter().setCreateTimeStart("2014-01-01").setName("simple").setState(0).setProcessType("预算管理流程1")));
 		System.out.println(engine.query().getHistoryOrders(new Page<HistoryOrder>(), new QueryFilter()));
 	}
 }
