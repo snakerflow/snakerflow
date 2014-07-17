@@ -31,6 +31,7 @@ import org.snaker.engine.model.TaskModel;
 public interface SnakerEngine {
 	public static final String ADMIN = "snaker.admin";
 	public static final String AUTO = "snaker.auto";
+    public static final String ID = "snaker.orderNo";
 	/**
 	 * 根据Configuration对象配置实现类
 	 * @param config 全局配置对象

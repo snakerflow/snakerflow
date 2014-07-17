@@ -60,13 +60,19 @@ public class OrderService extends AccessService implements IOrderService {
 		order.setLastUpdator(order.getCreator());
 		order.setProcessId(process.getId());
 		ProcessModel model = process.getModel();
-		if(model != null) {
+		if(model != null && args != null) {
 			if(StringHelper.isNotEmpty(model.getExpireTime())) {
 				String expireTime = DateHelper.parseTime(args.get(model.getExpireTime()));
 				order.setExpireTime(expireTime);
 			}
-			order.setOrderNo(model.getGenerator().generate(model));
+            String orderNo = (String)args.get(SnakerEngine.ID);
+            if(StringHelper.isNotEmpty(orderNo)) {
+                order.setOrderNo(orderNo);
+            } else {
+                order.setOrderNo(model.getGenerator().generate(model));
+            }
 		}
+
 		order.setVariable(JsonHelper.toJson(args));
 		saveOrder(order);
 		return order;
