@@ -127,7 +127,8 @@ public abstract class NodeModel extends BaseModel implements Action {
 			}
 			if(target instanceof ForkModel 
 					|| target instanceof JoinModel 
-					|| target instanceof SubProcessModel) {
+					|| target instanceof SubProcessModel
+                    || target instanceof EndModel) {
 				continue;
 			}
 			return canRejected(target);
