@@ -20,7 +20,7 @@ Contact
 
 Wiki
 ----
-* <http://snakerflow.github.io/>
+* <http://snakerflow.com/>
 
 Example
 -----
