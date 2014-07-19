@@ -188,9 +188,9 @@ create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
 //抄送实例表
 create table wf_cc_order (
-    order_Id        VARCHAR(100) COMMENT '流程实例ID',
-    actor_Id        VARCHAR(100) COMMENT '参与者ID',
-    status          smallint(1)  COMMENT '状态'
+    order_Id        VARCHAR(100),
+    actor_Id        VARCHAR(100),
+    status          smallint
 );
 COMMENT on table wf_cc_order is '抄送实例表';
 COMMENT on column wf_cc_order.order_Id is '流程实例ID';
