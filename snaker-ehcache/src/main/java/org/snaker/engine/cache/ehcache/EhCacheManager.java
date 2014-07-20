@@ -59,7 +59,18 @@ public class EhCacheManager implements CacheManager {
             throw new CacheException(e);
         }
 	}
-	
+
+    public void destroy() throws CacheException {
+        try {
+            manager.shutdown();
+        } catch (Exception e) {
+            if (log.isWarnEnabled()) {
+                log.warn("Unable to cleanly shutdown implicitly created CacheManager instance.  " +
+                        "Ignoring (shutting down)...");
+            }
+        }
+    }
+
     private net.sf.ehcache.CacheManager ensureCacheManager() {
         try {
             if (this.manager == null) {

@@ -49,4 +49,10 @@ public class MemoryCacheManager implements CacheManager {
         }
         return cache;
 	}
+
+    public void destroy() throws CacheException {
+        while (!caches.isEmpty()) {
+            caches.clear();
+        }
+    }
 }

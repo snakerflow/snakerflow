@@ -27,4 +27,10 @@ public interface CacheManager {
 	 * @throws CacheException
 	 */
 	public <K, V> Cache<K, V> getCache(String name) throws CacheException;
+
+    /**
+     * 销毁cache
+     * @throws CacheException
+     */
+    public void destroy() throws CacheException;
 }
