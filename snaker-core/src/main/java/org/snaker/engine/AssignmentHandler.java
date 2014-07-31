@@ -18,9 +18,10 @@ import org.snaker.engine.core.Execution;
 
 /**
  * 分配参与者的处理接口
+ * 建议使用Assignment接口
  * @author yuqs
- * @version 1.0
  * @since 1.2.1
+ * @see org.snaker.engine.Assignment
  */
 public interface AssignmentHandler {
 	/**

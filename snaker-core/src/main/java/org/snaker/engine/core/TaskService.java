@@ -20,10 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.snaker.engine.ITaskService;
-import org.snaker.engine.SnakerEngine;
-import org.snaker.engine.SnakerException;
-import org.snaker.engine.TaskAccessStrategy;
+import org.snaker.engine.*;
 import org.snaker.engine.entity.*;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.AssertHelper;
@@ -348,10 +345,15 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	private String[] getTaskActors(TaskModel model, Execution execution) {
 		Object assigneeObject = null;
+        AssignmentHandler handler = model.getAssignmentHandlerObject();
 		if(StringHelper.isNotEmpty(model.getAssignee())) {
 			assigneeObject = execution.getArgs().get(model.getAssignee());
-		} else if(model.getAssignmentHandlerObject() != null) {
-			assigneeObject = model.getAssignmentHandlerObject().assign(execution);
+		} else if(handler != null) {
+            if(handler instanceof Assignment) {
+                assigneeObject = ((Assignment)handler).assign(model, execution);
+            } else {
+                assigneeObject = handler.assign(execution);
+            }
 		}
 		return getTaskActors(assigneeObject == null ? model.getAssignee() : assigneeObject);
 	}
