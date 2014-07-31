@@ -77,8 +77,21 @@ public class OrderService extends AccessService implements IOrderService {
 		saveOrder(order);
 		return order;
 	}
-	
-	/**
+
+    /**
+     * 向活动实例临时添加全局变量数据
+     * @param orderId 实例id
+     * @param args 变量数据
+     */
+    public void addVariable(String orderId, Map<String, Object> args) {
+        Order order = access().getOrder(orderId);
+        Map<String, Object> data = order.getVariableMap();
+        data.putAll(args);
+        order.setVariable(JsonHelper.toJson(data));
+        updateOrder(order);
+    }
+
+    /**
 	 * 创建实例的抄送
 	 */
 	public void createCCOrder(String orderId, String... actorIds) {
@@ -102,7 +115,7 @@ public class OrderService extends AccessService implements IOrderService {
 	}
 	
 	/**
-	 * 更新活动实例的last_Updator、last_Update_Time、version
+	 * 更新活动实例的last_Updator、last_Update_Time、version、variable
 	 */
 	public void updateOrder(Order order) {
 		access().updateOrder(order);
