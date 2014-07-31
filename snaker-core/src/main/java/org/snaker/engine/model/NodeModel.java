@@ -120,6 +120,7 @@ public abstract class NodeModel extends BaseModel implements Action {
 		if(parent instanceof TaskModel && !((TaskModel)parent).isPerformAny()) {
 			return false;
 		}
+        boolean result = false;
 		for(TransitionModel tm : parent.getOutputs()) {
 			NodeModel target = tm.getTarget();
 			if(target.getName().equals(this.getName())) {
@@ -131,9 +132,9 @@ public abstract class NodeModel extends BaseModel implements Action {
                     || target instanceof EndModel) {
 				continue;
 			}
-			return canRejected(target);
+            result = result || canRejected(target);
 		}
-		return false;
+		return result;
 	}
 	
 	public List<TransitionModel> getInputs() {
