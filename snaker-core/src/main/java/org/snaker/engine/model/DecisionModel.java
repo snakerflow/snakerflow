@@ -50,7 +50,7 @@ public class DecisionModel extends NodeModel {
 	/**
 	 * 表达式解析器
 	 */
-	private Expression expression;
+	private transient Expression expression;
 	
 	public void exec(Execution execution) {
 		log.info(execution.getOrder().getId() + "->decision execution.getArgs():" + execution.getArgs());
