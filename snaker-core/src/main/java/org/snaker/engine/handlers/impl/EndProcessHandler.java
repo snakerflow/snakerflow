@@ -60,8 +60,9 @@ public class EndProcessHandler implements IHandler {
 			ProcessModel pm = process.getModel();
 			if(pm == null) return;
 			SubProcessModel spm = (SubProcessModel)pm.getNode(order.getParentNodeName());
-			Execution newExecution = new Execution(engine, process, parentOrder, execution.getArgs());
-			newExecution.setChildOrderId(order.getId());
+            Execution newExecution = new Execution(engine, process, parentOrder, execution.getArgs());
+            newExecution.setChildOrderId(order.getId());
+            newExecution.setTask(execution.getTask());
 			spm.execute(newExecution);
 			/**
 			 * SubProcessModel执行结果的tasks合并到当前执行对象execution的tasks列表中
