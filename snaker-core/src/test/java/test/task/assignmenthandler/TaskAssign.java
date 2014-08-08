@@ -14,16 +14,18 @@
  */
 package test.task.assignmenthandler;
 
-import org.snaker.engine.AssignmentHandler;
+import org.snaker.engine.Assignment;
 import org.snaker.engine.core.Execution;
+import org.snaker.engine.model.TaskModel;
 
 /**
  * @author yuqs
  * @version 1.0
  */
-public class TaskAssign implements AssignmentHandler {
+public class TaskAssign extends Assignment {
 	
-	public Object assign(Execution execution) {
+	public Object assign(TaskModel model, Execution execution) {
+        System.out.println(model);
 		System.out.println(execution.getArgs());
 		return "admin";
 	}
