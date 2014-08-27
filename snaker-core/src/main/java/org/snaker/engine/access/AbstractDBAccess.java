@@ -67,7 +67,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
 	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, variable = ?, version = version + 1 where id=? and version = ?";
 	protected static final String ORDER_HISTORY_INSERT = "insert into wf_hist_order (id,process_Id,order_State,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable) values (?,?,?,?,?,?,?,?,?,?)";
-	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ? where id = ? ";
+	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ?, variable = ? where id = ? ";
 	protected static final String ORDER_DELETE = "delete from wf_order where id = ?";
 	
 	protected static final String CCORDER_INSERT = "insert into wf_cc_order (order_Id, actor_Id, status) values (?, ?, ?)";
@@ -320,8 +320,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
 		} else {
-			Object[] args = new Object[]{order.getOrderState(), order.getEndTime(), order.getId()};
-			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
+			Object[] args = new Object[]{order.getOrderState(), order.getEndTime(), order.getVariable(), order.getId()};
+			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(ORDER_HISTORY_UPDATE, args, type));
 		}
 	}
@@ -353,6 +353,13 @@ public abstract class AbstractDBAccess implements DBAccess {
             }
 		}
 	}
+
+    public void updateOrderVariable(Order order) {
+        updateOrder(order);
+        HistoryOrder hist = getHistOrder(order.getId());
+        hist.setVariable(order.getVariable());
+        updateHistory(hist);
+    }
 	
 	public void saveSurrogate(Surrogate surrogate) {
 		if(isORM()) {

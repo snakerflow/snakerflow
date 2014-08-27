@@ -88,7 +88,7 @@ public class OrderService extends AccessService implements IOrderService {
         Map<String, Object> data = order.getVariableMap();
         data.putAll(args);
         order.setVariable(JsonHelper.toJson(data));
-        updateOrder(order);
+        access().updateOrderVariable(order);
     }
 
     /**

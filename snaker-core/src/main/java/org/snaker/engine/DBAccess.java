@@ -145,6 +145,12 @@ public interface DBAccess {
 	 * @param task 历史任务对象
 	 */
 	public void saveHistory(HistoryTask task);
+
+    /**
+     * 更新实例变量（包括历史实例表）
+     * @param order 实例对象
+     */
+    public void updateOrderVariable(Order order);
 	
 	/**
 	 * 保存委托代理对象
