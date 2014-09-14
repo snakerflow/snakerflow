@@ -564,6 +564,10 @@ public abstract class AbstractDBAccess implements DBAccess {
             sql.append(" and o.process_Id = ? ");
             paramList.add(filter.getProcessId());
         }
+        if(StringHelper.isNotEmpty(filter.getDisplayName())) {
+            sql.append(" and p.displayName like ?");
+            paramList.add("%" + filter.getDisplayName() + "%");
+        }
         if(StringHelper.isNotEmpty(filter.getProcessType())) {
             sql.append(" and p.type = ? ");
             paramList.add(filter.getProcessType());
@@ -684,6 +688,10 @@ public abstract class AbstractDBAccess implements DBAccess {
         if(StringHelper.isNotEmpty(filter.getProcessType())) {
             sql.append(" and p.type = ? ");
             paramList.add(filter.getProcessType());
+        }
+        if(StringHelper.isNotEmpty(filter.getDisplayName())) {
+            sql.append(" and p.displayName like ?");
+            paramList.add("%" + filter.getDisplayName() + "%");
         }
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and o.parent_Id = ? ");
