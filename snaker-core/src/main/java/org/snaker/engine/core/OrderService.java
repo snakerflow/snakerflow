@@ -100,6 +100,7 @@ public class OrderService extends AccessService implements IOrderService {
 			ccorder.setOrderId(orderId);
 			ccorder.setActorId(actorId);
 			ccorder.setStatus(STATE_ACTIVE);
+            ccorder.setCreateTime(DateHelper.getTime());
 			access().saveCCOrder(ccorder);
 		}
 	}
@@ -129,6 +130,7 @@ public class OrderService extends AccessService implements IOrderService {
         AssertHelper.notNull(ccorders);
         for(CCOrder ccorder : ccorders) {
             ccorder.setStatus(STATE_FINISH);
+            ccorder.setFinishTime(DateHelper.getTime());
             access().updateCCOrder(ccorder);
         }
 	}

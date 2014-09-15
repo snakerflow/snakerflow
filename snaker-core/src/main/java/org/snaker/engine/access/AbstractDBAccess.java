@@ -70,8 +70,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ?, variable = ? where id = ? ";
 	protected static final String ORDER_DELETE = "delete from wf_order where id = ?";
 	
-	protected static final String CCORDER_INSERT = "insert into wf_cc_order (order_Id, actor_Id, status) values (?, ?, ?)";
-	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ? where order_Id = ? and actor_Id = ?";
+	protected static final String CCORDER_INSERT = "insert into wf_cc_order (order_Id, actor_Id, create_Time, status) values (?, ?, ?, ?)";
+	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ?, finish_Time = ? where order_Id = ? and actor_Id = ?";
 	protected static final String CCORDER_DELETE = "delete from wf_cc_order where order_Id = ? and actor_Id = ?";
 	
 	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,0)";
@@ -89,7 +89,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String QUERY_ORDER = "select o.id,o.process_Id,o.creator,o.create_Time,o.parent_Id,o.parent_Node_Name,o.expire_Time,o.last_Update_Time,o.last_Updator,o.priority,o.order_No,o.variable, o.version from wf_order o ";
 	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
 	protected static final String QUERY_TASK_ACTOR = "select task_Id, actor_Id from wf_task_actor ";
-	protected static final String QUERY_CCORDER = "select order_Id, actor_Id, status from wf_cc_order ";
+	protected static final String QUERY_CCORDER = "select order_Id, actor_Id, create_Time, finish_Time, status from wf_cc_order ";
 	
 	protected static final String QUERY_HIST_ORDER = "select o.id,o.process_Id,o.order_State,o.priority,o.creator,o.create_Time,o.end_Time,o.parent_Id,o.expire_Time,o.order_No,o.variable from wf_hist_order o ";
 	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
@@ -228,8 +228,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(ccorder, SAVE));
 		} else {
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
-			saveOrUpdate(buildMap(CCORDER_INSERT, new Object[]{ccorder.getOrderId(), ccorder.getActorId(), ccorder.getStatus()}, type));
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(CCORDER_INSERT, new Object[]{ccorder.getOrderId(), ccorder.getActorId(), ccorder.getCreateTime(), ccorder.getStatus()}, type));
 		}
 	}
 
@@ -266,8 +266,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(ccorder, UPDATE));
 		} else {
-			Object[] args = new Object[]{ccorder.getStatus(), ccorder.getOrderId(), ccorder.getActorId() };
-			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
+			Object[] args = new Object[]{ccorder.getStatus(), ccorder.getFinishTime(), ccorder.getOrderId(), ccorder.getActorId() };
+			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(CCORDER_UPDATE, args, type));
 		}
 	}
@@ -825,7 +825,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter) {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select id,process_Id,order_State,priority,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable ");
+		sql.append(" select id,process_Id,order_State,priority,creator,cc.create_Time,end_Time,parent_Id,expire_Time,order_No,variable ");
 		sql.append(" from wf_cc_order cc ");
 		sql.append(" left join wf_hist_order o on cc.order_id = o.id ");
 		sql.append(" where 1=1 ");
@@ -856,11 +856,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 			paramList.add(filter.getParentId());
 		}
 		if(StringHelper.isNotEmpty(filter.getCreateTimeStart())) {
-			sql.append(" and create_Time >= ? ");
+			sql.append(" and cc.create_Time >= ? ");
 			paramList.add(filter.getCreateTimeStart());
 		}
 		if(StringHelper.isNotEmpty(filter.getCreateTimeEnd())) {
-			sql.append(" and create_Time <= ? ");
+			sql.append(" and cc.create_Time <= ? ");
 			paramList.add(filter.getCreateTimeEnd());
 		}
 		if(StringHelper.isNotEmpty(filter.getOrderNo())) {
@@ -869,7 +869,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
         if(!filter.isOrderBySetted()) {
             filter.setOrder(QueryFilter.DESC);
-            filter.setOrderBy("create_Time");
+            filter.setOrderBy("cc.create_Time");
         }
         return queryList(page, filter, HistoryOrder.class, sql.toString(), paramList.toArray());
 	}

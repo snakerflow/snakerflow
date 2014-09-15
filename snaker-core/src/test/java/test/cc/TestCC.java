@@ -38,7 +38,7 @@ public class TestCC extends TestSnakerBase {
 		args.put("task1.operator", new String[]{"1"});
 		Order order = engine.startInstanceByName("simple", 0, "2", args);
 		engine.order().createCCOrder(order.getId(), "test");
-//		engine.order().updateCCStatus("01b960b9d5df4be7b8565b9f64bc1856", "test");
+//		engine.order().updateCCStatus("b0fcc08da45d4e88819d9c287917b525", "test");
 //		engine.order().deleteCCOrder("01b960b9d5df4be7b8565b9f64bc1856", "test");
 	}
 }
