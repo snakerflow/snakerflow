@@ -108,6 +108,8 @@ create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 create table wf_cc_order (
     order_Id        nvarchar(100),
     actor_Id        nvarchar(100),
+    create_Time     nvarchar(50),
+    finish_Time     nvarchar(50),
     status          tinyint
 );
 create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
