@@ -17,6 +17,7 @@ package org.snaker.engine.core;
 import java.util.List;
 import java.util.Map;
 
+import org.snaker.engine.Completion;
 import org.snaker.engine.IOrderService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.QueryFilter;
@@ -157,6 +158,10 @@ public class OrderService extends AccessService implements IOrderService {
 		
 		access().updateHistory(history);
 		access().deleteOrder(order);
+        Completion completion = getCompletion();
+        if(completion != null) {
+            completion.complete(history);
+        }
 	}
 	
 	/**
@@ -185,5 +190,9 @@ public class OrderService extends AccessService implements IOrderService {
 		
 		access().updateHistory(history);
 		access().deleteOrder(order);
+        Completion completion = getCompletion();
+        if(completion != null) {
+            completion.complete(history);
+        }
 	}
 }

@@ -28,6 +28,7 @@ import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.impl.GeneralAccessStrategy;
+import org.snaker.engine.impl.GeneralCompletion;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
@@ -41,9 +42,9 @@ import org.snaker.engine.model.TaskModel.TaskType;
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";
-	
-	private TaskAccessStrategy strategy = null;
 
+    //访问策略接口
+	private TaskAccessStrategy strategy = null;
 	/**
 	 * 完成指定任务
 	 */
@@ -84,6 +85,10 @@ public class TaskService extends AccessService implements ITaskService {
 		}
 		access().saveHistory(history);
 		access().deleteTask(task);
+        Completion completion = getCompletion();
+        if(completion != null) {
+            completion.complete(history);
+        }
 		return task;
 	}
 	
@@ -426,11 +431,11 @@ public class TaskService extends AccessService implements ITaskService {
 
 	public TaskAccessStrategy getStrategy() {
 		if(strategy == null) {
-			strategy = ServiceContext.getContext().find(TaskAccessStrategy.class);
+			strategy = ServiceContext.find(TaskAccessStrategy.class);
 		}
 		if(strategy == null) {
 			strategy = new GeneralAccessStrategy();
-			ServiceContext.getContext().put(strategy.getClass().getName(), strategy);
+			ServiceContext.put(strategy.getClass().getName(), strategy);
 		}
 		return strategy;
 	}

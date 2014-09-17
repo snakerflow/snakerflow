@@ -14,7 +14,9 @@
  */
 package org.snaker.engine.core;
 
+import org.snaker.engine.Completion;
 import org.snaker.engine.DBAccess;
+import org.snaker.engine.impl.GeneralCompletion;
 
 /**
  * 作为抽象父类，提供给子类access实现方式
@@ -38,6 +40,10 @@ public abstract class AccessService {
 	 * 数据库的access
 	 */
 	protected DBAccess access;
+    /**
+     * 完成触发接口
+     */
+    private Completion completion = null;
 	/**
 	 * 获取DBAccess，供子类使用
 	 */
@@ -46,9 +52,27 @@ public abstract class AccessService {
 	}
 	/**
 	 * setter
-	 * @param access
+	 * @param access 访问对象
 	 */
 	public void setAccess(DBAccess access) {
 		this.access = access; 
 	}
+
+    /**
+     * setter
+     * @param completion 完成对象
+     */
+    public void setCompletion(Completion completion) {
+        this.completion = completion;
+    }
+    public Completion getCompletion() {
+        if(completion == null) {
+            completion = ServiceContext.find(Completion.class);
+        }
+        if(completion == null) {
+            completion = new GeneralCompletion();
+            ServiceContext.put(completion.getClass().getName(), completion);
+        }
+        return completion;
+    }
 }
