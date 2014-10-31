@@ -41,13 +41,16 @@ public class ConfigHelper
     private static Properties properties;
 
     public static Properties getProperties() {
-		return properties;
+        if(properties == null) {
+            synchronized (ConfigHelper.class) {
+                if(properties == null) {
+                    loadProperties(PROPERTIES_FILENAME);
+                }
+            }
+        }
+        return properties;
 	}
 
-	static {
-        loadProperties(PROPERTIES_FILENAME);
-    }
-    
     /**
      * 根据key获取配置的字符串value值
      * @param key
@@ -57,7 +60,7 @@ public class ConfigHelper
         if (key == null) {
             return null;
         }
-        return properties.getProperty(key);
+        return getProperties().getProperty(key);
     }
     
     /**
@@ -66,17 +69,21 @@ public class ConfigHelper
      * @return
      */
     public static int getNumerProperty(String key) {
-        String value = properties.getProperty(key);
+        String value = getProperties().getProperty(key);
         if(NumberUtils.isNumber(value)) {
         	return Integer.parseInt(value);
         } else {
         	return 0;
         }
     }
+
+    public static void loadProperties(Properties props) {
+        properties = props;
+    }
     
     /**
      * 根据指定的文件名称，从类路径中加载属性文件，构造Properties对象
-     * @param filename
+     * @param filename 属性文件名称
      */
     public static void loadProperties(String filename) {
     	InputStream in = null;

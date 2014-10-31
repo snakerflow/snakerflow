@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 
@@ -202,6 +203,26 @@ public class Configuration {
 		this.accessDBObject = dbObject;
 		return this;
 	}
+
+    /**
+     * 可装载自定义的属性配置文件
+     * @param fileName 属性文件名称
+     * @return Configuration
+     */
+    public Configuration initProperties(String fileName) {
+        ConfigHelper.loadProperties(fileName);
+        return this;
+    }
+
+    /**
+     * 可装载已有的属性对象
+     * @param properties 属性对象
+     * @return Configuration
+     */
+    public Configuration initProperties(Properties properties) {
+        ConfigHelper.loadProperties(properties);
+        return this;
+    }
 	
 	/**
 	 * 返回DBAccess的数据库访问对象
