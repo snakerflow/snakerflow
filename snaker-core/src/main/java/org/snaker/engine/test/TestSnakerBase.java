@@ -29,8 +29,7 @@ public class TestSnakerBase {
 	protected SnakerEngine engine = getEngine();
 	protected IProcessService processService = engine.process();
 	protected IQueryService queryService = engine.query();
-	
-	private SnakerEngine getEngine() {
+	protected SnakerEngine getEngine() {
 		return new Configuration().buildSnakerEngine();
 	}
 }
