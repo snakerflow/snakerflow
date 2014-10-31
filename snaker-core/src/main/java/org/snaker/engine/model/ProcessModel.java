@@ -56,6 +56,7 @@ public class ProcessModel extends BaseModel {
 	/**
 	 * 返回当前流程定义的所有工作任务节点模型
 	 * @return
+     * @deprecated
 	 */
 	public List<WorkModel> getWorkModels() {
 		List<WorkModel> models = new ArrayList<WorkModel>();
@@ -66,6 +67,22 @@ public class ProcessModel extends BaseModel {
 		}
 		return models;
 	}
+
+    /**
+     * 根据指定的节点类型返回流程定义中所有模型对象
+     * @param clazz 节点类型
+     * @param <T> 泛型
+     * @return List<T>
+     */
+    public <T> List<T> getModels(Class<T> clazz) {
+        List<T> models = new ArrayList<T>();
+        for(NodeModel node : nodes) {
+            if(clazz.isInstance(node)) {
+                models.add((T)node);
+            }
+        }
+        return models;
+    }
 
 	/**
 	 * 获取process定义的start节点模型
