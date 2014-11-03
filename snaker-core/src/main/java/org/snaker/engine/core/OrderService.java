@@ -21,11 +21,8 @@ import org.snaker.engine.Completion;
 import org.snaker.engine.IOrderService;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.QueryFilter;
-import org.snaker.engine.entity.CCOrder;
-import org.snaker.engine.entity.HistoryOrder;
-import org.snaker.engine.entity.Order;
+import org.snaker.engine.entity.*;
 import org.snaker.engine.entity.Process;
-import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
@@ -195,4 +192,26 @@ public class OrderService extends AccessService implements IOrderService {
             completion.complete(history);
         }
 	}
+
+    /**
+     * 激活已完成的历史流程实例
+     * @param orderId 实例id
+     * @return 活动实例对象
+     */
+    public Order resume(String orderId) {
+        HistoryOrder historyOrder = access().getHistOrder(orderId);
+        Order order = historyOrder.undo();
+        access().saveOrder(order);
+        historyOrder.setOrderState(STATE_ACTIVE);
+        access().updateHistory(historyOrder);
+
+        SnakerEngine engine = ServiceContext.getEngine();
+        List<HistoryTask> histTasks = access().getHistoryTasks(null,
+                new QueryFilter().setOrderId(orderId));
+        if(histTasks != null && !histTasks.isEmpty()) {
+            HistoryTask histTask = histTasks.get(0);
+            engine.task().resume(histTask.getId(), histTask.getOperator());
+        }
+        return order;
+    }
 }

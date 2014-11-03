@@ -94,6 +94,27 @@ public class HistoryOrder implements Serializable {
     	this.variable = order.getVariable();
     }
 
+    /**
+     * 根据历史实例撤回活动实例
+     * @return 活动实例对象
+     */
+    public Order undo() {
+        Order order = new Order();
+        order.setId(this.id);
+        order.setProcessId(this.processId);
+        order.setParentId(this.parentId);
+        order.setCreator(this.creator);
+        order.setCreateTime(this.createTime);
+        order.setLastUpdator(this.creator);
+        order.setLastUpdateTime(this.endTime);
+        order.setExpireTime(this.expireTime);
+        order.setOrderNo(this.orderNo);
+        order.setPriority(this.priority);
+        order.setVariable(this.variable);
+        order.setVersion(0);
+        return order;
+    }
+
 	public String getProcessId() {
 		return processId;
 	}
