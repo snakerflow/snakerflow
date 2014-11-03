@@ -244,27 +244,13 @@ public class TaskModel extends WorkModel {
     /**
      * 获取后续任务模型集合（方便预处理）
      * @return 模型集合
+     * @deprecated
      */
     public List<TaskModel> getNextTaskModels() {
         List<TaskModel> models = new ArrayList<TaskModel>();
         for(TransitionModel tm : this.getOutputs()) {
-            addNextTaskModels(models, tm);
+            addNextModels(models, tm, TaskModel.class);
         }
         return models;
-    }
-
-    /**
-     * 递归添加后续任务模型
-     * @param models 模型集合
-     * @param tm 连接模型
-     */
-    private void addNextTaskModels(List<TaskModel> models, TransitionModel tm) {
-        if(tm.getTarget() instanceof TaskModel) {
-            models.add((TaskModel)tm.getTarget());
-        } else {
-            for(TransitionModel tm2 : tm.getTarget().getOutputs()) {
-                addNextTaskModels(models, tm2);
-            }
-        }
     }
 }

@@ -58,7 +58,7 @@ public class TestModel extends TestSnakerBase {
         for(Task task : tasks) {
             TaskModel model = engine.task().getTaskModel(task.getId());
             System.out.println(model.getName());
-            List<TaskModel> models = model.getNextTaskModels();
+            List<TaskModel> models = model.getNextModels(TaskModel.class);
             for(TaskModel tm : models) {
                 System.out.println(tm.getName());
             }

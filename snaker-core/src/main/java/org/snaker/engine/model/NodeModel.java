@@ -138,6 +138,24 @@ public abstract class NodeModel extends BaseModel implements Action {
 		}
 		return result;
 	}
+
+    public <T> List<T> getNextModels(Class<T> clazz) {
+        List<T> models = new ArrayList<T>();
+        for(TransitionModel tm : this.getOutputs()) {
+            addNextModels(models, tm, clazz);
+        }
+        return models;
+    }
+
+    protected <T> void addNextModels(List<T> models, TransitionModel tm, Class<T> clazz) {
+        if(clazz.isInstance(tm.getTarget())) {
+            models.add((T)tm.getTarget());
+        } else {
+            for(TransitionModel tm2 : tm.getTarget().getOutputs()) {
+                addNextModels(models, tm2, clazz);
+            }
+        }
+    }
 	
 	public List<TransitionModel> getInputs() {
 		return inputs;
