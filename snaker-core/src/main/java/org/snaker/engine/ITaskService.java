@@ -65,6 +65,15 @@ public interface ITaskService {
 	 * @return Task 任务对象
 	 */
 	Task take(String taskId, String operator);
+
+    /**
+     * 根据历史任务主键id，操作人唤醒历史任务
+     * 该方法会导致流程状态不可控，请慎用
+     * @param taskId 历史任务id
+     * @param operator 操作人id
+     * @return Task 唤醒后的任务对象
+     */
+    Task resume(String taskId, String operator);
 	
 	/**
 	 * 向指定的任务id添加参与者

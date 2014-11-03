@@ -130,7 +130,7 @@ public class HistoryTask implements Serializable {
     
     /**
      * 根据历史任务产生撤回的任务对象
-     * @return
+     * @return 任务对象
      */
     public Task undoTask() {
     	Task task = new Task();

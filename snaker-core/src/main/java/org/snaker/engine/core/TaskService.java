@@ -106,6 +106,28 @@ public class TaskService extends AccessService implements ITaskService {
 		access().updateTask(task);
 		return task;
 	}
+
+    /**
+     * 唤醒指定的历史任务
+     */
+    public Task resume(String taskId, String operator) {
+        HistoryTask histTask = access().getHistTask(taskId);
+        AssertHelper.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
+        boolean isAllowed = true;
+        if(StringHelper.isNotEmpty(histTask.getOperator())) {
+            isAllowed = histTask.getOperator().equals(operator);
+        }
+        if(isAllowed) {
+            Task task = histTask.undoTask();
+            task.setId(StringHelper.getPrimaryKey());
+            task.setCreateTime(DateHelper.getTime());
+            access().saveTask(task);
+            assignTask(task.getId(), task.getOperator());
+            return task;
+        } else {
+            throw new SnakerException("当前参与者[" + operator + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+        }
+    }
 	
 	/**
 	 * 向指定任务添加参与者
