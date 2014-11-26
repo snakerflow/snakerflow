@@ -22,6 +22,8 @@ import org.snaker.engine.cfg.Configuration;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
 
+import java.util.Properties;
+
 /**
  * 基于Jfinal的Snaker插件
  * 通过调用getEngine方法获取引擎的服务入口
@@ -31,6 +33,7 @@ import com.jfinal.plugin.activerecord.IDataSourceProvider;
 public class SnakerPlugin implements IPlugin {
 	private static boolean isStarted = false;
 	private static DataSource dataSource;
+    private static Properties properties;
 	private static IDataSourceProvider dataSourceProvider;
 	private static SnakerEngine engine;
 	
@@ -41,6 +44,15 @@ public class SnakerPlugin implements IPlugin {
 	public SnakerPlugin(DataSource dataSource) {
 		SnakerPlugin.dataSource = dataSource;
 	}
+
+    /**
+     * 根据DataSource构造插件
+     * @param dataSource 数据源
+     */
+    public SnakerPlugin(DataSource dataSource, Properties properties) {
+        SnakerPlugin.dataSource = dataSource;
+        SnakerPlugin.properties = properties;
+    }
 	
 	/**
 	 * 根据数据源提供者构造插件
@@ -60,9 +72,9 @@ public class SnakerPlugin implements IPlugin {
 			dataSource = dataSourceProvider.getDataSource();
 		if (dataSource == null)
 			throw new RuntimeException("SnakerPlugin start error: SnakerPlugin need DataSource");
-		engine = new Configuration()
-			.initAccessDBObject(dataSource)
-			.buildSnakerEngine();
+        Configuration config = new Configuration().initAccessDBObject(dataSource);
+        if(properties != null) config.initProperties(properties);
+		engine = config.buildSnakerEngine();
 		isStarted = true;
 		return true;
 	}
