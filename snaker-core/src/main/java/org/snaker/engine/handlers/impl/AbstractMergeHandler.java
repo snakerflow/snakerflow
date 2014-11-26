@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.snaker.engine.model.TaskModel;
  * 合并处理的抽象处理器
  * 需要子类提供查询无法合并的task集合的参数map
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public abstract class AbstractMergeHandler implements IHandler {
 	public void handle(Execution execution) {

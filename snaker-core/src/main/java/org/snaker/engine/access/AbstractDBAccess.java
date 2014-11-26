@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import org.snaker.engine.helper.StringHelper;
  * 抽象数据库访问类
  * 封装SQL语句的构造
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public abstract class AbstractDBAccess implements DBAccess {
     private static final Logger log = LoggerFactory.getLogger(AbstractDBAccess.class);

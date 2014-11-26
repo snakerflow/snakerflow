@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 工作项（待办、已处理任务的查询结果实体）
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class WorkItem implements Serializable {
 	/**

@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.snaker.engine.model.ProcessModel;
  * 默认的流程实例编号生成器
  * 编号生成规则为:yyyyMMdd-HH:mm:ss-SSS-random
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class DefaultNoGenerator implements INoGenerator {
 	public String generate(ProcessModel model) {

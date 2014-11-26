@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import net.sf.cglib.proxy.MethodProxy;
 /**
  * 事务拦截器，用于产生业务逻辑类的代理类
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public abstract class TransactionInterceptor implements MethodInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(TransactionInterceptor.class);

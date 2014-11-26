@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import de.odysseus.el.util.SimpleContext;
 /**
  * Juel 表达式引擎实现
  * @author yuqs
- * @version 1.2
+ * @since 1.2
  */
 public class JuelExpression implements Expression {
 	ExpressionFactory factory = new ExpressionFactoryImpl();

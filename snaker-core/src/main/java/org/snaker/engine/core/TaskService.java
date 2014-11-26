@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.snaker.engine.model.TaskModel.TaskType;
 /**
  * 任务执行业务类
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";

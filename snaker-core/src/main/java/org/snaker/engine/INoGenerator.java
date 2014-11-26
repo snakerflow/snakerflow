@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.snaker.engine.model.ProcessModel;
  * 编号生成器接口
  * 流程实例的编号字段使用该接口实现类来产生对应的编号
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public interface INoGenerator {
 	/**

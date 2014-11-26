@@ -9,7 +9,7 @@ import org.snaker.engine.test.TestSnakerBase;
 /**
  * 流程定义查询测试
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class TestQueryProcess extends TestSnakerBase {
 	@Test

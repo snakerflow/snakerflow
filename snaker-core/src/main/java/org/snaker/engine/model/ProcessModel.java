@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.snaker.engine.impl.DefaultNoGenerator;
 /**
  * 流程定义process元素
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class ProcessModel extends BaseModel {
 	/**
@@ -36,6 +36,7 @@ public class ProcessModel extends BaseModel {
 	 * 节点元素集合
 	 */
 	private List<NodeModel> nodes = new ArrayList<NodeModel>();
+    private List<TaskModel> taskModels = new ArrayList<TaskModel>();
 	/**
 	 * 流程实例启动url
 	 */
@@ -52,6 +53,10 @@ public class ProcessModel extends BaseModel {
 	 * 实例编号生成器对象
 	 */
 	private INoGenerator generator;
+    /**
+     * lock
+     */
+    private final Object lock = new Object();
 	
 	/**
 	 * 返回当前流程定义的所有工作任务节点模型
@@ -69,19 +74,38 @@ public class ProcessModel extends BaseModel {
 	}
 
     /**
+     * 获取所有的有序任务模型集合
+     * @return List<TaskModel> 任务模型集合
+     */
+    public List<TaskModel> getTaskModels() {
+        if(taskModels.isEmpty()) {
+            synchronized (lock) {
+                if(taskModels.isEmpty())
+                    buildModels(taskModels, getStart().getNextModels(TaskModel.class), TaskModel.class);
+            }
+        }
+        return taskModels;
+    }
+
+    /**
      * 根据指定的节点类型返回流程定义中所有模型对象
      * @param clazz 节点类型
      * @param <T> 泛型
-     * @return List<T>
+     * @return 节点列表
      */
     public <T> List<T> getModels(Class<T> clazz) {
         List<T> models = new ArrayList<T>();
-        for(NodeModel node : nodes) {
-            if(clazz.isInstance(node)) {
-                models.add((T)node);
+        buildModels(models, getStart().getNextModels(clazz), clazz);
+        return models;
+    }
+
+    private <T> void buildModels(List<T> models, List<T> nextModels, Class<T> clazz) {
+        for(T nextModel : nextModels) {
+            if(!models.contains(nextModel)) {
+                models.add(nextModel);
+                buildModels(models, ((NodeModel)nextModel).getNextModels(clazz), clazz);
             }
         }
-        return models;
     }
 
 	/**
@@ -99,7 +123,7 @@ public class ProcessModel extends BaseModel {
 	
 	/**
 	 * 获取process定义的指定节点名称的节点模型
-	 * @param nodeName
+	 * @param nodeName 节点名称
 	 * @return
 	 */
 	public NodeModel getNode(String nodeName) {
@@ -113,7 +137,7 @@ public class ProcessModel extends BaseModel {
 	
 	/**
 	 * 判断当前模型的节点是否包含给定的节点名称参数
-	 * @param nodeNames
+	 * @param nodeNames 节点名称数组
 	 * @return
 	 */
 	public <T> boolean containsNodeNames(Class<T> T, String... nodeNames) {

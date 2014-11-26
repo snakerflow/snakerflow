@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.snaker.engine.access.transaction;
  * 事务对象保持类
  * 该类用于绑定数据库访问对象（Connection、Session）
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class TransactionObjectHolder {
 	/**

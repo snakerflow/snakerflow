@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.snaker.engine.entity.Task;
 /**
  * 日志拦截器
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class LogInterceptor implements SnakerInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(LogInterceptor.class);

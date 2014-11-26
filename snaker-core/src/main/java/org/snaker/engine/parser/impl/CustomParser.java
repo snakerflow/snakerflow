@@ -1,4 +1,4 @@
-/* Copyright 2013-2014 the original author or authors.
+/* Copyright 2013-2015 www.snakerflow.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 /**
  * 自定义节点解析器
  * @author yuqs
- * @version 1.0
+ * @since 1.0
  */
 public class CustomParser extends AbstractNodeParser {
 	protected void parseNode(NodeModel node, Element element) {
