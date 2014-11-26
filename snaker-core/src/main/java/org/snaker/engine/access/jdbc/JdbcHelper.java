@@ -22,6 +22,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.snaker.engine.access.dialect.*;
 import org.snaker.engine.access.transaction.TransactionObjectHolder;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.ConfigHelper;
@@ -317,6 +318,23 @@ public abstract class JdbcHelper {
         DatabaseMetaData databaseMetaData = conn.getMetaData();
         String databaseProductName = databaseMetaData.getDatabaseProductName();
         return databaseTypeMappings.getProperty(databaseProductName);
+    }
+
+    /**
+     * 根据连接对象获取数据库方言
+     * @param conn 数据库连接
+     * @return Dialect 方言
+     * @throws Exception
+     */
+    public static Dialect getDialect(Connection conn) throws Exception {
+        DatabaseMetaData databaseMetaData = conn.getMetaData();
+        String databaseProductName = databaseMetaData.getDatabaseProductName();
+        String dbType = databaseTypeMappings.getProperty(databaseProductName);
+        if(dbType == null || dbType.equalsIgnoreCase("mysql")) return new MySqlDialect();
+        else if(dbType.equalsIgnoreCase("oracle")) return new OracleDialect();
+        else if(dbType.equalsIgnoreCase("postgres")) return new PostgresqlDialect();
+        else if(dbType.equalsIgnoreCase("mssql")) return new SQLServerDialect();
+        else return new MySqlDialect();
     }
 
     /**

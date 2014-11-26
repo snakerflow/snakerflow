@@ -64,7 +64,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	protected static final String PROCESS_UPDATE_TYPE = "update wf_process set type=? where id=?";
 	
-	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,0)";
+	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, variable = ?, version = version + 1 where id=? and version = ?";
 	protected static final String ORDER_HISTORY_INSERT = "insert into wf_hist_order (id,process_Id,order_State,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable) values (?,?,?,?,?,?,?,?,?,?)";
 	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ?, variable = ? where id = ? ";
@@ -74,7 +74,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ?, finish_Time = ? where order_Id = ? and actor_Id = ?";
 	protected static final String CCORDER_DELETE = "delete from wf_cc_order where order_Id = ? and actor_Id = ?";
 	
-	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,0)";
+	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, version = version + 1 where id=? and version = ?";
 	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String TASK_DELETE = "delete from wf_task where id = ?";
@@ -152,9 +152,15 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 * @return
 	 */
 	protected Dialect getDialect() {
-		if(dialect == null) {
-			dialect = ServiceContext.getContext().find(Dialect.class);
-		}
+        if(dialect != null) return dialect;
+        try {
+            dialect = JdbcHelper.getDialect(getConnection());
+        } catch (Exception e) {
+            log.error("Unable to find the available dialect.Please configure dialect to snaker.xml");
+        }
+        if(dialect == null) {
+            dialect = ServiceContext.getContext().find(Dialect.class);
+        }
 		return dialect;
 	}
 	
@@ -204,10 +210,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		} else {
 			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
 					task.getPerformType(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
-					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable()};
+					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable(), task.getVersion()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
 					Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-					Types.VARCHAR, Types.VARCHAR};
+					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(TASK_INSERT, args, type));
 		}
 	}
@@ -217,9 +223,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(order, SAVE));
 		} else {
 			Object[] args = new Object[]{order.getId(), order.getProcessId(), order.getCreator(), order.getCreateTime(), order.getParentId(), 
-					order.getParentNodeName(), order.getExpireTime(), order.getLastUpdateTime(), order.getLastUpdator(), order.getOrderNo(), order.getVariable()};
+					order.getParentNodeName(), order.getExpireTime(), order.getLastUpdateTime(), order.getLastUpdator(), order.getOrderNo(),
+                    order.getVariable(), order.getVersion()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
-					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(ORDER_INSERT, args, type));
 		}
 	}
@@ -234,13 +241,13 @@ public abstract class AbstractDBAccess implements DBAccess {
 	}
 
 	public void saveTaskActor(TaskActor taskActor) {
-		if(isORM()) {
-			saveOrUpdate(buildMap(taskActor, SAVE));
-		} else {
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR};
-			saveOrUpdate(buildMap(TASK_ACTOR_INSERT, new Object[]{taskActor.getTaskId(), taskActor.getActorId() }, type));
-		}
-	}
+        if(isORM()) {
+            saveOrUpdate(buildMap(taskActor, SAVE));
+        } else {
+            int[] type = new int[]{Types.VARCHAR, Types.VARCHAR};
+            saveOrUpdate(buildMap(TASK_ACTOR_INSERT, new Object[]{taskActor.getTaskId(), taskActor.getActorId() }, type));
+        }
+    }
 
 	public void updateTask(Task task) {
 		if(isORM()) {
@@ -457,7 +464,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	}
 	
 	public HistoryOrder getHistOrder(String orderId) {
-		String where = " where o.id = ?";
+		String where = " where id = ?";
 		return queryObject(HistoryOrder.class, QUERY_HIST_ORDER + where, orderId);
 	}
 
@@ -472,7 +479,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	}
 
 	public Order getOrder(String orderId) {
-		String where = " where o.id = ?";
+		String where = " where id = ?";
 		return queryObject(Order.class, QUERY_ORDER + where, orderId);
 	}
 	
