@@ -64,7 +64,9 @@ public class SQLServerDialect implements Dialect {
                 orderByName = orderByItem.substring(0, orderByItem.indexOf(" "));
                 orderByDirect = orderByItem.substring(orderByItem.indexOf(" ") + 1);
             }
-
+            if(orderByName.indexOf(".") > -1) {
+                orderByName = orderByName.substring(orderByName.indexOf(".") + 1);
+            }
             String columnAlias = orderByName + " as ";
             int columnIndex = sql.indexOf(columnAlias);
             if(columnIndex == -1) {
