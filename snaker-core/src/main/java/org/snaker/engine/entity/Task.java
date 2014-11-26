@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TaskModel.TaskType;
-import org.snaker.engine.model.WorkModel;
 
 /**
  * 任务实体类
@@ -104,7 +104,7 @@ public class Task implements Serializable, Cloneable {
     /**
      * 保持模型对象
      */
-    private WorkModel model;
+    private TaskModel model;
     
     public Task() {
     	
@@ -254,11 +254,11 @@ public class Task implements Serializable, Cloneable {
 		this.remindDate = remindDate;
 	}
 
-	public WorkModel getModel() {
+	public TaskModel getModel() {
 		return model;
 	}
 
-	public void setModel(WorkModel model) {
+	public void setModel(TaskModel model) {
 		this.model = model;
 	}
 	
