@@ -45,7 +45,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
     /**
      * dbutils的QueryRunner对象
      */
-    private QueryRunner runner = new QueryRunner();
+    private QueryRunner runner = new QueryRunner(true);
     
 	/**
 	 * jdbc的数据源
@@ -70,7 +70,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	/**
      * 返回数据库连接对象
      * @return
-     * @throws SQLException
+     * @throws java.sql.SQLException
      */
     protected Connection getConnection() throws SQLException {
     	return JdbcHelper.getConnection(dataSource);
