@@ -62,7 +62,7 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 完成指定任务
 	 * 该方法仅仅结束活动任务，并不能驱动流程继续执行
-	 * @see org.snaker.engine.core.SnakerEngineImpl#executeTask(String, String, Map)
+	 * @see SnakerEngineImpl#executeTask(String, String, java.util.Map)
 	 */
 	public Task complete(String taskId, String operator, Map<String, Object> args) {
 		Task task = access().getTask(taskId);
@@ -408,6 +408,11 @@ public class TaskService extends AccessService implements ITaskService {
 				results[i] = actorStrs[i];
 			}
 			return results;
+        } else if(actors instanceof List){
+            //jackson会把stirng[]转成arraylist，此处增加arraylist的逻辑判断,by 红豆冰沙2014.11.21
+            results= (String[])((List)actors).toArray();
+            return results;
+
 		} else if(actors instanceof Long) {
 			//如果为Long类型，则返回1个元素的String[]
 			results = new String[1];
