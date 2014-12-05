@@ -7,6 +7,9 @@
 		    <key-property name="orderId" column="ORDER_ID"/>
 		    <key-property name="actorId" column="ACTOR_ID"/>
 		</composite-id>
+        <property name="creator" type="java.lang.String" column="creator"/>
+        <property name="createTime" type="java.lang.String" column="create_Time"/>
+        <property name="finishTime" type="java.lang.String" column="finish_Time"/>
 		<property name="status" type="java.lang.Integer" column="status"/>
     </class>
 </hibernate-mapping>
