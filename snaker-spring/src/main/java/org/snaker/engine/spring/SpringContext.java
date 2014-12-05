@@ -41,7 +41,7 @@ public class SpringContext implements Context {
 	
 	/**
 	 * 根据spring的上下文构造SpringContext
-	 * @param ctx
+	 * @param ctx 上下文
 	 */
 	public SpringContext(ApplicationContext ctx) {
 		this.applicationContext = ctx;
@@ -79,7 +79,7 @@ public class SpringContext implements Context {
 	 * spring不支持向applicationContext中直接添加对象
 	 */
 	public void put(String name, Object object) {
-		log.warn("spring不允许设置服务");
+		log.warn("spring不支持向applicationContext中直接添加对象");
 	}
 	
 	/**
