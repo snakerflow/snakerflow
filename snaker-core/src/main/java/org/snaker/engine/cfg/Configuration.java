@@ -130,13 +130,12 @@ public class Configuration {
 		if (!isCMB()) {
 		    parser(EXT_CONFIG_FILE);
 			for(Entry<String, Class<?>> entry : txClass.entrySet()) {
-				Object instance = null;
 				if(interceptor != null) {
-					instance = interceptor.getProxy(entry.getValue());
+                    Object instance = interceptor.getProxy(entry.getValue());
+                    ServiceContext.put(entry.getKey(), instance);
 				} else {
-					instance = ClassHelper.instantiate(entry.getValue());
+                    ServiceContext.put(entry.getKey(), entry.getValue());
 				}
-				ServiceContext.put(entry.getKey(), instance);
 			}
 		}
 		
