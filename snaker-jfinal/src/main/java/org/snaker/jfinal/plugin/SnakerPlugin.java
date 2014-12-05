@@ -48,6 +48,7 @@ public class SnakerPlugin implements IPlugin {
     /**
      * 根据DataSource构造插件
      * @param dataSource 数据源
+     * @param properties 属性
      */
     public SnakerPlugin(DataSource dataSource, Properties properties) {
         SnakerPlugin.dataSource = dataSource;
@@ -57,9 +58,11 @@ public class SnakerPlugin implements IPlugin {
 	/**
 	 * 根据数据源提供者构造插件
 	 * @param dataSourceProvider 数据源提供接口
+     * @param properties 属性
 	 */
-	public SnakerPlugin(IDataSourceProvider dataSourceProvider) {
+	public SnakerPlugin(IDataSourceProvider dataSourceProvider, Properties properties) {
 		SnakerPlugin.dataSourceProvider = dataSourceProvider;
+        SnakerPlugin.properties = properties;
 	}
 	
 	/**
@@ -81,7 +84,7 @@ public class SnakerPlugin implements IPlugin {
 	
 	/**
 	 * 获取snaker的流程引擎
-	 * @return
+	 * @return SnakerEngine
 	 */
 	public static SnakerEngine getEngine() {
 		return engine;
