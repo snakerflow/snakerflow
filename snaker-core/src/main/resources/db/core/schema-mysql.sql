@@ -1,4 +1,3 @@
-//流程定义表
 CREATE TABLE wf_process (
     id                VARCHAR(100) PRIMARY KEY NOT NULL comment '主键ID',
     name              VARCHAR(100) comment '流程名称',
@@ -12,7 +11,6 @@ CREATE TABLE wf_process (
     creator           VARCHAR(50) comment '创建人'
 )comment='流程定义表';
 
-//流程实例表
 CREATE TABLE wf_order (
     id                VARCHAR(100) NOT NULL PRIMARY KEY comment '主键ID',
     parent_Id         VARCHAR(100) comment '父流程ID',
@@ -29,7 +27,6 @@ CREATE TABLE wf_order (
     version           INT(3) comment '版本'
 )comment='流程实例表';
 
-//任务表
 CREATE TABLE wf_task (
     id                VARCHAR(100) NOT NULL PRIMARY KEY comment '主键ID',
     order_Id          VARCHAR(100) NOT NULL comment '流程实例ID',
@@ -47,13 +44,11 @@ CREATE TABLE wf_task (
     version           TINYINT(1) comment '版本'
 )comment='任务表';
 
-//任务参与者表
 CREATE TABLE wf_task_actor (
     task_Id           VARCHAR(100) not null comment '任务ID',
     actor_Id          VARCHAR(100) not null comment '参与者ID'
 )comment='任务参与者表';
 
-//历史流程实例表
 create table wf_hist_order (
     id                VARCHAR(100) not null primary key comment '主键ID',
     process_Id        VARCHAR(100) not null comment '流程定义ID',
@@ -68,7 +63,6 @@ create table wf_hist_order (
     variable          VARCHAR(2000) comment '附属变量json存储'
 )comment='历史流程实例表';
 
-//历史任务表
 create table wf_hist_task (
     id                VARCHAR(100) not null primary key comment '主键ID',
     order_Id          VARCHAR(100) not null comment '流程实例ID',
@@ -86,13 +80,11 @@ create table wf_hist_task (
     variable          VARCHAR(2000) comment '附属变量json存储'
 )comment='历史任务表';
 
-//历史任务参与者表
 create table wf_hist_task_actor (
     task_Id           VARCHAR(100) not null comment '任务ID',
     actor_Id          VARCHAR(100) not null comment '参与者ID'
 )comment='历史任务参与者表';
 
-//委托代理表
 create table wf_surrogate (
     id                VARCHAR(100) PRIMARY KEY NOT NULL COMMENT '主键ID',
     process_Name       VARCHAR(100) COMMENT '流程名称',
@@ -105,17 +97,16 @@ create table wf_surrogate (
 )COMMENT='委托代理表';
 create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 
-//抄送实例表
 create table wf_cc_order (
     order_Id        varchar(100) COMMENT '流程实例ID',
     actor_Id        varchar(100) COMMENT '参与者ID',
+    creator         varchar(50) COMMENT '发起人',
     create_Time     varchar(50) COMMENT '抄送时间',
     finish_Time     varchar(50) COMMENT '完成时间',
     status          TINYINT(1)  COMMENT '状态'
 )comment='抄送实例表';
 create index IDX_CCORDER_ORDER on wf_cc_order (order_Id);
 
-//对若干字段增加索引
 create index IDX_PROCESS_NAME on wf_process (name);
 create index IDX_ORDER_PROCESSID on wf_order (process_Id);
 create index IDX_ORDER_NO on wf_order (order_No);
@@ -130,28 +121,27 @@ create index IDX_HIST_TASK_TASKNAME on wf_hist_task (task_Name);
 create index IDX_HIST_TASK_PARENTTASK on wf_hist_task (parent_Task_Id);
 create index IDX_HIST_TASKACTOR_TASK on wf_hist_task_actor (task_Id);
 
-//增加外键关联约束
-alter table WF_TASK_ACTOR
-  add constraint FK_TASK_ACTOR_TASKID foreign key (TASK_ID)
-  references WF_TASK (ID);
-alter table WF_TASK
-  add constraint FK_TASK_ORDERID foreign key (ORDER_ID)
-  references WF_ORDER (ID);
-alter table WF_ORDER
-  add constraint FK_ORDER_PARENTID foreign key (PARENT_ID)
-  references WF_ORDER (ID);
-alter table WF_ORDER
-  add constraint FK_ORDER_PROCESSID foreign key (PROCESS_ID)
-  references WF_PROCESS (ID);
-alter table WF_HIST_TASK_ACTOR
-  add constraint FK_HIST_TASKACTOR foreign key (TASK_ID)
-  references WF_HIST_TASK (ID);
-alter table WF_HIST_TASK
-  add constraint FK_HIST_TASK_ORDERID foreign key (ORDER_ID)
-  references WF_HIST_ORDER (ID);
-alter table WF_HIST_ORDER
-  add constraint FK_HIST_ORDER_PARENTID foreign key (PARENT_ID)
-  references WF_HIST_ORDER (ID);
-alter table WF_HIST_ORDER
-  add constraint FK_HIST_ORDER_PROCESSID foreign key (PROCESS_ID)
-  references WF_PROCESS (ID);
+alter table wf_task_actor
+  add constraint FK_TASK_ACTOR_TASKID foreign key (task_Id)
+  references wf_task (id);
+alter table wf_task
+  add constraint FK_TASK_ORDERID foreign key (order_Id)
+  references wf_order (id);
+alter table wf_order
+  add constraint FK_ORDER_PARENTID foreign key (parent_Id)
+  references wf_order (id);
+alter table wf_order
+  add constraint FK_ORDER_PROCESSID foreign key (process_Id)
+  references wf_process (id);
+alter table wf_hist_task_actor
+  add constraint FK_HIST_TASKACTOR foreign key (task_Id)
+  references wf_hist_task (id);
+alter table wf_hist_task
+  add constraint FK_HIST_TASK_ORDERID foreign key (order_Id)
+  references wf_hist_order (id);
+alter table wf_hist_order
+  add constraint FK_HIST_ORDER_PARENTID foreign key (parent_Id)
+  references wf_hist_order (id);
+alter table wf_hist_order
+  add constraint FK_HIST_ORDER_PROCESSID foreign key (process_Id)
+  references wf_process (id);
