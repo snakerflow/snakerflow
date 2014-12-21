@@ -92,11 +92,12 @@ public class OrderService extends AccessService implements IOrderService {
     /**
 	 * 创建实例的抄送
 	 */
-	public void createCCOrder(String orderId, String... actorIds) {
+	public void createCCOrder(String orderId, String creator, String... actorIds) {
 		for(String actorId : actorIds) {
 			CCOrder ccorder = new CCOrder();
 			ccorder.setOrderId(orderId);
 			ccorder.setActorId(actorId);
+            ccorder.setCreator(creator);
 			ccorder.setStatus(STATE_ACTIVE);
             ccorder.setCreateTime(DateHelper.getTime());
 			access().saveCCOrder(ccorder);

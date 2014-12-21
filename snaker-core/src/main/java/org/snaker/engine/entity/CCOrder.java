@@ -25,6 +25,7 @@ public class CCOrder implements Serializable {
 	private static final long serialVersionUID = -7596174225209412843L;
 	private String orderId;
 	private String actorId;
+    private String creator;
     private String createTime;
     private String finishTime;
 	private Integer status;
@@ -34,6 +35,14 @@ public class CCOrder implements Serializable {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
 	public String getActorId() {
 		return actorId;
 	}

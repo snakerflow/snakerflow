@@ -56,9 +56,10 @@ public interface IOrderService {
 	 * 创建抄送实例
 	 * @param orderId 流程实例id
 	 * @param actorIds 参与者id
+     * @param creator 创建人id
 	 * @since 1.5
 	 */
-	void createCCOrder(String orderId, String... actorIds);
+	void createCCOrder(String orderId, String creator, String... actorIds);
 	
 	/**
 	 * 流程实例正常完成
