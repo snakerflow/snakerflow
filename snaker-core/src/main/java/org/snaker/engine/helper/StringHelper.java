@@ -25,7 +25,7 @@ import org.snaker.engine.SnakerException;
 public class StringHelper {
 	/**
 	 * 获取uuid类型的字符串
-	 * @return
+	 * @return uuid字符串
 	 */
 	public static String getPrimaryKey() {
 		return java.util.UUID.randomUUID().toString().replace("-", "");
@@ -33,8 +33,8 @@ public class StringHelper {
 	
 	/**
 	 * 判断字符串是否为空
-	 * @param str
-	 * @return
+	 * @param str 字符串
+	 * @return 是否为空标识
 	 */
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
@@ -42,8 +42,8 @@ public class StringHelper {
 	
 	/**
 	 * 判断字符串是否为非空
-	 * @param str
-	 * @return
+	 * @param str 字符串
+	 * @return 是否为非空标识
 	 */
 	public static boolean isNotEmpty(String str) {
 		return !isEmpty(str);
@@ -51,13 +51,13 @@ public class StringHelper {
 	
 	/**
 	 * 根据字符串数组返回逗号分隔的字符串值
-	 * @param strs
-	 * @return
+	 * @param strArray 字符串数组
+	 * @return 逗号分隔的字符串
 	 */
-	public static String getStringByArray(String... strs) {
-		if(strs == null) return null;
-		StringBuffer buffer = new StringBuffer(strs.length * 10);
-		for(String str : strs) {
+	public static String getStringByArray(String... strArray) {
+		if(strArray == null) return "";
+		StringBuilder buffer = new StringBuilder(strArray.length * 10);
+		for(String str : strArray) {
 			buffer.append(str).append(",");
 		}
 		buffer.deleteCharAt(buffer.length() - 1);
@@ -66,8 +66,8 @@ public class StringHelper {
 	
 	/**
 	 * xml内容特殊符号替换
-	 * @param xml
-	 * @return
+	 * @param xml xml字符串
+	 * @return 替换后的xml
 	 */
 	public static String textXML(String xml) {
 		if(xml == null) return "";
@@ -81,16 +81,16 @@ public class StringHelper {
 	
 	/**
 	 * 构造排序条件
-	 * @param order
-	 * @param orderby
-	 * @return
+	 * @param order 排序方向
+	 * @param orderby 排序字段
+	 * @return 组装好的排序sql
 	 */
 	public static String buildPageOrder(String order, String orderby) {
 		if(isEmpty(orderby) || isEmpty(order)) return "";
 		String[] orderByArray = StringUtils.split(orderby, ',');
 		String[] orderArray = StringUtils.split(order, ',');
 		if(orderArray.length != orderByArray.length) throw new SnakerException("分页多重排序参数中,排序字段与排序方向的个数不相等");
-		StringBuffer orderStr = new StringBuffer(30);
+		StringBuilder orderStr = new StringBuilder(30);
 		orderStr.append(" order by ");
 
 		for (int i = 0; i < orderByArray.length; i++) {
@@ -103,9 +103,9 @@ public class StringHelper {
 	/**
 	 * 简单字符串匹配方法，支持匹配类型为：
 	 * *what *what* what*
-	 * @param pattern
-	 * @param str
-	 * @return
+	 * @param pattern 匹配模式
+	 * @param str 字符串
+	 * @return 是否匹配
 	 */
 	public static boolean simpleMatch(String pattern, String str) {
 		if (pattern == null || str == null) {
