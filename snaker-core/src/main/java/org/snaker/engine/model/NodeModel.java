@@ -68,14 +68,13 @@ public abstract class NodeModel extends BaseModel implements Action {
 	
 	/**
 	 * 具体节点模型需要完成的执行逻辑
-	 * @param execution
+	 * @param execution 执行对象
 	 */
 	protected abstract void exec(Execution execution);
 	
 	/**
 	 * 对执行逻辑增加前置、后置拦截处理
-	 * @param execution
-	 * @return
+	 * @param execution 执行对象
 	 */
 	public void execute(Execution execution) {
 		intercept(preInterceptorList, execution);
@@ -85,7 +84,7 @@ public abstract class NodeModel extends BaseModel implements Action {
 	
 	/**
 	 * 运行变迁继续执行
-	 * @param execution
+	 * @param execution 执行对象
 	 */
 	protected void runOutTransition(Execution execution) {
 		for (TransitionModel tm : getOutputs()) {
@@ -96,8 +95,8 @@ public abstract class NodeModel extends BaseModel implements Action {
 	
 	/**
 	 * 拦截方法
-	 * @param interceptorList
-	 * @param execution
+	 * @param interceptorList 拦截器列表
+	 * @param execution 执行对象
 	 */
 	private void intercept(List<SnakerInterceptor> interceptorList, Execution execution) {
 		try {
@@ -105,7 +104,6 @@ public abstract class NodeModel extends BaseModel implements Action {
 				interceptor.intercept(execution);
 			}
 		} catch(Exception e) {
-			//拦截器执行过程中出现的异常不影响流程执行逻辑
 			log.error("拦截器执行失败=" + e.getMessage());
             throw new SnakerException(e);
 		}
@@ -115,8 +113,8 @@ public abstract class NodeModel extends BaseModel implements Action {
 	 * 根据父节点模型、当前节点模型判断是否可退回。可退回条件：
 	 * 1、满足中间无fork、join、subprocess模型
 	 * 2、满足父节点模型如果为任务模型时，参与类型为any
-	 * @param parent
-	 * @return
+	 * @param parent 父节点模型
+	 * @return 是否可以退回
 	 */
 	public boolean canRejected(NodeModel parent) {
 		if(parent instanceof TaskModel && !((TaskModel)parent).isPerformAny()) {
