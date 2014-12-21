@@ -66,12 +66,14 @@ public abstract class AccessService {
         this.completion = completion;
     }
     public Completion getCompletion() {
-        if(completion == null) {
-            completion = ServiceContext.find(Completion.class);
+        if(completion != null) {
+            return completion;
         }
+
+        completion = ServiceContext.find(Completion.class);
         if(completion == null) {
-            completion = new GeneralCompletion();
-            ServiceContext.put(completion.getClass().getName(), completion);
+            ServiceContext.put(Completion.class.getName(), GeneralCompletion.class);
+            completion = ServiceContext.find(Completion.class);
         }
         return completion;
     }
