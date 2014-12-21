@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snaker.engine.SnakerException;
 import org.snaker.engine.SnakerInterceptor;
 import org.snaker.engine.core.Execution;
 import org.snaker.engine.core.ServiceContext;
@@ -39,7 +40,7 @@ public class CreateTaskHandler implements IHandler {
 	
 	/**
 	 * 调用者需要提供任务模型
-	 * @param model
+	 * @param model 模型
 	 */
 	public CreateTaskHandler(TaskModel model) {
 		this.model = model;
@@ -60,8 +61,8 @@ public class CreateTaskHandler implements IHandler {
 				interceptor.intercept(execution);
 			}
 		} catch(Exception e) {
-			//拦截器执行过程中出现的异常不影响流程执行逻辑
 			log.error("拦截器执行失败=" + e.getMessage());
+			throw new SnakerException(e);
 		}
 	}
 }
