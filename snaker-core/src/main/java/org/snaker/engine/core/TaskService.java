@@ -14,11 +14,7 @@
  */
 package org.snaker.engine.core;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.snaker.engine.*;
 import org.snaker.engine.entity.*;
@@ -28,7 +24,7 @@ import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.impl.GeneralAccessStrategy;
-import org.snaker.engine.impl.GeneralCompletion;
+import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.NodeModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
@@ -42,8 +38,9 @@ import org.snaker.engine.model.TaskModel.TaskType;
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";
+	private static final String KEY_ACTOR = "S-ACTOR";
 
-    //访问策略接口
+	//访问策略接口
 	private TaskAccessStrategy strategy = null;
 	/**
 	 * 完成指定任务
@@ -90,6 +87,24 @@ public class TaskService extends AccessService implements ITaskService {
             completion.complete(history);
         }
 		return task;
+	}
+
+	public HistoryTask history(Execution execution, CustomModel model) {
+		HistoryTask historyTask = new HistoryTask();
+		historyTask.setId(StringHelper.getPrimaryKey());
+		historyTask.setOrderId(execution.getOrder().getId());
+		String currentTime = DateHelper.getTime();
+		historyTask.setCreateTime(currentTime);
+		historyTask.setFinishTime(currentTime);
+		historyTask.setDisplayName(model.getDisplayName());
+		historyTask.setTaskName(model.getName());
+		historyTask.setTaskState(STATE_FINISH);
+		historyTask.setTaskType(TaskType.Record.ordinal());
+		historyTask.setParentTaskId(execution.getTask() == null ?
+				START : execution.getTask().getId());
+		historyTask.setVariable(JsonHelper.toJson(execution.getArgs()));
+		access().saveHistory(historyTask);
+		return historyTask;
 	}
 	
 	/**
@@ -149,6 +164,11 @@ public class TaskService extends AccessService implements ITaskService {
 		switch(performType) {
 		case 0:
 			assignTask(task.getId(), actors);
+			Map<String, Object> data = task.getVariableMap();
+			String oldActor = (String)data.get(KEY_ACTOR);
+			data.put(KEY_ACTOR, oldActor + "," + StringHelper.getStringByArray(actors));
+			task.setVariable(JsonHelper.toJson(data));
+			access().updateTask(task);
 			break;
 		case 1:
 			try {
@@ -262,7 +282,7 @@ public class TaskService extends AccessService implements ITaskService {
 			newTask.setTaskType(taskType);
 			newTask.setCreateTime(DateHelper.getTime());
 			newTask.setParentTaskId(taskId);
-			tasks.add(saveTask(newTask, PerformType.ANY.ordinal(), actors));
+			tasks.add(saveTask(newTask, actors));
 		} catch (CloneNotSupportedException e) {
 			throw new SnakerException("任务对象不支持复制", e.getCause());
 		}
@@ -307,6 +327,7 @@ public class TaskService extends AccessService implements ITaskService {
 		String actionUrl = StringHelper.isEmpty(form) ? taskModel.getForm() : form;
 		
 		String[] actors = getTaskActors(taskModel, execution);
+		args.put(KEY_ACTOR, StringHelper.getStringByArray(actors));
 		Task task = createTaskBase(taskModel, execution);
 		task.setActionUrl(actionUrl);
 		task.setExpireDate(expireDate);
@@ -315,7 +336,7 @@ public class TaskService extends AccessService implements ITaskService {
 		
 		if(taskModel.isPerformAny()) {
 			//任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-			task = saveTask(task, PerformType.ANY.ordinal(), actors);
+			task = saveTask(task, actors);
 			task.setRemindDate(remindDate);
 			tasks.add(task);
 		} else if(taskModel.isPerformAll()){
@@ -327,7 +348,7 @@ public class TaskService extends AccessService implements ITaskService {
                 } catch (CloneNotSupportedException e) {
                     singleTask = task;
                 }
-                singleTask = saveTask(singleTask, PerformType.ALL.ordinal(), actor);
+                singleTask = saveTask(singleTask, actor);
                 singleTask.setRemindDate(remindDate);
                 tasks.add(singleTask);
 			}
@@ -339,7 +360,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 根据模型、执行对象、任务类型构建基本的task对象
 	 * @param model 模型
 	 * @param execution 执行对象
-	 * @return
+	 * @return Task任务对象
 	 */
 	private Task createTaskBase(TaskModel model, Execution execution) {
 		Task task = new Task();
@@ -361,7 +382,7 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 由DBAccess实现类持久化task对象
 	 */
-	private Task saveTask(Task task, int performType, String... actors) {
+	private Task saveTask(Task task, String... actors) {
 		task.setId(StringHelper.getPrimaryKey());
 		task.setPerformType(PerformType.ANY.ordinal());
 		access().saveTask(task);
@@ -374,7 +395,7 @@ public class TaskService extends AccessService implements ITaskService {
 	 * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
 	 * @param model 模型
 	 * @param execution 执行对象
-	 * @return
+	 * @return 参与者数组
 	 */
 	private String[] getTaskActors(TaskModel model, Execution execution) {
 		Object assigneeObject = null;
@@ -394,20 +415,15 @@ public class TaskService extends AccessService implements ITaskService {
 	/**
 	 * 根据taskmodel指定的assignee属性，从args中取值
 	 * 将取到的值处理为String[]类型。
-	 * @param actors
-	 * @return
+	 * @param actors 参与者对象
+	 * @return 参与者数组
 	 */
 	private String[] getTaskActors(Object actors) {
 		if(actors == null) return null;
 		String[] results = null;
 		if(actors instanceof String) {
-			//如果值为字符串类型，则使用逗号,分隔，并解析为Long类型
-			String[] actorStrs = ((String)actors).split(",");
-			results = new String[actorStrs.length];
-			for(int i = 0; i < actorStrs.length; i++) {
-				results[i] = actorStrs[i];
-			}
-			return results;
+			//如果值为字符串类型，则使用逗号,分隔
+			return ((String)actors).split(",");
         } else if(actors instanceof List){
             //jackson会把stirng[]转成arraylist，此处增加arraylist的逻辑判断,by 红豆冰沙2014.11.21
             results= (String[])((List)actors).toArray();
@@ -419,7 +435,7 @@ public class TaskService extends AccessService implements ITaskService {
 			results[0] = String.valueOf((Long)actors);
 			return results;
 		} else if(actors instanceof Integer) {
-			//如果为Long类型，则返回1个元素的String[]
+			//如果为Integer类型，则返回1个元素的String[]
 			results = new String[1];
 			results[0] = String.valueOf((Integer)actors);
 			return results;
@@ -429,7 +445,7 @@ public class TaskService extends AccessService implements ITaskService {
 		} else {
 			//其它类型，抛出不支持的类型异常
 			throw new SnakerException("任务参与者对象[" + actors + "]类型不支持."
-					+ "合法参数示例:Long,new String[]{},'10000,20000'");
+					+ "合法参数示例:Long,Integer,new String[]{},'10000,20000',List<String>");
 		}
 	}
 
@@ -448,8 +464,8 @@ public class TaskService extends AccessService implements ITaskService {
 		}
 		List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
 		if(actors == null || actors.isEmpty()) return true;
-		if(StringHelper.isEmpty(operator)) return false;
-		return getStrategy().isAllowed(operator, actors);
+		return !StringHelper.isEmpty(operator)
+				&& getStrategy().isAllowed(operator, actors);
 	}
 
 	public void setStrategy(TaskAccessStrategy strategy) {
@@ -457,12 +473,13 @@ public class TaskService extends AccessService implements ITaskService {
 	}
 
 	public TaskAccessStrategy getStrategy() {
+        if(strategy != null) {
+            return strategy;
+        }
+		strategy = ServiceContext.find(TaskAccessStrategy.class);
 		if(strategy == null) {
-			strategy = ServiceContext.find(TaskAccessStrategy.class);
-		}
-		if(strategy == null) {
-			strategy = new GeneralAccessStrategy();
-			ServiceContext.put(strategy.getClass().getName(), strategy);
+			ServiceContext.put(TaskAccessStrategy.class.getName(), GeneralAccessStrategy.class);
+            strategy = ServiceContext.find(TaskAccessStrategy.class);
 		}
 		return strategy;
 	}

@@ -35,6 +35,7 @@ public class CustomModel extends WorkModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 8796192915721758769L;
+
 	/**
 	 * 需要执行的class类路径
 	 */
@@ -78,14 +79,15 @@ public class CustomModel extends WorkModel {
 				execution.getArgs().put(var, returnValue);
 			}
 		}
+		execution.getEngine().task().history(execution, this);
 		runOutTransition(execution);
 	}
 	
 	/**
 	 * 根据传递的执行参数、模型的参数列表返回实际的参数对象数组
-	 * @param execArgs
-	 * @param args
-	 * @return
+	 * @param execArgs 运行时传递的参数数据
+	 * @param args 自定义节点需要的参数
+	 * @return 调用自定义节点类方法的参数数组
 	 */
 	private Object[] getArgs(Map<String, Object> execArgs, String args) {
 		Object[] objects = null;

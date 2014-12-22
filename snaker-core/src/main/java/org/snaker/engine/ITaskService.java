@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.snaker.engine.core.Execution;
+import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Task;
+import org.snaker.engine.model.CustomModel;
 import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
 
@@ -56,6 +58,14 @@ public interface ITaskService {
 	 * @return Task 任务对象
 	 */
 	Task complete(String taskId, String operator, Map<String, Object> args);
+
+	/**
+	 * 根据执行对象、自定义节点模型创建历史任务记录
+	 * @param execution 执行对象
+	 * @param model 自定义节点模型
+	 * @return 历史任务
+	 */
+	HistoryTask history(Execution execution, CustomModel model);
 	
 	/**
 	 * 根据任务主键ID，操作人ID提取任务
