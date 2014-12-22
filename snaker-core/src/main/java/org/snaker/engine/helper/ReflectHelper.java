@@ -92,10 +92,10 @@ public class ReflectHelper {
 	
 	/**
 	 * 根据指定的对象、方法、参数反射调用，并返回调用结果
-	 * @param method
-	 * @param target
-	 * @param args
-	 * @return
+	 * @param method 方法
+	 * @param target 对象
+	 * @param args 参数数组
+	 * @return 方法调用的返回数据
 	 */
 	public static Object invoke(Method method, Object target, Object[] args) {
 		if (method == null) {
