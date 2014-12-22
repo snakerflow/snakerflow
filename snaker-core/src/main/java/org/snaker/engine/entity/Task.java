@@ -40,7 +40,7 @@ public class Task implements Serializable, Cloneable {
 	/**
 	 * 版本
 	 */
-	private Integer version;
+	private Integer version = 0;
     /**
      * 流程实例ID
      */
