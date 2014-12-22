@@ -24,7 +24,7 @@ import org.snaker.engine.test.TestSnakerBase;
 public class TestActor extends TestSnakerBase {
 	@Test
 	public void test() {
-		//engine.addTaskActor("3880d75457414b3fb7071b66c34da9ef", "2");
-		//engine.removeTaskActor("3880d75457414b3fb7071b66c34da9ef", "2");
+		//engine.task().addTaskActor("13b9edb451e5453394f7980ff4ab7ca9", new String[]{"test1", "test2"});
+		engine.task().removeTaskActor("13b9edb451e5453394f7980ff4ab7ca9", "2");
 	}
 }
