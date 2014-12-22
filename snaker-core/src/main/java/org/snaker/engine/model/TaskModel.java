@@ -58,10 +58,10 @@ public class TaskModel extends WorkModel {
 		ANY, ALL;
 	}
 	/**
-	 * 任务类型(Major:主办的,Aidant:协助的)
+	 * 任务类型(Major:主办的,Aidant:协助的,Record:仅仅作为记录的)
 	 */
 	public enum TaskType {
-		Major, Aidant;
+		Major, Aidant, Record;
 	}
 	/**
 	 * 参与者变量名称
