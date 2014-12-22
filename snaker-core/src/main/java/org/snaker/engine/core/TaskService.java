@@ -177,6 +177,9 @@ public class TaskService extends AccessService implements ITaskService {
 					newTask.setId(StringHelper.getPrimaryKey());
 					newTask.setCreateTime(DateHelper.getTime());
 					newTask.setOperator(actor);
+					Map<String, Object> taskData = task.getVariableMap();
+					taskData.put(KEY_ACTOR, actor);
+					task.setVariable(JsonHelper.toJson(taskData));
 					access().saveTask(newTask);
 					assignTask(newTask.getId(), actor);
 				}
@@ -195,8 +198,32 @@ public class TaskService extends AccessService implements ITaskService {
 	public void removeTaskActor(String taskId, String... actors) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+		if(actors == null || actors.length == 0) return;
 		if(task.isMajor()) {
 			access().removeTaskActor(task.getId(), actors);
+			Map<String, Object> taskData = task.getVariableMap();
+			String actorStr = (String)taskData.get(KEY_ACTOR);
+			if(StringHelper.isNotEmpty(actorStr)) {
+				String[] actorArray = actorStr.split(",");
+				StringBuilder newActor = new StringBuilder(actorStr.length());
+				boolean isMatch = false;
+				for(String actor : actorArray) {
+					isMatch = false;
+					if(StringHelper.isEmpty(actor)) continue;
+					for(String removeActor : actors) {
+						if(actor.equals(removeActor)) {
+							isMatch = true;
+							break;
+						}
+					}
+					if(isMatch) continue;
+					newActor.append(actor).append(",");
+				}
+				newActor.deleteCharAt(newActor.length() - 1);
+				taskData.put(KEY_ACTOR, newActor.toString());
+				task.setVariable(JsonHelper.toJson(taskData));
+				access().updateTask(task);
+			}
 		}
 	}
 	
