@@ -12,6 +12,7 @@
         <module>snaker-nutz</module>
         <module>snaker-mybatis</module>
         <module>snaker-hibernate</module>
+        <module>snaker-hibernate4</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>snaker-hibernate</artifactId>
+    <artifactId>snaker-hibernate4</artifactId>
 
     <packaging>jar</packaging>
     <name>snaker-hibernate</name>
@@ -44,11 +44,15 @@
             <artifactId>snaker-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
-       <dependency>
+        <dependency>
+            <groupId>com.github.snakerflow</groupId>
+            <artifactId>snaker-hibernate</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>3.3.2.GA</version>
+            <version>4.1.9.Final</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -96,20 +100,20 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

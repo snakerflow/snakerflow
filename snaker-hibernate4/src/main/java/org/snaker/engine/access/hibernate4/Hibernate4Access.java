@@ -15,6 +15,9 @@
  *
  */
 
+package org.snaker.engine.access.hibernate4;
+
+import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.SnakerException;
@@ -22,7 +25,6 @@ import org.snaker.engine.access.ScriptRunner;
 import org.snaker.engine.access.hibernate.HibernateAccess;
 import org.snaker.engine.access.jdbc.JdbcHelper;
 
-import java.io.IOException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,6 +35,10 @@ import java.sql.SQLException;
  * @since 2.0
  */
 public class Hibernate4Access extends HibernateAccess implements DBAccess {
+    public Session getSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
     /**
      * 取得hibernate的connection对象
      */
@@ -52,7 +58,7 @@ public class Hibernate4Access extends HibernateAccess implements DBAccess {
                 }
                 try {
                     String databaseType = JdbcHelper.getDatabaseType(conn);
-                    String schema = "db/schema-" + databaseType + ".sql";
+                    String schema = "db/core/schema-" + databaseType + ".sql";
                     ScriptRunner runner = new ScriptRunner(conn, true);
                     runner.runScript(schema);
                 } catch (Exception e) {
