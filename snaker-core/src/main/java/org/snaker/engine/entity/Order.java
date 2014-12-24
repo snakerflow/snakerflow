@@ -37,7 +37,7 @@ public class Order implements Serializable {
 	/**
 	 * 版本
 	 */
-	private Integer version;
+	private Integer version = 0;
 	/**
 	 * 流程定义ID
 	 */
