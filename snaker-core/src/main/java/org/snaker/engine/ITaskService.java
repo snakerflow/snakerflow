@@ -60,6 +60,11 @@ public interface ITaskService {
 	Task complete(String taskId, String operator, Map<String, Object> args);
 
 	/**
+	 * 更新任务对象
+	 * @param task 任务对象
+	 */
+	void updateTask(Task task);
+	/**
 	 * 根据执行对象、自定义节点模型创建历史任务记录
 	 * @param execution 执行对象
 	 * @param model 自定义节点模型

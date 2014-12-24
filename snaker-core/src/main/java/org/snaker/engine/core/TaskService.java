@@ -89,6 +89,20 @@ public class TaskService extends AccessService implements ITaskService {
 		return task;
 	}
 
+	/**
+	 * 更新任务对象的finish_Time、operator、expire_Time、version、variable
+	 * @param task 任务对象
+	 */
+	public void updateTask(Task task) {
+		access().updateTask(task);
+	}
+
+	/**
+	 * 任务历史记录方法
+	 * @param execution 执行对象
+	 * @param model 自定义节点模型
+	 * @return 历史任务对象
+	 */
 	public HistoryTask history(Execution execution, CustomModel model) {
 		HistoryTask historyTask = new HistoryTask();
 		historyTask.setId(StringHelper.getPrimaryKey());
