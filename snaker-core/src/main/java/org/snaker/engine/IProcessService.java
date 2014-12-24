@@ -120,6 +120,7 @@ public interface IProcessService {
 	 * 2.wf_order,wf_hist_order
 	 * 3.wf_task,wf_hist_task
 	 * 4.wf_task_actor,wf_hist_task_actor
+	 * 5.wf_cc_order
 	 * @param id
 	 */
 	void cascadeRemove(String id);

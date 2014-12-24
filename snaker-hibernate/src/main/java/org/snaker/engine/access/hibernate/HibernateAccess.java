@@ -104,6 +104,10 @@ public abstract class HibernateAccess extends AbstractDBAccess implements DBAcce
 
 		getSession().saveOrUpdate(process);
 	}
+
+	public void deleteProcess(Process process) {
+		getSession().delete(process);
+	}
 	
 	public void deleteTask(Task task) {
 		List<TaskActor> actors = getTaskActorsByTaskId(task.getId());
@@ -116,7 +120,19 @@ public abstract class HibernateAccess extends AbstractDBAccess implements DBAcce
 	public void deleteOrder(Order order) {
 		getSession().delete(order);
 	}
-	
+
+	public void deleteHistoryOrder(HistoryOrder historyOrder) {
+		getSession().delete(historyOrder);
+	}
+
+	public void deleteHistoryTask(HistoryTask historyTask) {
+		List<HistoryTaskActor> actors = getHistTaskActorsByTaskId(historyTask.getId());
+		for(HistoryTaskActor actor : actors) {
+			getSession().delete(actor);
+		}
+		getSession().delete(historyTask);
+	}
+
 	public void deleteSurrogate(Surrogate surrogate) {
 		getSession().delete(surrogate);
 	}

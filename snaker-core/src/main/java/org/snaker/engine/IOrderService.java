@@ -112,4 +112,15 @@ public interface IOrderService {
 	 * @param actorId 参与者id
 	 */
 	void deleteCCOrder(String orderId, String actorId);
+
+	/**
+	 * 谨慎使用.数据恢复非常痛苦，你懂得~~
+	 * 级联删除指定流程实例的所有数据：
+	 * 1.wf_order,wf_hist_order
+	 * 2.wf_task,wf_hist_task
+	 * 3.wf_task_actor,wf_hist_task_actor
+	 * 4.wf_cc_order
+	 * @param id
+	 */
+	void cascadeRemove(String id);
 }

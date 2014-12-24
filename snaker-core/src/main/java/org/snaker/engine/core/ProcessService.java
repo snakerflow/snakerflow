@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snaker.engine.Context;
 import org.snaker.engine.IProcessService;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.Page;
@@ -26,6 +27,7 @@ import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.cache.Cache;
 import org.snaker.engine.cache.CacheManager;
 import org.snaker.engine.cache.CacheManagerAware;
+import org.snaker.engine.entity.HistoryOrder;
 import org.snaker.engine.entity.Process;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
@@ -248,7 +250,14 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	 * 级联删除指定流程定义的所有数据
 	 */
 	public void cascadeRemove(String id) {
-		
+		Process entity = access().getProcess(id);
+		List<HistoryOrder> historyOrders = access().getHistoryOrders(null, new QueryFilter().setProcessId(id));
+
+		for(HistoryOrder historyOrder : historyOrders) {
+			ServiceContext.getEngine().order().cascadeRemove(historyOrder.getId());
+		}
+		access().deleteProcess(entity);
+		clear(entity);
 	}
 
 	/**
@@ -269,7 +278,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	
 	/**
 	 * 缓存实体
-	 * @param entity
+	 * @param entity 流程定义对象
 	 */
 	private void cache(Process entity) {
 		Cache<String, String> nameCache = ensureAvailableNameCache();
@@ -288,6 +297,20 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 			if(log.isDebugEnabled()) {
 				log.debug("no cache implementation class");
 			}
+		}
+	}
+
+	/**
+	 * 清除实体
+	 * @param entity 流程定义对象
+	 */
+	private void clear(Process entity) {
+		Cache<String, String> nameCache = ensureAvailableNameCache();
+		Cache<String, Process> entityCache = ensureAvailableEntityCache();
+		String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
+		if(nameCache != null && entityCache != null) {
+			nameCache.remove(entity.getId());
+			entityCache.remove(processName);
 		}
 	}
 

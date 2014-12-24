@@ -95,6 +95,12 @@ public interface DBAccess {
 	 * @param process 流程定义对象
 	 */
 	public void updateProcess(Process process);
+
+	/**
+	 * 删除流程定义对象
+	 * @param process 流程定义对象
+	 */
+	public void deleteProcess(Process process);
 	
 	/**
 	 * 更新流程定义类别
@@ -145,6 +151,18 @@ public interface DBAccess {
 	 * @param task 历史任务对象
 	 */
 	public void saveHistory(HistoryTask task);
+
+	/**
+	 * 删除历史实例记录
+	 * @param historyOrder 历史实例
+	 */
+	public void deleteHistoryOrder(HistoryOrder historyOrder);
+
+	/**
+	 * 删除历史任务记录
+	 * @param historyTask 历史任务
+	 */
+	public void deleteHistoryTask(HistoryTask historyTask);
 
     /**
      * 更新实例变量（包括历史实例表）

@@ -61,28 +61,32 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	protected static final String PROCESS_INSERT = "insert into wf_process (id,name,display_Name,type,instance_Url,state,version,create_Time,creator) values (?,?,?,?,?,?,?,?,?)";
 	protected static final String PROCESS_UPDATE = "update wf_process set name=?, display_Name=?,state=?,instance_Url=?,create_Time=?,creator=? where id=? ";
+	protected static final String PROCESS_DELETE = "delete from wf_process where id = ?";
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	protected static final String PROCESS_UPDATE_TYPE = "update wf_process set type=? where id=?";
 	
 	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?)";
-	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, variable = ?, version = version + 1 where id=? and version = ?";
+	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, variable = ?, expire_Time=?, version = version + 1 where id=? and version = ?";
+	protected static final String ORDER_DELETE = "delete from wf_order where id = ?";
 	protected static final String ORDER_HISTORY_INSERT = "insert into wf_hist_order (id,process_Id,order_State,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable) values (?,?,?,?,?,?,?,?,?,?)";
 	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ?, variable = ? where id = ? ";
-	protected static final String ORDER_DELETE = "delete from wf_order where id = ?";
+	protected static final String ORDER_HISTORY_DELETE = "delete from wf_hist_order where id = ?";
 	
 	protected static final String CCORDER_INSERT = "insert into wf_cc_order (order_Id, actor_Id, creator, create_Time, status) values (?, ?, ?, ?, ?)";
 	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ?, finish_Time = ? where order_Id = ? and actor_Id = ?";
 	protected static final String CCORDER_DELETE = "delete from wf_cc_order where order_Id = ? and actor_Id = ?";
 	
 	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, variable=?, version = version + 1 where id=? and version = ?";
-	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, variable=?, expire_Time=?, action_Url=?, version = version + 1 where id=? and version = ?";
 	protected static final String TASK_DELETE = "delete from wf_task where id = ?";
+	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_HISTORY_DELETE = "delete from wf_hist_task where id = ?";
 	
 	protected static final String TASK_ACTOR_INSERT = "insert into wf_task_actor (task_Id, actor_Id) values (?, ?)";
-	protected static final String TASK_ACTOR_HISTORY_INSERT = "insert into wf_hist_task_actor (task_Id, actor_Id) values (?, ?)";
 	protected static final String TASK_ACTOR_DELETE = "delete from wf_task_actor where task_Id = ?";
 	protected static final String TASK_ACTOR_REDUCE = "delete from wf_task_actor where task_Id = ? and actor_Id = ?";
+	protected static final String TASK_ACTOR_HISTORY_INSERT = "insert into wf_hist_task_actor (task_Id, actor_Id) values (?, ?)";
+	protected static final String TASK_ACTOR_HISTORY_DELETE = "delete from wf_hist_task_actor where task_Id = ?";
 	
 	protected static final String QUERY_VERSION = "select max(version) from wf_process ";
 	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version,create_Time,creator from wf_process ";
@@ -194,6 +198,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 			saveOrUpdate(buildMap(PROCESS_UPDATE, args, type));
 		}
 	}
+
+	public void deleteProcess(Process process) {
+		if(!isORM()) {
+			Object[] args = new Object[]{process.getId()};
+			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(PROCESS_DELETE, args, type));
+		}
+	}
 	
 	public void updateProcessType(String id, String type) {
 		if(isORM()) {
@@ -257,8 +269,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, UPDATE));
 		} else {
-			Object[] args = new Object[]{task.getFinishTime(), task.getOperator(), task.getVariable(), task.getId(), task.getVersion() };
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.INTEGER};
+			Object[] args = new Object[]{task.getFinishTime(), task.getOperator(), task.getVariable(), task.getExpireTime(), task.getActionUrl(), task.getId(), task.getVersion() };
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(TASK_UPDATE, args, type));
 		}
 	}
@@ -267,8 +279,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
 		} else {
-			Object[] args = new Object[]{order.getLastUpdator(), order.getLastUpdateTime(), order.getVariable(), order.getId(), order.getVersion() };
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+			Object[] args = new Object[]{order.getLastUpdator(), order.getLastUpdateTime(), order.getVariable(), order.getExpireTime(), order.getId(), order.getVersion() };
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(ORDER_UPDATE, args, type));
 		}
 	}
@@ -337,6 +349,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 		}
 	}
 
+	public void deleteHistoryOrder(HistoryOrder historyOrder) {
+		if(!isORM()) {
+			Object[] args = new Object[]{historyOrder.getId()};
+			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(ORDER_HISTORY_DELETE, args, type));
+		}
+	}
+
 	public void saveHistory(HistoryTask task) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, SAVE));
@@ -362,6 +382,15 @@ public abstract class AbstractDBAccess implements DBAccess {
                     saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
                 }
             }
+		}
+	}
+
+	public void deleteHistoryTask(HistoryTask historyTask) {
+		if(!isORM()) {
+			Object[] args = new Object[]{historyTask.getId()};
+			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_DELETE, args, type));
+			saveOrUpdate(buildMap(TASK_HISTORY_DELETE, args, type));
 		}
 	}
 
@@ -489,11 +518,17 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<CCOrder> getCCOrder(String orderId, String... actorIds) {
         StringBuilder where = new StringBuilder(QUERY_CCORDER);
-		where.append(" where status = 1 and order_Id = ? ");
-		where.append(" and actor_Id in (");
-		where.append(StringUtils.repeat("?,", actorIds.length));
-		where.deleteCharAt(where.length() - 1);
-		where.append(") ");
+		where.append(" where 1 = 1 ");
+
+		if(StringHelper.isNotEmpty(orderId)) {
+			where.append(" and order_Id = ?");
+		}
+		if(actorIds != null && actorIds.length > 0) {
+			where.append(" and actor_Id in (");
+			where.append(StringUtils.repeat("?,", actorIds.length));
+			where.deleteCharAt(where.length() - 1);
+			where.append(") ");
+		}
 		return queryList(CCOrder.class, where.toString(), ArrayUtils.add(actorIds, 0, orderId));
 	}
 
