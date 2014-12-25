@@ -336,6 +336,7 @@ public abstract class JdbcHelper {
         else if(dbType.equalsIgnoreCase("postgres")) return new PostgresqlDialect();
         else if(dbType.equalsIgnoreCase("mssql")) return new SQLServerDialect();
 		else if(dbType.equalsIgnoreCase("db2")) return new Db2Dialect();
+		else if(dbType.equalsIgnoreCase("h2")) return new H2Dialect();
         else return null;
     }
 
