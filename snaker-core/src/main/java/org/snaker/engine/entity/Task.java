@@ -33,6 +33,7 @@ public class Task implements Serializable, Cloneable {
 	 * 
 	 */
 	private static final long serialVersionUID = -189094546633914087L;
+	public static final String KEY_ACTOR = "S-ACTOR";
 	/**
 	 * 主键ID
 	 */
@@ -115,7 +116,7 @@ public class Task implements Serializable, Cloneable {
     }
     
     public boolean isMajor() {
-    	return this.taskType.intValue() == TaskType.Major.ordinal();
+    	return this.taskType == TaskType.Major.ordinal();
     }
     
 	public String getParentTaskId() {
@@ -215,6 +216,12 @@ public class Task implements Serializable, Cloneable {
 	}
 
 	public String[] getActorIds() {
+		if(actorIds == null) {
+			String actorStr = (String)getVariableMap().get(KEY_ACTOR);
+			if(actorStr != null) {
+				actorIds = actorStr.split(",");
+			}
+		}
 		return actorIds;
 	}
 

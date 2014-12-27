@@ -38,7 +38,6 @@ import org.snaker.engine.model.TaskModel.TaskType;
  */
 public class TaskService extends AccessService implements ITaskService {
 	private static final String START = "start";
-	private static final String KEY_ACTOR = "S-ACTOR";
 
 	//访问策略接口
 	private TaskAccessStrategy strategy = null;
@@ -179,8 +178,8 @@ public class TaskService extends AccessService implements ITaskService {
 		case 0:
 			assignTask(task.getId(), actors);
 			Map<String, Object> data = task.getVariableMap();
-			String oldActor = (String)data.get(KEY_ACTOR);
-			data.put(KEY_ACTOR, oldActor + "," + StringHelper.getStringByArray(actors));
+			String oldActor = (String)data.get(Task.KEY_ACTOR);
+			data.put(Task.KEY_ACTOR, oldActor + "," + StringHelper.getStringByArray(actors));
 			task.setVariable(JsonHelper.toJson(data));
 			access().updateTask(task);
 			break;
@@ -192,7 +191,7 @@ public class TaskService extends AccessService implements ITaskService {
 					newTask.setCreateTime(DateHelper.getTime());
 					newTask.setOperator(actor);
 					Map<String, Object> taskData = task.getVariableMap();
-					taskData.put(KEY_ACTOR, actor);
+					taskData.put(Task.KEY_ACTOR, actor);
 					task.setVariable(JsonHelper.toJson(taskData));
 					access().saveTask(newTask);
 					assignTask(newTask.getId(), actor);
@@ -216,11 +215,11 @@ public class TaskService extends AccessService implements ITaskService {
 		if(task.isMajor()) {
 			access().removeTaskActor(task.getId(), actors);
 			Map<String, Object> taskData = task.getVariableMap();
-			String actorStr = (String)taskData.get(KEY_ACTOR);
+			String actorStr = (String)taskData.get(Task.KEY_ACTOR);
 			if(StringHelper.isNotEmpty(actorStr)) {
 				String[] actorArray = actorStr.split(",");
 				StringBuilder newActor = new StringBuilder(actorStr.length());
-				boolean isMatch = false;
+				boolean isMatch;
 				for(String actor : actorArray) {
 					isMatch = false;
 					if(StringHelper.isEmpty(actor)) continue;
@@ -234,7 +233,7 @@ public class TaskService extends AccessService implements ITaskService {
 					newActor.append(actor).append(",");
 				}
 				newActor.deleteCharAt(newActor.length() - 1);
-				taskData.put(KEY_ACTOR, newActor.toString());
+				taskData.put(Task.KEY_ACTOR, newActor.toString());
 				task.setVariable(JsonHelper.toJson(taskData));
 				access().updateTask(task);
 			}
@@ -247,7 +246,7 @@ public class TaskService extends AccessService implements ITaskService {
 	public Task withdrawTask(String taskId, String operator) {
 		HistoryTask hist = access().getHistTask(taskId);
 		AssertHelper.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-		List<Task> tasks = null;
+		List<Task> tasks;
 		if(hist.isPerformAny()) {
 			tasks = access().getNextActiveTasks(hist.getId());
 		} else {
@@ -280,7 +279,7 @@ public class TaskService extends AccessService implements ITaskService {
 		NodeModel current = model.getNode(currentTask.getTaskName());
 		HistoryTask history = access().getHistTask(parentTaskId);
 		NodeModel parent = model.getNode(history.getTaskName());
-		if(!current.canRejected(parent)) {
+		if(!NodeModel.canRejected(current, parent)) {
 			throw new SnakerException("无法驳回至上一步处理，请确认上一步骤并非fork、join、suprocess以及会签任务");
 		}
 
@@ -368,7 +367,7 @@ public class TaskService extends AccessService implements ITaskService {
 		String actionUrl = StringHelper.isEmpty(form) ? taskModel.getForm() : form;
 		
 		String[] actors = getTaskActors(taskModel, execution);
-		args.put(KEY_ACTOR, StringHelper.getStringByArray(actors));
+		args.put(Task.KEY_ACTOR, StringHelper.getStringByArray(actors));
 		Task task = createTaskBase(taskModel, execution);
 		task.setActionUrl(actionUrl);
 		task.setExpireDate(expireDate);
@@ -383,7 +382,7 @@ public class TaskService extends AccessService implements ITaskService {
 		} else if(taskModel.isPerformAll()){
 			//任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
 			for(String actor : actors) {
-                Task singleTask = null;
+                Task singleTask;
                 try {
                     singleTask = (Task) task.clone();
                 } catch (CloneNotSupportedException e) {
@@ -461,15 +460,18 @@ public class TaskService extends AccessService implements ITaskService {
 	 */
 	private String[] getTaskActors(Object actors) {
 		if(actors == null) return null;
-		String[] results = null;
+		String[] results;
 		if(actors instanceof String) {
 			//如果值为字符串类型，则使用逗号,分隔
 			return ((String)actors).split(",");
         } else if(actors instanceof List){
             //jackson会把stirng[]转成arraylist，此处增加arraylist的逻辑判断,by 红豆冰沙2014.11.21
-            results= (String[])((List)actors).toArray();
+			List<?> list = (List)actors;
+			results = new String[list.size()];
+			for(int i = 0; i < list.size(); i++) {
+				results[i] = (String)list.get(i);
+			}
             return results;
-
 		} else if(actors instanceof Long) {
 			//如果为Long类型，则返回1个元素的String[]
 			results = new String[1];

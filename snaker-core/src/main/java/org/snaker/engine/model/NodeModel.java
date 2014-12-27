@@ -116,23 +116,23 @@ public abstract class NodeModel extends BaseModel implements Action {
 	 * @param parent 父节点模型
 	 * @return 是否可以退回
 	 */
-	public boolean canRejected(NodeModel parent) {
+	public static boolean canRejected(NodeModel current, NodeModel parent) {
 		if(parent instanceof TaskModel && !((TaskModel)parent).isPerformAny()) {
 			return false;
 		}
         boolean result = false;
-		for(TransitionModel tm : parent.getOutputs()) {
-			NodeModel target = tm.getTarget();
-			if(target.getName().equals(this.getName())) {
+		for(TransitionModel tm : current.getInputs()) {
+			NodeModel source = tm.getSource();
+			if(source == parent) {
 				return true;
 			}
-			if(target instanceof ForkModel 
-					|| target instanceof JoinModel 
-					|| target instanceof SubProcessModel
-                    || target instanceof EndModel) {
+			if(source instanceof ForkModel
+					|| source instanceof JoinModel
+					|| source instanceof SubProcessModel
+					|| source instanceof StartModel) {
 				continue;
 			}
-            result = result || canRejected(target);
+			result = result || canRejected(source, parent);
 		}
 		return result;
 	}
