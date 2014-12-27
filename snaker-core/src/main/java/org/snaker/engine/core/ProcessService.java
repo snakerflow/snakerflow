@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snaker.engine.Context;
 import org.snaker.engine.IProcessService;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.Page;
@@ -67,7 +66,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	
 	public void check(Process process, String idOrName) {
 		AssertHelper.notNull(process, "指定的流程定义[id/name=" + idOrName + "]不存在");
-		if(process.getState() != null && process.getState().intValue() == 0) {
+		if(process.getState() != null && process.getState() == 0) {
 			throw new IllegalArgumentException("指定的流程定义[id/name=" + idOrName + 
 					",version=" + process.getVersion() + "]为非活动状态");
 		}
@@ -97,7 +96,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	public Process getProcessById(String id) {
 		AssertHelper.notEmpty(id);
 		Process entity = null;
-		String processName = "";
+		String processName;
 		Cache<String, String> nameCache = ensureAvailableNameCache();
 		Cache<String, Process> entityCache = ensureAvailableEntityCache();
 		if(nameCache != null && entityCache != null) {
@@ -168,7 +167,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	
 	/**
 	 * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
-	 * @param input
+	 * @param input 定义输入流
 	 */
 	public String deploy(InputStream input) {
 		return deploy(input, null);
@@ -176,8 +175,8 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	
 	/**
 	 * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
-	 * @param input
-	 * @param creator
+	 * @param input 定义输入流
+	 * @param creator 创建人
 	 */
 	public String deploy(InputStream input, String creator) {
 		AssertHelper.notNull(input);
@@ -209,7 +208,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
 	
 	/**
 	 * 根据流程定义id、xml的输入流解析为字节数组，保存至数据库中，并且重新put到缓存中
-	 * @param input
+	 * @param input 定义输入流
 	 */
 	public void redeploy(String id, InputStream input) {
 		AssertHelper.notNull(input);
