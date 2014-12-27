@@ -18,6 +18,7 @@
         <property name="orderVariable" type="java.lang.String" column="order_Variable"/>
         
         <property name="taskName" type="java.lang.String" column="task_Name"/>
+        <property name="taskKey" type="java.lang.String" column="task_Key"/>
         <property name="operator" type="java.lang.String" column="operator" />
         <property name="taskCreateTime" type="java.lang.String" column="task_Create_Time"/>
         <property name="taskEndTime" type="java.lang.String" column="task_End_Time"/>

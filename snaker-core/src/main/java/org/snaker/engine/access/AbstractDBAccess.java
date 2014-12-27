@@ -484,11 +484,8 @@ public abstract class AbstractDBAccess implements DBAccess {
 	}
 	
 	public List<Task> getNextActiveTasks(String orderId, String taskName, String parentTaskId) {
-        StringBuilder sql = new StringBuilder(QUERY_TASK);
-		sql.append(" where parent_task_id in ( ");
-		sql.append("select ht.id from wf_hist_task ht where ht.order_id=? and ht.task_name=? and ht.parent_task_id=? ");
-		sql.append(")");
-		return queryList(Task.class, sql.toString(), orderId, taskName, parentTaskId);
+		String sql = QUERY_TASK + " where parent_task_id in ( select ht.id from wf_hist_task ht where ht.order_id=? and ht.task_name=? and ht.parent_task_id=? )";
+		return queryList(Task.class, sql, orderId, taskName, parentTaskId);
 	}
 	
 	public HistoryTask getHistTask(String taskId) {
@@ -815,7 +812,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         StringBuilder sql = new StringBuilder();
 		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
-		sql.append(" t.display_Name as task_Name, t.task_Type, t.perform_Type, t.operator, t.action_Url, ");
+		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type, t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
 		sql.append(" from wf_task t ");
 		sql.append(" left join wf_order o on t.order_id = o.id ");
@@ -937,7 +934,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         StringBuilder sql = new StringBuilder();
 		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
-		sql.append(" t.display_Name as task_Name, t.task_Type, t.perform_Type,t.operator, t.action_Url, ");
+		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type,t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
 		sql.append(" from wf_hist_task t ");
 		sql.append(" left join wf_hist_order o on t.order_id = o.id ");

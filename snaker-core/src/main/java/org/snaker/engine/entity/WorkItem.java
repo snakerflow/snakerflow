@@ -84,6 +84,10 @@ public class WorkItem implements Serializable {
      */
 	private String taskName;
 	/**
+	 * 任务标识名称
+	 */
+	private String taskKey;
+	/**
 	 * 参与类型（0：普通任务；1：参与者fork任务[即：如果10个参与者，需要每个人都要完成，才继续流转]）
 	 */
 	private Integer performType;
@@ -195,6 +199,14 @@ public class WorkItem implements Serializable {
 	}
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;
+	}
+
+	public String getTaskKey() {
+		return taskKey;
+	}
+
+	public void setTaskKey(String taskKey) {
+		this.taskKey = taskKey;
 	}
 	public Integer getTaskType() {
 		return taskType;
