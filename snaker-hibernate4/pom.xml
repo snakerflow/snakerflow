@@ -5,14 +5,14 @@
     <parent>
         <artifactId>snaker-parent</artifactId>
         <groupId>com.github.snakerflow</groupId>
-        <version>2.4.0</version>
+        <version>2.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>snaker-hibernate4</artifactId>
 
     <packaging>jar</packaging>
-    <name>snaker-hibernate</name>
+    <name>snaker-hibernate4</name>
     <url>https://github.com/snakerflow/snakerflow</url>
     <description>snaker is free workflow.</description>
 
