@@ -1,5 +1,5 @@
 create table wf_process (
-  id               VARCHAR(100) primary key not null,
+  id               VARCHAR(32) primary key not null,
   name             VARCHAR(100),
   display_Name     VARCHAR(200),
   type             VARCHAR(100),
@@ -12,84 +12,84 @@ create table wf_process (
 );
 
 create table wf_order (
-  id               VARCHAR(100) not null primary key,
-  process_Id       VARCHAR(100) not null,
-  creator          VARCHAR(100),
+  id               VARCHAR(32) not null primary key,
+  process_Id       VARCHAR(32) not null,
+  creator          VARCHAR(50),
   create_Time      VARCHAR(50) not null,
   expire_Time      VARCHAR(50),
   last_Update_Time VARCHAR(50),
-  last_Updator     VARCHAR(100),
+  last_Updator     VARCHAR(50),
   priority         integer,
-  parent_Id        VARCHAR(100),
+  parent_Id        VARCHAR(32),
   parent_Node_Name VARCHAR(100),
-  order_No         VARCHAR(100),
+  order_No         VARCHAR(50),
   variable         VARCHAR(2000),
   version          integer
 );
 
 create table wf_task (
-  id               VARCHAR(100) not null primary key,
-  order_Id         VARCHAR(100) not null,
+  id               VARCHAR(32) not null primary key,
+  order_Id         VARCHAR(32) not null,
   task_Name        VARCHAR(100) not null,
   display_Name     VARCHAR(200) not null,
   task_Type        integer not null,
   perform_Type     integer,
-  operator         VARCHAR(100),
+  operator         VARCHAR(50),
   create_Time      VARCHAR(50) not null,
   finish_Time      VARCHAR(50),
   expire_Time      VARCHAR(50),
   action_Url       VARCHAR(200),
-  parent_Task_Id   VARCHAR(100),
+  parent_Task_Id   VARCHAR(32),
   variable         VARCHAR(2000),
   version          integer
 );
 
 create table wf_task_actor (
-  task_Id          VARCHAR(100) not null,
-  actor_Id         VARCHAR(100) not null
+  task_Id          VARCHAR(32) not null,
+  actor_Id         VARCHAR(50) not null
 );
 
 create table wf_hist_order (
-  id               VARCHAR(100) not null primary key,
-  process_Id       VARCHAR(100) not null,
+  id               VARCHAR(32) not null primary key,
+  process_Id       VARCHAR(32) not null,
   order_State      integer not null,
-  creator          VARCHAR(100),
+  creator          VARCHAR(50),
   create_Time      VARCHAR(50) not null,
   end_Time         VARCHAR(50),
   expire_Time      VARCHAR(50),
   priority         integer,
-  parent_Id        VARCHAR(100),
-  order_No         VARCHAR(100),
+  parent_Id        VARCHAR(32),
+  order_No         VARCHAR(50),
   variable         VARCHAR(2000)
 );
 
 create table wf_hist_task (
-  id               VARCHAR(100) not null primary key,
-  order_Id         VARCHAR(100) not null,
+  id               VARCHAR(32) not null primary key,
+  order_Id         VARCHAR(32) not null,
   task_Name        VARCHAR(100) not null,
   display_Name     VARCHAR(200) not null,
   task_Type        integer not null,
   perform_Type     integer,
   task_State       integer not null,
-  operator         VARCHAR(100),
+  operator         VARCHAR(50),
   create_Time      VARCHAR(50) not null,
   finish_Time      VARCHAR(50),
   expire_Time      VARCHAR(50),
   action_Url       VARCHAR(200),
-  parent_Task_Id   VARCHAR(100),
+  parent_Task_Id   VARCHAR(32),
   variable         VARCHAR(2000)
 );
 
 create table wf_hist_task_actor (
-  task_Id          VARCHAR(100) not null,
-  actor_Id         VARCHAR(100) not null
+  task_Id          VARCHAR(32) not null,
+  actor_Id         VARCHAR(50) not null
 );
 
 create table wf_surrogate (
-  id                VARCHAR(100) not null primary key,
+  id                VARCHAR(32) not null primary key,
   process_Name      VARCHAR(100),
-  operator          VARCHAR(100),
-  surrogate         VARCHAR(100),
+  operator          VARCHAR(50),
+  surrogate         VARCHAR(50),
   odate             VARCHAR(64),
   sdate             VARCHAR(64),
   edate             VARCHAR(64),
@@ -97,8 +97,8 @@ create table wf_surrogate (
 );
 
 create table wf_cc_order (
-  order_Id        VARCHAR(100),
-  actor_Id        VARCHAR(100),
+  order_Id        VARCHAR(32),
+  actor_Id        VARCHAR(50),
   creator         VARCHAR(50),
   create_Time     VARCHAR(50),
   finish_Time    VARCHAR(50),
