@@ -7,16 +7,16 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.Process" table="wf_process">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
-        <property name="name" type="java.lang.String" column="name"/>
-        <property name="displayName" type="java.lang.String" column="display_name"/>
-        <property name="instanceUrl" type="java.lang.String" column="instance_Url"/>
-        <property name="type" type="java.lang.String" column="type"/>
-        <property name="state" type="java.lang.Integer" column="state"/>
+        <property name="name" type="java.lang.String" column="name" length="100"/>
+        <property name="displayName" type="java.lang.String" column="display_name" length="200"/>
+        <property name="instanceUrl" type="java.lang.String" column="instance_Url" length="200"/>
+        <property name="type" type="java.lang.String" column="type" length="100"/>
+        <property name="state" type="java.lang.Integer" column="state" length="1"/>
         <property name="content" type="java.sql.Blob" column="content"/>
-        <property name="version" type="java.lang.Integer" column="version"/>
-        <property name="createTime" type="java.lang.String" column="create_Time"/>
-        <property name="creator" type="java.lang.String" column="creator"/>
+        <property name="version" type="java.lang.Integer" column="version" length="2"/>
+        <property name="createTime" type="java.lang.String" column="create_Time" length="50"/>
+        <property name="creator" type="java.lang.String" column="creator" length="50"/>
     </class>
 </hibernate-mapping>

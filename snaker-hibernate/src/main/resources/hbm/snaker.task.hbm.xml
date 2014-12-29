@@ -4,39 +4,39 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.Task" table="wf_task">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
         <version name="version" column="version" />
-        <property name="orderId" type="java.lang.String" column="ORDER_ID" />
-        <property name="taskName" type="java.lang.String" column="TASK_NAME"/>
-        <property name="displayName" type="java.lang.String" column="DISPLAY_NAME"/>
-        <property name="operator" type="java.lang.String" column="operator" />
-        <property name="createTime" type="java.lang.String" column="CREATE_TIME"/>
-        <property name="finishTime" type="java.lang.String" column="FINISH_TIME"/>
-        <property name="expireTime" type="java.lang.String" column="EXPIRE_TIME"/>
-        <property name="actionUrl" type="java.lang.String" column="ACTION_URL"/>
-        <property name="taskType" type="java.lang.Integer" column="TASK_TYPE"/>
-        <property name="performType" type="java.lang.Integer" column="PERFORM_TYPE"/> 
-        <property name="parentTaskId" type="java.lang.String" column="PARENT_TASK_ID"/>
-        <property name="variable" type="java.lang.String" column="VARIABLE"/>
+        <property name="orderId" type="java.lang.String" column="ORDER_ID" length="32"/>
+        <property name="taskName" type="java.lang.String" column="TASK_NAME" length="100"/>
+        <property name="displayName" type="java.lang.String" column="DISPLAY_NAME" length="200"/>
+        <property name="operator" type="java.lang.String" column="OPERATOR" length="50"/>
+        <property name="createTime" type="java.lang.String" column="CREATE_TIME" length="50"/>
+        <property name="finishTime" type="java.lang.String" column="FINISH_TIME" length="50"/>
+        <property name="expireTime" type="java.lang.String" column="EXPIRE_TIME" length="50"/>
+        <property name="actionUrl" type="java.lang.String" column="ACTION_URL" length="200"/>
+        <property name="taskType" type="java.lang.Integer" column="TASK_TYPE" length="1"/>
+        <property name="performType" type="java.lang.Integer" column="PERFORM_TYPE" length="1"/>
+        <property name="parentTaskId" type="java.lang.String" column="PARENT_TASK_ID" length="32"/>
+        <property name="variable" type="java.lang.String" column="VARIABLE" length="2000"/>
     </class>
     
     <class name="org.snaker.engine.entity.HistoryTask" table="wf_hist_task">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
-        <property name="orderId" type="java.lang.String" column="ORDER_ID" />
-        <property name="taskName" type="java.lang.String" column="TASK_NAME"/>
-        <property name="displayName" type="java.lang.String" column="DISPLAY_NAME"/>
-        <property name="operator" type="java.lang.String" column="operator" />
-        <property name="createTime" type="java.lang.String" column="CREATE_TIME"/>
-        <property name="finishTime" type="java.lang.String" column="FINISH_TIME"/>
-        <property name="expireTime" type="java.lang.String" column="EXPIRE_TIME"/>
-        <property name="actionUrl" type="java.lang.String" column="ACTION_URL"/>
-        <property name="taskType" type="java.lang.Integer" column="TASK_TYPE"/>
-        <property name="taskState" type="java.lang.Integer" column="TASK_STATE"/>
-        <property name="performType" type="java.lang.Integer" column="PERFORM_TYPE"/>
-        <property name="parentTaskId" type="java.lang.String" column="PARENT_TASK_ID"/>
-        <property name="variable" type="java.lang.String" column="VARIABLE"/>
+        <property name="orderId" type="java.lang.String" column="ORDER_ID" length="32"/>
+        <property name="taskName" type="java.lang.String" column="TASK_NAME" length="100"/>
+        <property name="displayName" type="java.lang.String" column="DISPLAY_NAME" length="200"/>
+        <property name="operator" type="java.lang.String" column="OPERATOR" length="50"/>
+        <property name="createTime" type="java.lang.String" column="CREATE_TIME" length="50"/>
+        <property name="finishTime" type="java.lang.String" column="FINISH_TIME" length="50"/>
+        <property name="expireTime" type="java.lang.String" column="EXPIRE_TIME" length="50"/>
+        <property name="actionUrl" type="java.lang.String" column="ACTION_URL" length="200"/>
+        <property name="taskType" type="java.lang.Integer" column="TASK_TYPE" length="1"/>
+        <property name="taskState" type="java.lang.Integer" column="TASK_STATE" length="1"/>
+        <property name="performType" type="java.lang.Integer" column="PERFORM_TYPE" length="1"/>
+        <property name="parentTaskId" type="java.lang.String" column="PARENT_TASK_ID" length="32"/>
+        <property name="variable" type="java.lang.String" column="VARIABLE" length="2000"/>
     </class>
 </hibernate-mapping>

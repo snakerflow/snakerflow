@@ -4,12 +4,12 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.CCOrder" table="wf_cc_order">
 		<composite-id>
-		    <key-property name="orderId" column="ORDER_ID"/>
-		    <key-property name="actorId" column="ACTOR_ID"/>
+		    <key-property name="orderId" column="ORDER_ID" length="32"/>
+		    <key-property name="actorId" column="ACTOR_ID" length="32"/>
 		</composite-id>
-        <property name="creator" type="java.lang.String" column="creator"/>
-        <property name="createTime" type="java.lang.String" column="create_Time"/>
-        <property name="finishTime" type="java.lang.String" column="finish_Time"/>
-		<property name="status" type="java.lang.Integer" column="status"/>
+        <property name="creator" type="java.lang.String" column="creator" length="50"/>
+        <property name="createTime" type="java.lang.String" column="create_Time" length="50"/>
+        <property name="finishTime" type="java.lang.String" column="finish_Time" length="50"/>
+		<property name="status" type="java.lang.Integer" column="status" length="1"/>
     </class>
 </hibernate-mapping>

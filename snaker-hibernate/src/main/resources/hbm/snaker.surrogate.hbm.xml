@@ -6,14 +6,14 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.Surrogate" table="wf_surrogate">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
-        <property name="processName" type="java.lang.String" column="process_Name"/>
-        <property name="operator" type="java.lang.String" column="operator"/>
-        <property name="surrogate" type="java.lang.String" column="surrogate"/>
-        <property name="odate" type="java.lang.String" column="odate"/>
-        <property name="sdate" type="java.lang.String" column="sdate"/>
-        <property name="edate" type="java.lang.String" column="edate"/>
-        <property name="state" type="java.lang.Integer" column="state"/>
+        <property name="processName" type="java.lang.String" column="process_Name" length="100"/>
+        <property name="operator" type="java.lang.String" column="operator" length="50"/>
+        <property name="surrogate" type="java.lang.String" column="surrogate" length="50"/>
+        <property name="odate" type="java.lang.String" column="odate" length="50"/>
+        <property name="sdate" type="java.lang.String" column="sdate" length="50"/>
+        <property name="edate" type="java.lang.String" column="edate" length="50"/>
+        <property name="state" type="java.lang.Integer" column="state" length="50"/>
     </class>
 </hibernate-mapping>

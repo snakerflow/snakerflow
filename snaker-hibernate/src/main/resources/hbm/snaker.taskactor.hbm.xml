@@ -4,15 +4,15 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.TaskActor" table="wf_task_actor">
 		<composite-id>
-		    <key-property name="taskId" column="TASK_ID"/>
-		    <key-property name="actorId" column="ACTOR_ID"/>
+		    <key-property name="taskId" column="TASK_ID" length="32"/>
+		    <key-property name="actorId" column="ACTOR_ID" length="50"/>
 		</composite-id>
     </class>
     
     <class name="org.snaker.engine.entity.HistoryTaskActor" table="wf_hist_task_actor">
 		<composite-id>
-		    <key-property name="taskId" column="TASK_ID"/>
-		    <key-property name="actorId" column="ACTOR_ID"/>
+		    <key-property name="taskId" column="TASK_ID" length="32"/>
+		    <key-property name="actorId" column="ACTOR_ID" length="50"/>
 		</composite-id>
     </class>
 </hibernate-mapping>

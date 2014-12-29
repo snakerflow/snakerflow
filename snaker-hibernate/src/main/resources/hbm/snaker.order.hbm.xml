@@ -4,35 +4,35 @@
 <hibernate-mapping>
     <class name="org.snaker.engine.entity.Order" table="wf_order">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
-        <version name="version" column="version" />
-       	<property name="processId" type="java.lang.String" column="process_Id" />
-        <property name="creator" type="java.lang.String" column="creator" />
-        <property name="createTime" type="java.lang.String" column="create_Time"/>
-        <property name="expireTime" type="java.lang.String" column="expire_Time"/>
-        <property name="lastUpdateTime" type="java.lang.String" column="last_Update_Time"/>
-        <property name="lastUpdator" type="java.lang.String" column="last_Updator"/>
-        <property name="priority" type="java.lang.Integer" column="priority"/>
-        <property name="parentId" type="java.lang.String" column="parent_Id" />
-        <property name="parentNodeName" type="java.lang.String" column="parent_Node_Name" />
-        <property name="orderNo" type="java.lang.String" column="order_No" />
-        <property name="variable" type="java.lang.String" column="variable" />
+        <version name="version" column="version"/>
+       	<property name="processId" type="java.lang.String" column="process_Id" length="32"/>
+        <property name="creator" type="java.lang.String" column="creator" length="50"/>
+        <property name="createTime" type="java.lang.String" column="create_Time" length="50"/>
+        <property name="expireTime" type="java.lang.String" column="expire_Time" length="50"/>
+        <property name="lastUpdateTime" type="java.lang.String" column="last_Update_Time" length="50"/>
+        <property name="lastUpdator" type="java.lang.String" column="last_Updator" length="50"/>
+        <property name="priority" type="java.lang.Integer" column="priority" length="1"/>
+        <property name="parentId" type="java.lang.String" column="parent_Id" length="32"/>
+        <property name="parentNodeName" type="java.lang.String" column="parent_Node_Name" length="50"/>
+        <property name="orderNo" type="java.lang.String" column="order_No" length="50"/>
+        <property name="variable" type="java.lang.String" column="variable" length="2000"/>
     </class>
     
     <class name="org.snaker.engine.entity.HistoryOrder" table="wf_hist_order">
         <id name="id" type="java.lang.String">
-            <column name="id"/>
+            <column name="id" length="32"/>
         </id>
-       	<property name="processId" type="java.lang.String" column="process_Id" />
-        <property name="orderState" type="java.lang.Integer" column="order_State"/>
-        <property name="creator" type="java.lang.String" column="creator" />
-        <property name="createTime" type="java.lang.String" column="create_Time"/>
-        <property name="endTime" type="java.lang.String" column="end_Time"/>
-        <property name="expireTime" type="java.lang.String" column="expire_Time"/>
-        <property name="priority" type="java.lang.Integer" column="priority"/>
-        <property name="parentId" type="java.lang.String" column="parent_Id" />
-        <property name="orderNo" type="java.lang.String" column="order_No" />
-        <property name="variable" type="java.lang.String" column="variable" />
+       	<property name="processId" type="java.lang.String" column="process_Id" length="32"/>
+        <property name="orderState" type="java.lang.Integer" column="order_State" length="1"/>
+        <property name="creator" type="java.lang.String" column="creator" length="50"/>
+        <property name="createTime" type="java.lang.String" column="create_Time" length="50"/>
+        <property name="endTime" type="java.lang.String" column="end_Time" length="50"/>
+        <property name="expireTime" type="java.lang.String" column="expire_Time" length="50"/>
+        <property name="priority" type="java.lang.Integer" column="priority" length="1"/>
+        <property name="parentId" type="java.lang.String" column="parent_Id" length="32"/>
+        <property name="orderNo" type="java.lang.String" column="order_No" length="50"/>
+        <property name="variable" type="java.lang.String" column="variable" length="2000"/>
     </class>
 </hibernate-mapping>
