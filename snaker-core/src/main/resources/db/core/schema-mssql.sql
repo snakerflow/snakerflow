@@ -100,7 +100,7 @@ create index IDX_SURROGATE_OPERATOR on wf_surrogate (operator);
 create table wf_cc_order (
     order_Id        nvarchar(32),
     actor_Id        nvarchar(50),
-    creator         nvarchar(50),,
+    creator         nvarchar(50),
     create_Time     nvarchar(50),
     finish_Time     nvarchar(50),
     status          tinyint
