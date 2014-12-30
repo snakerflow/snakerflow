@@ -160,14 +160,14 @@ public abstract class AbstractDBAccess implements DBAccess {
 	 */
 	protected Dialect getDialect() {
         if(dialect != null) return dialect;
-        try {
-            dialect = JdbcHelper.getDialect(getConnection());
-        } catch (Exception e) {
-            log.error("Unable to find the available dialect.Please configure dialect to snaker.xml");
-        }
-        if(dialect == null) {
-            dialect = ServiceContext.getContext().find(Dialect.class);
-        }
+		dialect = ServiceContext.getContext().find(Dialect.class);
+		if(dialect == null) {
+			try {
+				dialect = JdbcHelper.getDialect(getConnection());
+			} catch (Exception e) {
+				log.error("Unable to find the available dialect.Please configure dialect to snaker.xml");
+			}
+		}
 		return dialect;
 	}
 	
