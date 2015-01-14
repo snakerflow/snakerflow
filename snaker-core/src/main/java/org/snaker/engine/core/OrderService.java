@@ -150,7 +150,7 @@ public class OrderService extends AccessService implements IOrderService {
 	 */
 	public void complete(String orderId) {
 		Order order = access().getOrder(orderId);
-		HistoryOrder history = new HistoryOrder(order);
+		HistoryOrder history = access().getHistOrder(orderId);
 		history.setOrderState(STATE_FINISH);
 		history.setEndTime(DateHelper.getTime());
 		
