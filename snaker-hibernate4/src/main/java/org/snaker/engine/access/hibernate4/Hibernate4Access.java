@@ -18,7 +18,9 @@
 package org.snaker.engine.access.hibernate4;
 
 import org.hibernate.Session;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jdbc.Work;
+import org.hibernate.service.jdbc.connections.spi.ConnectionProvider;
 import org.snaker.engine.DBAccess;
 import org.snaker.engine.SnakerException;
 import org.snaker.engine.access.ScriptRunner;
@@ -43,6 +45,11 @@ public class Hibernate4Access extends HibernateAccess implements DBAccess {
      * 取得hibernate的connection对象
      */
     protected Connection getConnection() throws SQLException {
+        if (sessionFactory instanceof SessionFactoryImpl) {
+            SessionFactoryImpl sessionFactoryImpl = (SessionFactoryImpl) sessionFactory;
+            ConnectionProvider provider = sessionFactoryImpl.getServiceRegistry().getService(ConnectionProvider.class);
+            if(provider != null) return provider.getConnection();
+        }
         return null;
     }
 
