@@ -608,7 +608,7 @@ public abstract class AbstractDBAccess implements DBAccess {
             paramList.add(filter.getProcessId());
         }
         if(StringHelper.isNotEmpty(filter.getDisplayName())) {
-            sql.append(" and p.displayName like ?");
+            sql.append(" and p.display_Name like ?");
             paramList.add("%" + filter.getDisplayName() + "%");
         }
         if(StringHelper.isNotEmpty(filter.getProcessType())) {
@@ -617,6 +617,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and o.parent_Id = ? ");
+			paramList.add(filter.getParentId());
 		}
 		if(filter.getExcludedIds() != null && filter.getExcludedIds().length > 0) {
 			sql.append(" and o.id not in(");
@@ -733,7 +734,7 @@ public abstract class AbstractDBAccess implements DBAccess {
             paramList.add(filter.getProcessType());
         }
         if(StringHelper.isNotEmpty(filter.getDisplayName())) {
-            sql.append(" and p.displayName like ?");
+            sql.append(" and p.display_Name like ?");
             paramList.add("%" + filter.getDisplayName() + "%");
         }
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
@@ -810,7 +811,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
-		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
+		sql.append(" select distinct o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
 		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type, t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
@@ -837,6 +838,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and o.process_Id = ?");
 			paramList.add(filter.getProcessId());
+		}
+		if(StringHelper.isNotEmpty(filter.getDisplayName())) {
+			sql.append(" and p.display_Name like ?");
+			paramList.add("%" + filter.getDisplayName() + "%");
 		}
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and o.parent_Id = ? ");
@@ -932,7 +937,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
-		sql.append(" select o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
+		sql.append(" select distinct o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
 		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
 		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type,t.operator, t.action_Url, ");
 		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
@@ -958,6 +963,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(StringHelper.isNotEmpty(filter.getProcessId())) {
 			sql.append(" and o.process_Id = ?");
 			paramList.add(filter.getProcessId());
+		}
+		if(StringHelper.isNotEmpty(filter.getDisplayName())) {
+			sql.append(" and p.display_Name like ?");
+			paramList.add("%" + filter.getDisplayName() + "%");
 		}
 		if(StringHelper.isNotEmpty(filter.getParentId())) {
 			sql.append(" and o.parent_Id = ? ");
