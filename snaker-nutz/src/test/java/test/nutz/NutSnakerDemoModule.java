@@ -10,6 +10,6 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
  */
 @IocBy(type=ComboIocProvider.class, args={"*js", "ioc/", // 其他json ioc配置文件
 										  "*anno", "net.wendal.snaker.demo", //需要扫描的package 
-										  "*org.snaker.nutz.SnakerIocLoader"})
+										  "*org.snaker.nutz.SnakerIocLoader", "flows"}) // 假设流程配置文件在flows目录下
 public class NutSnakerDemoModule {
 }

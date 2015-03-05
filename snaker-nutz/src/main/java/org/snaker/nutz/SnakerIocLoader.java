@@ -59,6 +59,10 @@ public class SnakerIocLoader implements IocLoader {
         if (log.isDebugEnabled())
         	log.debug("snakerflow bean will define as\n" + Json.toJson(iobj));
     }
+	
+	public static SnakerEngine buildSnaker(DataSource ds) throws IOException {
+		return buildSnaker(ds, new Object[]{});
+	}
 
     public static SnakerEngine buildSnaker(DataSource ds, String path) throws IOException {
     	return buildSnaker(ds, new Object[]{path});
