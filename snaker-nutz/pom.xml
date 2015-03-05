@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.nutz</groupId>
             <artifactId>nutz</artifactId>
-            <version>1.b.50</version>
+            <version>1.b.52</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
