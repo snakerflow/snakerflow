@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <config>
-	
-	<bean class="org.snaker.nutz.access.NutzAccess"/>
-	<bean class="org.snaker.nutz.access.NutzTransactionInterceptor"/>
 	<bean class="org.snaker.engine.access.dialect.MySqlDialect" />
 	<bean class="org.snaker.engine.impl.JuelExpression" />
 </config>

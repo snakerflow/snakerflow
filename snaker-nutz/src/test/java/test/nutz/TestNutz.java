@@ -17,20 +17,23 @@
 
 package test.nutz;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nutz.ioc.Ioc;
+import org.nutz.ioc.IocLoader;
 import org.nutz.ioc.impl.NutIoc;
-import org.nutz.ioc.loader.json.JsonLoader;
+import org.nutz.ioc.loader.combo.ComboIocLoader;
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.helper.StreamHelper;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.snaker.nutz.SnakerIocLoader;
 
 /**
  * 测试nutz整合
@@ -38,12 +41,19 @@ import java.util.Map;
  * @since 2.0
  */
 public class TestNutz {
+	
+	protected Ioc ioc;
     private SnakerEngine engine;
     @Before
-    public void before() {
-        Ioc ioc = new NutIoc(new JsonLoader("ioc.js"));
-        SnakerFacets facets = ioc.get(SnakerFacets.class, "snaker");
-        engine = facets.getEngine();
+    public void before() throws ClassNotFoundException {
+    	IocLoader loader = new ComboIocLoader("*js", "ioc.js", "*"+SnakerIocLoader.class.getName());
+        ioc = new NutIoc(loader);
+        engine = ioc.get(SnakerEngine.class);
+    }
+    @After
+    public void after() {
+    	if (ioc != null)
+    		ioc.depose();
     }
 
     @Test

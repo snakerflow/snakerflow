@@ -36,9 +36,5 @@ var ioc = {
 		type : "org.nutz.dao.impl.NutDao",
 		args : [ { refer : "dataSource" } ],
 		fields : { sqlManager : { refer : "sql" } }
-	},
-	snaker : {
-		type : "test.nutz.SnakerFacets",
-		args : [ { refer : "dataSource" } ]
 	}
 }
