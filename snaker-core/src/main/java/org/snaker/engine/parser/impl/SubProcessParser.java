@@ -41,12 +41,10 @@ public class SubProcessParser extends AbstractNodeParser {
 	protected void parseNode(NodeModel node, Element element) {
 		SubProcessModel model = (SubProcessModel)node;
 		model.setProcessName(element.getAttribute(ATTR_PROCESSNAME));
-		String version = element.getAttribute(ATTR_VERSION);
-		int ver = 0;
-        if(NumberUtils.isNumber(version)) {
-        	ver = Integer.parseInt(version);
+		String versionStr = element.getAttribute(ATTR_VERSION);
+        if(NumberUtils.isNumber(versionStr)) {
+			model.setVersion(Integer.parseInt(versionStr));
         }
-		model.setVersion(ver);
 		String form = element.getAttribute(ATTR_FORM);
 		if(StringHelper.isNotEmpty(form)) {
 			model.setForm(form);

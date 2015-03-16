@@ -26,6 +26,8 @@ import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.Variable;
 import org.snaker.engine.helper.AssertHelper;
 
 /**
@@ -125,6 +127,22 @@ public class QueryService extends AccessService implements IQueryService {
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
 		AssertHelper.notNull(filter);
 		return access().getHistoryWorkItems(page, filter);
+	}
+
+	public List<Variable> getVariablesByOrderId(String orderId, boolean isGlobal) {
+		return access().getVariablesByOrderId(orderId, isGlobal);
+	}
+
+	public List<Variable> getVariablesByTaskId(String taskId) {
+		return access().getVariablesByTaskId(taskId);
+	}
+
+	public List<HistoryVariable> getHistoryVariablesByOrderId(String orderId, boolean isGlobal) {
+		return access().getHistoryVariablesByOrderId(orderId, isGlobal);
+	}
+
+	public List<HistoryVariable> getHistoryVariablesByTaskId(String taskId) {
+		return access().getHistoryVariablesByTaskId(taskId);
 	}
 
 	public <T> T nativeQueryObject(Class<T> T, String sql, Object... args) {

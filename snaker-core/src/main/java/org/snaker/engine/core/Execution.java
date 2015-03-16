@@ -84,9 +84,9 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 用于产生子流程执行对象使用
-	 * @param execution
-	 * @param process
-	 * @param parentNodeName
+	 * @param execution 执行对象
+	 * @param process 流程定义对象
+	 * @param parentNodeName 父节点名称
 	 */
 	Execution(Execution execution, Process process, String parentNodeName) {
 		if(execution == null || process == null || parentNodeName == null) {
@@ -102,9 +102,9 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 构造函数，接收流程定义、流程实例对象、执行参数
-	 * @param process
-	 * @param order
-	 * @param args
+	 * @param process 流程定义对象
+	 * @param order 流程实例对象
+	 * @param args 参数列表
 	 */
 	public Execution(SnakerEngine engine, Process process, Order order, Map<String, Object> args) {
 		if(process == null || order == null) {
@@ -118,10 +118,10 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 根据当前执行对象execution、子流程定义process、当前节点名称产生子流程的执行对象
-	 * @param execution
-	 * @param process
-	 * @param parentNodeName
-	 * @return
+	 * @param execution 执行对象
+	 * @param process 流程定义对象
+	 * @param parentNodeName 父节点名称
+	 * @return 执行对象
 	 */
 	public Execution createSubExecution(Execution execution, Process process, String parentNodeName) {
 		return new Execution(execution, process, parentNodeName);
@@ -129,7 +129,7 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 获取流程定义对象
-	 * @return
+	 * @return 流程定义
 	 */
 	public Process getProcess() {
 		return process;
@@ -137,7 +137,7 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 获取流程模型对象
-	 * @return
+	 * @return 流程定义模型
 	 */
 	public ProcessModel getModel() {
 		return process.getModel();
@@ -145,15 +145,24 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 获取流程实例对象
-	 * @return
+	 * @return 流程实例
 	 */
 	public Order getOrder() {
 		return order;
 	}
+
+	/**
+	 * 返回实例id
+	 * @return
+	 */
+	public String getOrderId() {
+		if(order == null) return null;
+		return order.getId();
+	}
 	
 	/**
 	 * 获取执行参数
-	 * @return
+	 * @return 参数列表
 	 */
 	public Map<String, Object> getArgs() {
 		return args;
@@ -161,7 +170,7 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 返回任务结果集
-	 * @return
+	 * @return 任务列表
 	 */
 	public List<Task> getTasks() {
 		return tasks;
@@ -169,7 +178,7 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 添加任务集合
-	 * @param tasks
+	 * @param tasks 任务列表
 	 */
 	public void addTasks(List<Task> tasks) {
 		this.tasks.addAll(tasks);
@@ -177,7 +186,7 @@ public class Execution implements Serializable {
 	
 	/**
 	 * 添加任务
-	 * @param task
+	 * @param task 任务
 	 */
 	public void addTask(Task task) {
 		this.tasks.add(task);
@@ -185,7 +194,7 @@ public class Execution implements Serializable {
 
 	/**
 	 * 返回当前操作人ID
-	 * @return
+	 * @return 操作人
 	 */
 	public String getOperator() {
 		return operator;
@@ -193,15 +202,24 @@ public class Execution implements Serializable {
 
 	/**
 	 * 设置当前操作人ID
-	 * @param operator
+	 * @param operator 操作人
 	 */
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
 
 	/**
-	 * 返回任务
+	 * 返回任务id
 	 * @return
+	 */
+	public String getTaskId() {
+		if(task == null) return null;
+		return task.getId();
+	}
+
+	/**
+	 * 返回任务
+	 * @return 任务对象
 	 */
 	public Task getTask() {
 		return task;
@@ -209,7 +227,7 @@ public class Execution implements Serializable {
 
 	/**
 	 * 设置任务
-	 * @param task
+	 * @param task 任务对象
 	 */
 	public void setTask(Task task) {
 		this.task = task;
@@ -217,7 +235,7 @@ public class Execution implements Serializable {
 
 	/**
 	 * 判断是否已经成功合并
-	 * @return
+	 * @return 是否合并
 	 */
 	public boolean isMerged() {
 		return isMerged;
@@ -225,7 +243,7 @@ public class Execution implements Serializable {
 
 	/**
 	 * 设置是否为已合并
-	 * @param isMerged
+	 * @param isMerged 是否合并
 	 */
 	public void setMerged(boolean isMerged) {
 		this.isMerged = isMerged;
@@ -233,7 +251,7 @@ public class Execution implements Serializable {
 
 	/**
 	 * 获取引擎
-	 * @return
+	 * @return 流程引擎
 	 */
 	public SnakerEngine getEngine() {
 		return engine;

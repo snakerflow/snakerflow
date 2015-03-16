@@ -21,6 +21,8 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.WorkItem;
 import org.snaker.engine.test.TestSnakerBase;
 
+import java.util.List;
+
 /**
  * @author yuqs
  * @since 1.0
@@ -28,9 +30,15 @@ import org.snaker.engine.test.TestSnakerBase;
 public class TestQueryHistTask extends TestSnakerBase {
 	@Test
 	public void test() {
-		System.out.println(queryService.getHistoryTasks(new Page<HistoryTask>(), 
-				new QueryFilter().setOperator("admin")));
-		System.out.println(queryService.getHistoryWorkItems(new Page<WorkItem>(), 
-				new QueryFilter().setOperator("admin")));
+//		System.out.println(queryService.getHistoryTasks(new Page<HistoryTask>(),
+//				new QueryFilter().setOperator("admin")));
+//		System.out.println(queryService.getHistoryWorkItems(new Page<WorkItem>(),
+//				new QueryFilter().setOperator("admin")));
+		List<WorkItem> workItems = queryService.getHistoryWorkItems(new Page<WorkItem>(),
+				new QueryFilter());
+		for(WorkItem item : workItems) {
+			System.out.println(item);
+			System.out.println(item.getVariables());
+		}
 	}
 }

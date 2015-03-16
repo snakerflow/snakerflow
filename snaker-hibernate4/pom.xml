@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>snaker-parent</artifactId>
-        <groupId>com.github.snakerflow</groupId>
-        <version>2.5.1</version>
+        <groupId>com.snakerflow</groupId>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,12 +40,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.snakerflow</groupId>
+            <groupId>com.snakerflow</groupId>
             <artifactId>snaker-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.snakerflow</groupId>
+            <groupId>com.snakerflow</groupId>
             <artifactId>snaker-hibernate</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

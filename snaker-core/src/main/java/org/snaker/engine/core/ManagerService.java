@@ -20,6 +20,7 @@ import org.snaker.engine.IManagerService;
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.Surrogate;
+import org.snaker.engine.entity.var.Variable;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
 import org.snaker.engine.helper.StringHelper;
@@ -78,5 +79,20 @@ public class ManagerService extends AccessService implements IManagerService {
 		}
 		buffer.deleteCharAt(buffer.length() - 1);
 		return buffer.toString();
+	}
+
+	public void createVariable(Variable variable) {
+		AssertHelper.notNull(variable);
+		access().saveVariable(variable);
+	}
+
+	public void updateVariable(Variable variable) {
+		AssertHelper.notNull(variable);
+		access().updateVariable(variable);
+	}
+
+	public void deleteVariable(Variable variable) {
+		AssertHelper.notNull(variable);
+		access().deleteVariable(variable);
 	}
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.Surrogate;
+import org.snaker.engine.entity.var.Variable;
 
 /**
  * 管理服务接口,用于流程管理控制服务
@@ -70,4 +71,22 @@ public interface IManagerService {
 	 * @return List<Surrogate> 委托代理对象集合
 	 */
 	public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter);
+
+	/**
+	 * 保存活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void createVariable(Variable variable);
+
+	/**
+	 * 更新活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void updateVariable(Variable variable);
+
+	/**
+	 * 删除活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void deleteVariable(Variable variable);
 }

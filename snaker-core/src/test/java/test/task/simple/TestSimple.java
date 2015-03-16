@@ -33,19 +33,19 @@ import org.snaker.engine.test.TestSnakerBase;
 public class TestSimple extends TestSnakerBase {
 	@Before
 	public void before() {
-		processId = engine.process().deploy(StreamHelper.getStreamFromClasspath("test/task/simple/process.snaker"));
-		engine.process().updateType(processId, "预算管理流程");
+		//processId = engine.process().deploy(StreamHelper.getStreamFromClasspath("test/task/simple/process.snaker"));
+		//engine.process().updateType(processId, "预算管理流程");
 	}
-	
+
 	@Test
 	public void test() {
 		Map<String, Object> args = new HashMap<String, Object>();
-		args.put("task1.operator", new String[]{"1"});
+		args.put("task1.operator", "1");
 		Order order = engine.startInstanceByName("simple", 0, "2", args);
 		System.out.println("order=" + order);
 		List<Task> tasks = queryService.getActiveTasks(new QueryFilter().setOrderId(order.getId()));
 		for(Task task : tasks) {
-			engine.executeTask(task.getId(), "1", args);
+			//engine.executeTask(task.getId(), "1", args);
 		}
 	}
 }

@@ -4,10 +4,10 @@ CREATE TABLE wf_process (
     display_Name      VARCHAR(200) comment '流程显示名称',
     type              VARCHAR(100) comment '流程类型',
     instance_Url      VARCHAR(200) comment '实例url',
-    state             TINYINT(1) comment '流程是否可用',
+    state             TINYINT comment '流程是否可用',
     content           LONGBLOB comment '流程模型定义',
-    version           INT(2) comment '版本',
-    create_Time       VARCHAR(50) comment '创建时间',
+    version           INTEGER comment '版本',
+    create_Time      VARCHAR(50) comment '创建时间',
     creator           VARCHAR(50) comment '创建人'
 )comment='流程定义表';
 
@@ -20,11 +20,10 @@ CREATE TABLE wf_order (
     expire_Time       VARCHAR(50) comment '期望完成时间',
     last_Update_Time  VARCHAR(50) comment '上次更新时间',
     last_Updator      VARCHAR(50) comment '上次更新人',
-    priority          TINYINT(1) comment '优先级',
+    priority          TINYINT comment '优先级',
     parent_Node_Name  VARCHAR(100) comment '父流程依赖的节点名称',
     order_No          VARCHAR(50) comment '流程实例编号',
-    variable          VARCHAR(2000) comment '附属变量json存储',
-    version           INT(3) comment '版本'
+    version           INTEGER comment '版本'
 )comment='流程实例表';
 
 CREATE TABLE wf_task (
@@ -32,16 +31,15 @@ CREATE TABLE wf_task (
     order_Id          VARCHAR(32) NOT NULL comment '流程实例ID',
     task_Name         VARCHAR(100) NOT NULL comment '任务名称',
     display_Name      VARCHAR(200) NOT NULL comment '任务显示名称',
-    task_Type         TINYINT(1) NOT NULL comment '任务类型',
-    perform_Type      TINYINT(1) comment '参与类型',
+    task_Type         TINYINT NOT NULL comment '任务类型',
+    perform_Type      TINYINT comment '参与类型',
     operator          VARCHAR(50) comment '任务处理人',
     create_Time       VARCHAR(50) comment '任务创建时间',
     finish_Time       VARCHAR(50) comment '任务完成时间',
     expire_Time       VARCHAR(50) comment '任务期望完成时间',
     action_Url        VARCHAR(200) comment '任务处理的url',
     parent_Task_Id    VARCHAR(32) comment '父任务ID',
-    variable          VARCHAR(2000) comment '附属变量json存储',
-    version           TINYINT(1) comment '版本'
+    version           INTEGER comment '版本'
 )comment='任务表';
 
 CREATE TABLE wf_task_actor (
@@ -52,15 +50,14 @@ CREATE TABLE wf_task_actor (
 create table wf_hist_order (
     id                VARCHAR(32) not null primary key comment '主键ID',
     process_Id        VARCHAR(32) not null comment '流程定义ID',
-    order_State       TINYINT(1) not null comment '状态',
+    order_State       TINYINT not null comment '状态',
     creator           VARCHAR(50) comment '发起人',
     create_Time       VARCHAR(50) not null comment '发起时间',
     end_Time          VARCHAR(50) comment '完成时间',
     expire_Time       VARCHAR(50) comment '期望完成时间',
-    priority          TINYINT(1) comment '优先级',
+    priority          TINYINT comment '优先级',
     parent_Id         VARCHAR(32) comment '父流程ID',
-    order_No          VARCHAR(50) comment '流程实例编号',
-    variable          VARCHAR(2000) comment '附属变量json存储'
+    order_No          VARCHAR(50) comment '流程实例编号'
 )comment='历史流程实例表';
 
 create table wf_hist_task (
@@ -68,22 +65,45 @@ create table wf_hist_task (
     order_Id          VARCHAR(32) not null comment '流程实例ID',
     task_Name         VARCHAR(100) not null comment '任务名称',
     display_Name      VARCHAR(200) not null comment '任务显示名称',
-    task_Type         TINYINT(1) not null comment '任务类型',
-    perform_Type      TINYINT(1) comment '参与类型',
-    task_State        TINYINT(1) not null comment '任务状态',
+    task_Type         TINYINT not null comment '任务类型',
+    perform_Type      TINYINT comment '参与类型',
+    task_State        TINYINT not null comment '任务状态',
     operator          VARCHAR(50) comment '任务处理人',
     create_Time       VARCHAR(50) not null comment '任务创建时间',
     finish_Time       VARCHAR(50) comment '任务完成时间',
     expire_Time       VARCHAR(50) comment '任务期望完成时间',
     action_Url        VARCHAR(200) comment '任务处理url',
-    parent_Task_Id    VARCHAR(32) comment '父任务ID',
-    variable          VARCHAR(2000) comment '附属变量json存储'
+    parent_Task_Id    VARCHAR(32) comment '父任务ID'
 )comment='历史任务表';
 
 create table wf_hist_task_actor (
     task_Id           VARCHAR(32) not null comment '任务ID',
     actor_Id          VARCHAR(50) not null comment '参与者ID'
 )comment='历史任务参与者表';
+
+create table wf_variable (
+    id                  VARCHAR(32) not null primary key comment '主键ID',
+    version            INTEGER comment '版本',
+    order_Id           VARCHAR(32) comment '流程实例ID',
+    task_Id            VARCHAR(32) comment '任务ID',
+    name                VARCHAR(255) not null comment '变量名称',
+    type                INTEGER comment '变量类型',
+    double_value       DOUBLE comment '浮点变量值',
+    long_value          BIGINT comment '长整型变量值',
+    text_value          VARCHAR(4000) comment '字符型变量值'
+)comment='活动变量表';
+
+create table wf_hist_variable (
+    id                  VARCHAR(32) not null primary key comment '主键ID',
+    version            INTEGER comment '版本',
+    order_Id           VARCHAR(32) comment '流程实例ID',
+    task_Id            VARCHAR(32) comment '任务ID',
+    name                VARCHAR(255) not null comment '变量名称',
+    type                INTEGER comment '变量类型',
+    double_value       DOUBLE comment '浮点变量值',
+    long_value          BIGINT comment '长整型变量值',
+    text_value          VARCHAR(4000) comment '字符型变量值'
+)comment='历史变量表';
 
 create table wf_surrogate (
     id                VARCHAR(32) PRIMARY KEY NOT NULL COMMENT '主键ID',
@@ -120,6 +140,10 @@ create index IDX_HIST_TASK_ORDER on wf_hist_task (order_Id);
 create index IDX_HIST_TASK_TASKNAME on wf_hist_task (task_Name);
 create index IDX_HIST_TASK_PARENTTASK on wf_hist_task (parent_Task_Id);
 create index IDX_HIST_TASKACTOR_TASK on wf_hist_task_actor (task_Id);
+create index IDX_VARIABLE_TASK on wf_variable (task_Id);
+create index IDX_VARIABLE_ORDER on wf_variable (order_Id);
+create index IDX_HIST_VARIABLE_TASK on wf_hist_variable (task_Id);
+create index IDX_HIST_VARIABLE_ORDER on wf_hist_variable (order_Id);
 
 alter table wf_task_actor
   add constraint FK_TASK_ACTOR_TASKID foreign key (task_Id)

@@ -54,7 +54,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	
 	/**
 	 * setter
-	 * @param dataSource
+	 * @param dataSource 数据源
 	 */
     public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -69,7 +69,7 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 
 	/**
      * 返回数据库连接对象
-     * @return
+     * @return 数据库连接
      * @throws java.sql.SQLException
      */
     protected Connection getConnection() throws SQLException {
@@ -82,10 +82,9 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	public void saveProcess(Process process) {
 		super.saveProcess(process);
 		if(process.getBytes() != null) {
-			Connection conn = null;
 			PreparedStatement pstmt = null;
 			try {
-				conn = getConnection();
+				Connection conn = getConnection();
 				pstmt = conn.prepareStatement(PROCESS_UPDATE_BLOB);
 				pstmt.setBytes(1, process.getBytes());
 				pstmt.setString(2, process.getId());
@@ -108,10 +107,9 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	public void updateProcess(Process process) {
 		super.updateProcess(process);
 		if(process.getBytes() != null) {
-			Connection conn = null;
 			PreparedStatement pstmt = null;
 			try {
-				conn = getConnection();
+				Connection conn = getConnection();
 				pstmt = conn.prepareStatement(PROCESS_UPDATE_BLOB);
 				pstmt.setBytes(1, process.getBytes());
 				pstmt.setString(2, process.getId());
@@ -174,12 +172,11 @@ public class JdbcAccess extends AbstractDBAccess implements DBAccess {
 	}
 
 	public <T> T queryObject(Class<T> clazz, String sql, Object... args) {
-    	List<T> result = null;
         try {
         	if(log.isDebugEnabled()) {
         		log.debug("查询单条记录=\n" + sql);
         	}
-        	result = runner.query(getConnection(), sql, new BeanPropertyHandler<T>(clazz), args);
+			List<T> result = runner.query(getConnection(), sql, new BeanPropertyHandler<T>(clazz), args);
         	return JdbcHelper.requiredSingleResult(result);
         } catch (SQLException e) {
         	log.error(e.getMessage(), e);

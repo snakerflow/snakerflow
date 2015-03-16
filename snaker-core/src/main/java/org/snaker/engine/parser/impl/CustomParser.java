@@ -30,7 +30,7 @@ public class CustomParser extends AbstractNodeParser {
 		custom.setClazz(element.getAttribute(ATTR_CLAZZ));
 		custom.setMethodName(element.getAttribute(ATTR_METHODNAME));
 		custom.setArgs(element.getAttribute(ATTR_ARGS));
-		custom.setVar(element.getAttribute(ATTR_VAR));
+		custom.setReturnKey(element.getAttribute(ATTR_RETURNKEY));
 	}
 	
 	protected NodeModel newModel() {

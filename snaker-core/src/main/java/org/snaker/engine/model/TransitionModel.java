@@ -51,7 +51,7 @@ public class TransitionModel extends BaseModel implements Action {
 	 */
 	private String g;
 	/**
-	 * 描述便宜位置
+	 * 描述偏移位置
 	 */
 	private String offset;
 	/**

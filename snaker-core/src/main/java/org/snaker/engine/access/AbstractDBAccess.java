@@ -38,6 +38,8 @@ import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.Variable;
 import org.snaker.engine.helper.ClassHelper;
 import org.snaker.engine.helper.ConfigHelper;
 import org.snaker.engine.helper.StringHelper;
@@ -65,21 +67,21 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String PROCESS_UPDATE_BLOB = "update wf_process set content=? where id=?";
 	protected static final String PROCESS_UPDATE_TYPE = "update wf_process set type=? where id=?";
 	
-	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?)";
-	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, variable = ?, expire_Time=?, version = version + 1 where id=? and version = ?";
+	protected static final String ORDER_INSERT = "insert into wf_order (id,process_Id,creator,create_Time,parent_Id,parent_Node_Name,expire_Time,last_Update_Time,last_Updator,order_No,version) values (?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String ORDER_UPDATE = "update wf_order set last_Updator=?, last_Update_Time=?, expire_Time=?, version = version + 1 where id=? and version = ?";
 	protected static final String ORDER_DELETE = "delete from wf_order where id = ?";
-	protected static final String ORDER_HISTORY_INSERT = "insert into wf_hist_order (id,process_Id,order_State,creator,create_Time,end_Time,parent_Id,expire_Time,order_No,variable) values (?,?,?,?,?,?,?,?,?,?)";
-	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ?, variable = ? where id = ? ";
+	protected static final String ORDER_HISTORY_INSERT = "insert into wf_hist_order (id,process_Id,order_State,creator,create_Time,end_Time,parent_Id,expire_Time,order_No) values (?,?,?,?,?,?,?,?,?)";
+	protected static final String ORDER_HISTORY_UPDATE = "update wf_hist_order set order_State = ?, end_Time = ? where id = ? ";
 	protected static final String ORDER_HISTORY_DELETE = "delete from wf_hist_order where id = ?";
 	
 	protected static final String CCORDER_INSERT = "insert into wf_cc_order (order_Id, actor_Id, creator, create_Time, status) values (?, ?, ?, ?, ?)";
 	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ?, finish_Time = ? where order_Id = ? and actor_Id = ?";
 	protected static final String CCORDER_DELETE = "delete from wf_cc_order where order_Id = ? and actor_Id = ?";
 	
-	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, variable=?, expire_Time=?, action_Url=?, version = version + 1 where id=? and version = ?";
+	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, expire_Time=?, action_Url=?, version = version + 1 where id=? and version = ?";
 	protected static final String TASK_DELETE = "delete from wf_task where id = ?";
-	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String TASK_HISTORY_DELETE = "delete from wf_hist_task where id = ?";
 	
 	protected static final String TASK_ACTOR_INSERT = "insert into wf_task_actor (task_Id, actor_Id) values (?, ?)";
@@ -87,16 +89,30 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String TASK_ACTOR_REDUCE = "delete from wf_task_actor where task_Id = ? and actor_Id = ?";
 	protected static final String TASK_ACTOR_HISTORY_INSERT = "insert into wf_hist_task_actor (task_Id, actor_Id) values (?, ?)";
 	protected static final String TASK_ACTOR_HISTORY_DELETE = "delete from wf_hist_task_actor where task_Id = ?";
+
+	protected static final String VARIABLE_INSERT = "insert into wf_variable(id, version, order_Id, task_Id, name, type, text_value, long_value, double_value) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	protected static final String VARIABLE_UPDATE = "update wf_variable set order_Id=?, task_Id=?, name=?, type=?, text_value=?, long_value=?, double_value=?, version = version + 1 where id=? and version = ?";
+	protected static final String VARIABLE_DELETE_ID = "delete from wf_variable where id = ? and version = ?";
+	protected static final String VARIABLE_DELETE_TASKID = "delete from wf_variable where task_Id = ?";
+	protected static final String VARIABLE_DELETE_ORDERID = "delete from wf_variable where order_Id = ? and task_Id is null";
+	protected static final String QUERY_VARIABLE = "select id, version, order_Id, task_Id, name, type, text_value, long_value, double_value from wf_variable ";
+
+	protected static final String VARIABLE_HISTORY_INSERT = "insert into wf_hist_variable(id, version, order_Id, task_Id, name, type, text_value, long_value, double_value) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	protected static final String VARIABLE_HISTORY_UPDATE = "update wf_hist_variable set order_Id=?, task_Id=?, name=?, type=?, text_value=?, long_value=?, double_value=?, version = version + 1 where id=? and version = ?";
+	protected static final String VARIABLE_HISTORY_DELETE_ID = "delete from wf_hist_variable where id = ? and version = ?";
+	protected static final String VARIABLE_HISTORY_DELETE_TASKID = "delete from wf_hist_variable where task_Id = ?";
+	protected static final String VARIABLE_HISTORY_DELETE_ORDERID = "delete from wf_hist_variable where order_Id = ? and task_Id is null";
+	protected static final String QUERY_HIST_VARIABLE = "select id, version, order_Id, task_Id, name, type, text_value, long_value, double_value from wf_hist_variable ";
 	
 	protected static final String QUERY_VERSION = "select max(version) from wf_process ";
 	protected static final String QUERY_PROCESS = "select id,name,display_Name,type,instance_Url,state, content, version,create_Time,creator from wf_process ";
-	protected static final String QUERY_ORDER = "select o.id,o.process_Id,o.creator,o.create_Time,o.parent_Id,o.parent_Node_Name,o.expire_Time,o.last_Update_Time,o.last_Updator,o.priority,o.order_No,o.variable, o.version from wf_order o ";
-	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable, version from wf_task ";
+	protected static final String QUERY_ORDER = "select o.id,o.process_Id,o.creator,o.create_Time,o.parent_Id,o.parent_Node_Name,o.expire_Time,o.last_Update_Time,o.last_Updator,o.priority,o.order_No,o.version from wf_order o ";
+	protected static final String QUERY_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,version from wf_task ";
 	protected static final String QUERY_TASK_ACTOR = "select task_Id, actor_Id from wf_task_actor ";
 	protected static final String QUERY_CCORDER = "select order_Id, actor_Id, creator, create_Time, finish_Time, status from wf_cc_order ";
 	
-	protected static final String QUERY_HIST_ORDER = "select o.id,o.process_Id,o.order_State,o.priority,o.creator,o.create_Time,o.end_Time,o.parent_Id,o.expire_Time,o.order_No,o.variable from wf_hist_order o ";
-	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable from wf_hist_task ";
+	protected static final String QUERY_HIST_ORDER = "select o.id,o.process_Id,o.order_State,o.priority,o.creator,o.create_Time,o.end_Time,o.parent_Id,o.expire_Time,o.order_No from wf_hist_order o ";
+	protected static final String QUERY_HIST_TASK = "select id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id from wf_hist_task ";
 	protected static final String QUERY_HIST_TASK_ACTOR = "select task_Id, actor_Id from wf_hist_task_actor ";
 	
 	/**委托代理CRUD*/
@@ -223,12 +239,12 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, SAVE));
 		} else {
-			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
-					task.getPerformType(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
-					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable(), task.getVersion()};
+			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(),
+					task.getTaskType(), task.getPerformType(), task.getOperator(), task.getCreateTime(), task.getFinishTime(),
+					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVersion()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
 					Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+					Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(TASK_INSERT, args, type));
 		}
 	}
@@ -237,11 +253,11 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, SAVE));
 		} else {
-			Object[] args = new Object[]{order.getId(), order.getProcessId(), order.getCreator(), order.getCreateTime(), order.getParentId(), 
-					order.getParentNodeName(), order.getExpireTime(), order.getLastUpdateTime(), order.getLastUpdator(), order.getOrderNo(),
-                    order.getVariable(), order.getVersion()};
+			Object[] args = new Object[]{order.getId(), order.getProcessId(), order.getCreator(), order.getCreateTime(),
+					order.getParentId(), order.getParentNodeName(), order.getExpireTime(), order.getLastUpdateTime(),
+					order.getLastUpdator(), order.getOrderNo(), order.getVersion()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
-					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(ORDER_INSERT, args, type));
 		}
 	}
@@ -269,8 +285,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(task, UPDATE));
 		} else {
-			Object[] args = new Object[]{task.getFinishTime(), task.getOperator(), task.getVariable(), task.getExpireTime(), task.getActionUrl(), task.getId(), task.getVersion() };
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.INTEGER};
+			Object[] args = new Object[]{task.getFinishTime(), task.getOperator(), task.getExpireTime(),
+					task.getActionUrl(), task.getId(), task.getVersion() };
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(TASK_UPDATE, args, type));
 		}
 	}
@@ -279,8 +297,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
 		} else {
-			Object[] args = new Object[]{order.getLastUpdator(), order.getLastUpdateTime(), order.getVariable(), order.getExpireTime(), order.getId(), order.getVersion() };
-			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+			Object[] args = new Object[]{order.getLastUpdator(), order.getLastUpdateTime(),
+					order.getExpireTime(), order.getId(), order.getVersion() };
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
 			saveOrUpdate(buildMap(ORDER_UPDATE, args, type));
 		}
 	}
@@ -300,14 +319,17 @@ public abstract class AbstractDBAccess implements DBAccess {
 			Object[] args = new Object[]{task.getId()};
 			int[] type = new int[]{Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_ACTOR_DELETE, args, type));
+			saveOrUpdate(buildMap(VARIABLE_DELETE_TASKID, args, type));
 			saveOrUpdate(buildMap(TASK_DELETE, args, type));
 		}
 	}
 
 	public void deleteOrder(Order order) {
 		if(!isORM()) {
+			Object[] args = new Object[]{order.getId() };
 			int[] type = new int[]{Types.VARCHAR};
-			saveOrUpdate(buildMap(ORDER_DELETE, new Object[]{order.getId()}, type));
+			saveOrUpdate(buildMap(VARIABLE_DELETE_ORDERID, args, type));
+			saveOrUpdate(buildMap(ORDER_DELETE, args, type));
 		}
 	}
 	
@@ -331,20 +353,22 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, SAVE));
 		} else {
-			Object[] args = new Object[]{order.getId(), order.getProcessId(), order.getOrderState(), order.getCreator(), 
-					order.getCreateTime(), order.getEndTime(), order.getParentId(), order.getExpireTime(), order.getOrderNo(), order.getVariable()};
+			Object[] args = new Object[]{order.getId(), order.getProcessId(), order.getOrderState(),
+					order.getCreator(), order.getCreateTime(), order.getEndTime(), order.getParentId(),
+					order.getExpireTime(), order.getOrderNo()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, 
-					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(ORDER_HISTORY_INSERT, args, type));
 		}
+		saveHistoryVariables(order.getHistoryVariables());
 	}
 
 	public void updateHistory(HistoryOrder order) {
 		if(isORM()) {
 			saveOrUpdate(buildMap(order, UPDATE));
 		} else {
-			Object[] args = new Object[]{order.getOrderState(), order.getEndTime(), order.getVariable(), order.getId()};
-			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+			Object[] args = new Object[]{order.getOrderState(), order.getEndTime(), order.getId()};
+			int[] type = new int[]{Types.INTEGER, Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(ORDER_HISTORY_UPDATE, args, type));
 		}
 	}
@@ -353,6 +377,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 		if(!isORM()) {
 			Object[] args = new Object[]{historyOrder.getId()};
 			int[] type = new int[]{Types.VARCHAR};
+			saveOrUpdate(buildMap(VARIABLE_HISTORY_DELETE_ORDERID, args, type));
 			saveOrUpdate(buildMap(ORDER_HISTORY_DELETE, args, type));
 		}
 	}
@@ -370,19 +395,23 @@ public abstract class AbstractDBAccess implements DBAccess {
                 }
             }
 		} else {
-			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
-					task.getPerformType(), task.getTaskState(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
-					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable()};
+			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(),
+					task.getTaskType(), task.getPerformType(), task.getTaskState(), task.getOperator(),
+					task.getCreateTime(), task.getFinishTime(), task.getExpireTime(), task.getActionUrl(),
+					task.getParentTaskId()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
-					Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.VARCHAR, Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_HISTORY_INSERT, args, type));
             if(task.getActorIds() != null) {
                 for(String actorId : task.getActorIds()) {
                     if(StringHelper.isEmpty(actorId)) continue;
-                    saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
+                    saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId},
+							new int[]{Types.VARCHAR, Types.VARCHAR}));
                 }
             }
 		}
+		saveHistoryVariables(task.getHistoryVariables());
 	}
 
 	public void deleteHistoryTask(HistoryTask historyTask) {
@@ -390,16 +419,108 @@ public abstract class AbstractDBAccess implements DBAccess {
 			Object[] args = new Object[]{historyTask.getId()};
 			int[] type = new int[]{Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_DELETE, args, type));
+			saveOrUpdate(buildMap(VARIABLE_HISTORY_DELETE_TASKID, args, type));
 			saveOrUpdate(buildMap(TASK_HISTORY_DELETE, args, type));
 		}
 	}
 
-    public void updateOrderVariable(Order order) {
-        updateOrder(order);
-        HistoryOrder hist = getHistOrder(order.getId());
-        hist.setVariable(order.getVariable());
-        updateHistory(hist);
-    }
+	public void saveVariables(Map<String, Variable> variables) {
+		if(variables != null) {
+			for(Variable variable: variables.values()) {
+				saveVariable(variable);
+			}
+		}
+	}
+
+	public void saveHistoryVariables(List<HistoryVariable> historyVariables) {
+		if(historyVariables != null) {
+			for(HistoryVariable historyVariable: historyVariables) {
+				saveHistoryVariable(historyVariable);
+			}
+		}
+	}
+
+	public void saveVariable(Variable variable) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(variable, SAVE));
+		} else {
+			Object[] args = new Object[]{variable.getId(), variable.getVersion(), variable.getOrderId(), variable.getTaskId(),
+					variable.getName(), variable.getType(), variable.getTextValue(), variable.getLongValue(), variable.getDoubleValue()};
+			int[] type = new int[]{Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.DOUBLE};
+			saveOrUpdate(buildMap(VARIABLE_INSERT, args, type));
+		}
+	}
+
+	public void updateVariable(Variable variable) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(variable, UPDATE));
+		} else {
+			Object[] args = new Object[]{variable.getOrderId(), variable.getTaskId(), variable.getName(), variable.getType(),
+					variable.getTextValue(), variable.getLongValue(), variable.getDoubleValue(), variable.getId(), variable.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
+					Types.INTEGER, Types.DOUBLE, Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(VARIABLE_UPDATE, args, type));
+		}
+	}
+
+	public void deleteVariable(Variable variable) {
+		if(!isORM()) {
+			Object[] args = new Object[]{variable.getId(), variable.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(VARIABLE_DELETE_ID, args, type));
+		}
+	}
+
+	public void saveHistoryVariable(HistoryVariable variable) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(variable, SAVE));
+		} else {
+			Object[] args = new Object[]{variable.getId(), variable.getVersion(), variable.getOrderId(), variable.getTaskId(),
+					variable.getName(), variable.getType(), variable.getTextValue(), variable.getLongValue(), variable.getDoubleValue()};
+			int[] type = new int[]{Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+					Types.INTEGER, Types.VARCHAR, Types.INTEGER, Types.DOUBLE};
+			saveOrUpdate(buildMap(VARIABLE_HISTORY_INSERT, args, type));
+		}
+	}
+
+	public void updateHistoryVariable(HistoryVariable variable) {
+		if(isORM()) {
+			saveOrUpdate(buildMap(variable, UPDATE));
+		} else {
+			Object[] args = new Object[]{variable.getOrderId(), variable.getTaskId(), variable.getName(), variable.getType(),
+					variable.getTextValue(), variable.getLongValue(), variable.getDoubleValue(), variable.getId(), variable.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
+					Types.INTEGER, Types.DOUBLE, Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(VARIABLE_HISTORY_UPDATE, args, type));
+		}
+	}
+
+	public void deleteHistoryVariable(HistoryVariable variable) {
+		if(!isORM()) {
+			Object[] args = new Object[]{variable.getId(), variable.getVersion()};
+			int[] type = new int[]{Types.VARCHAR, Types.INTEGER};
+			saveOrUpdate(buildMap(VARIABLE_HISTORY_DELETE_ID, args, type));
+		}
+	}
+
+	public List<Variable> getVariablesByOrderId(String orderId, boolean isGlobal) {
+		String append = isGlobal ? "" : " and task_Id is null";
+		return queryList(Variable.class, QUERY_VARIABLE + " where order_Id = ? " + append, orderId);
+	}
+
+	public List<Variable> getVariablesByTaskId(String taskId) {
+		return queryList(Variable.class, QUERY_VARIABLE + " where task_Id = ?", taskId);
+	}
+
+	public List<HistoryVariable> getHistoryVariablesByOrderId(String orderId, boolean isGlobal) {
+		String append = isGlobal ? "" : " and task_Id is null";
+		return queryList(HistoryVariable.class, QUERY_HIST_VARIABLE + " where order_Id = ? " + append, orderId);
+	}
+
+	public List<HistoryVariable> getHistoryVariablesByTaskId(String taskId) {
+		return queryList(HistoryVariable.class, QUERY_HIST_VARIABLE + " where task_Id = ?", taskId);
+	}
 	
 	public void saveSurrogate(Surrogate surrogate) {
 		if(isORM()) {
@@ -812,9 +933,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 	public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
 		sql.append(" select distinct o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
-		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
+		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, ");
 		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type, t.operator, t.action_Url, ");
-		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
+		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time ");
 		sql.append(" from wf_task t ");
 		sql.append(" left join wf_order o on t.order_id = o.id ");
 		sql.append(" left join wf_task_actor ta on ta.task_id=t.id ");
@@ -886,7 +1007,7 @@ public abstract class AbstractDBAccess implements DBAccess {
 	
 	public List<HistoryOrder> getCCWorks(Page<HistoryOrder> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
-		sql.append(" select id,process_Id,order_State,priority,cc.creator,cc.create_Time,end_Time,parent_Id,expire_Time,order_No,variable ");
+		sql.append(" select id,process_Id,order_State,priority,cc.creator,cc.create_Time,end_Time,parent_Id,expire_Time,order_No ");
 		sql.append(" from wf_cc_order cc ");
 		sql.append(" left join wf_hist_order o on cc.order_id = o.id ");
 		sql.append(" where 1=1 ");
@@ -938,9 +1059,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 	public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
 		sql.append(" select distinct o.process_Id, t.order_Id, t.id as id, t.id as task_Id, p.display_Name as process_Name, p.instance_Url, o.parent_Id, o.creator, ");
-		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.variable as order_Variable, ");
+		sql.append(" o.create_Time as order_Create_Time, o.expire_Time as order_Expire_Time, o.order_No, o.order_State, ");
 		sql.append(" t.display_Name as task_Name, t.task_Name as task_Key, t.task_Type, t.perform_Type,t.operator, t.action_Url, ");
-		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time, t.variable as task_Variable ");
+		sql.append(" t.create_Time as task_Create_Time, t.finish_Time as task_End_Time, t.expire_Time as task_Expire_Time ");
 		sql.append(" from wf_hist_task t ");
 		sql.append(" left join wf_hist_order o on t.order_id = o.id ");
 		sql.append(" left join wf_hist_task_actor ta on ta.task_id=t.id ");

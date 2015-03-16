@@ -51,7 +51,7 @@ public class CustomModel extends WorkModel {
 	/**
 	 * 执行的返回值变量
 	 */
-	private String var;
+	private String returnKey;
 	/**
 	 * 加载模型时初始化的对象实例
 	 */
@@ -75,8 +75,8 @@ public class CustomModel extends WorkModel {
 			}
 			Object[] objects = getArgs(execution.getArgs(), args);
 			Object returnValue = ReflectHelper.invoke(method, invokeObject, objects);
-			if(StringHelper.isNotEmpty(var)) {
-				execution.getArgs().put(var, returnValue);
+			if(StringHelper.isNotEmpty(returnKey)) {
+				execution.getArgs().put(returnKey, returnValue);
 			}
 		}
 		execution.getEngine().task().history(execution, this);
@@ -119,10 +119,10 @@ public class CustomModel extends WorkModel {
 	public void setArgs(String args) {
 		this.args = args;
 	}
-	public String getVar() {
-		return var;
+	public String getReturnKey() {
+		return returnKey;
 	}
-	public void setVar(String var) {
-		this.var = var;
+	public void setReturnKey(String returnKey) {
+		this.returnKey = returnKey;
 	}
 }

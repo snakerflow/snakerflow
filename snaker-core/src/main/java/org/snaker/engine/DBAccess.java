@@ -15,6 +15,7 @@
 package org.snaker.engine;
 
 import java.util.List;
+import java.util.Map;
 
 import org.snaker.engine.access.Page;
 import org.snaker.engine.access.QueryFilter;
@@ -28,6 +29,8 @@ import org.snaker.engine.entity.Surrogate;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.TaskActor;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.Variable;
 
 /**
  * 数据库访问接口
@@ -163,12 +166,6 @@ public interface DBAccess {
 	 * @param historyTask 历史任务
 	 */
 	public void deleteHistoryTask(HistoryTask historyTask);
-
-    /**
-     * 更新实例变量（包括历史实例表）
-     * @param order 实例对象
-     */
-    public void updateOrderVariable(Order order);
 	
 	/**
 	 * 保存委托代理对象
@@ -282,6 +279,78 @@ public interface DBAccess {
 	 * @return Integer 流程定义版本号
 	 */
 	public Integer getLatestProcessVersion(String name);
+
+	/**
+	 * 保存活动变量数据
+	 * @param variables 变量映射
+	 */
+	public void saveVariables(Map<String, Variable> variables);
+
+	/**
+	 * 保存活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void saveVariable(Variable variable);
+
+	/**
+	 * 更新活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void updateVariable(Variable variable);
+
+	/**
+	 * 删除活动变量数据
+	 * @param variable 变量对象
+	 */
+	public void deleteVariable(Variable variable);
+
+	/**
+	 * 保存历史变量数据
+	 * @param variable 变量对象
+	 */
+	public void saveHistoryVariable(HistoryVariable variable);
+
+	/**
+	 * 更新历史变量数据
+	 * @param variable 变量对象
+	 */
+	public void updateHistoryVariable(HistoryVariable variable);
+
+	/**
+	 * 删除历史变量数据
+	 * @param variable 变量对象
+	 */
+	public void deleteHistoryVariable(HistoryVariable variable);
+
+	/**
+	 * 根据流程实例id获取该实例的所有变量数据
+	 * @param orderId 流程实例id
+	 * @param isGlobal 是否全局变量
+	 * @return 变量集合
+	 */
+	public List<Variable> getVariablesByOrderId(String orderId, boolean isGlobal);
+
+	/**
+	 * 根据任务id获取该任务的所有变量数据
+	 * @param taskId 任务id
+	 * @return 变量集合
+	 */
+	public List<Variable> getVariablesByTaskId(String taskId) ;
+
+	/**
+	 * 根据流程实例id获取该实例的所有历史变量数据
+	 * @param orderId 流程实例id
+	 * @param isGlobal 是否全局变量
+	 * @return 变量集合
+	 */
+	public List<HistoryVariable> getHistoryVariablesByOrderId(String orderId, boolean isGlobal);
+
+	/**
+	 * 根据任务id获取该任务的所有历史变量数据
+	 * @param taskId 任务id
+	 * @return 变量集合
+	 */
+	public List<HistoryVariable> getHistoryVariablesByTaskId(String taskId) ;
 	
 	/**
 	 * 根据查询的参数，分页对象，返回分页后的查询结果

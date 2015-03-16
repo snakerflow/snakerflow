@@ -15,10 +15,13 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.core.ServiceContext;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.VariableHelper;
+import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.TaskModel.PerformType;
 
 /**
@@ -89,26 +92,9 @@ public class HistoryTask implements Serializable {
      */
     private String parentTaskId;
 	/**
-     * 任务附属变量
-     */
-    private String variable;
-    
-    public String getParentTaskId() {
-		return parentTaskId;
-	}
-
-	public void setParentTaskId(String parentTaskId) {
-		this.parentTaskId = parentTaskId;
-	}
-
-	public String getVariable() {
-		return variable;
-	}
-
-	public void setVariable(String variable) {
-		this.variable = variable;
-	}
-
+	 * 历史变量
+	 */
+	private List<HistoryVariable> historyVariables;
 	public HistoryTask() {
     	
     }
@@ -124,8 +110,8 @@ public class HistoryTask implements Serializable {
     	this.actionUrl = task.getActionUrl();
     	this.actorIds = task.getActorIds();
     	this.parentTaskId = task.getParentTaskId();
-    	this.variable = task.getVariable();
     	this.performType = task.getPerformType();
+		this.historyVariables = VariableHelper.convertToHistoryVariables(task.getVariables());
     }
     
     /**
@@ -133,7 +119,7 @@ public class HistoryTask implements Serializable {
      * @return 任务对象
      */
     public Task undoTask() {
-    	Task task = new Task();
+    	Task task = new Task(StringHelper.getPrimaryKey());
     	task.setOrderId(this.getOrderId());;
     	task.setTaskName(this.getTaskName());
     	task.setDisplayName(this.getDisplayName());
@@ -141,7 +127,7 @@ public class HistoryTask implements Serializable {
     	task.setExpireTime(this.getExpireTime());
     	task.setActionUrl(this.getActionUrl());
     	task.setParentTaskId(this.getParentTaskId());
-    	task.setVariable(this.getVariable());
+		task.setVariables(VariableHelper.convertToVariableMap(getHistoryVariables()));
     	task.setPerformType(this.getPerformType());
     	task.setOperator(this.getOperator());
     	return task;
@@ -254,12 +240,44 @@ public class HistoryTask implements Serializable {
 	public void setActorIds(String[] actorIds) {
 		this.actorIds = actorIds;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.variable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
+
+	public String getParentTaskId() {
+		return parentTaskId;
+	}
+
+	public void setParentTaskId(String parentTaskId) {
+		this.parentTaskId = parentTaskId;
+	}
+
+	public void setHistoryVariables(Map<String, Object> args) {
+		historyVariables = VariableHelper.createHistoryVariables(args, this.orderId, this.getId());
+	}
+
+	public List<HistoryVariable> getHistoryVariables() {
+		if(historyVariables == null) {
+			historyVariables = ServiceContext
+					.getEngine()
+					.query()
+					.getHistoryVariablesByTaskId(this.getId());
+		}
+		return historyVariables;
+	}
+
+	public void mergeHistoryVariables(Map<String, Object> args) {
+		List<HistoryVariable> variables = VariableHelper.createHistoryVariables(args, this.orderId, this.id);
+		boolean existed = false;
+		for(HistoryVariable variable : variables) {
+			existed = false;
+			for(HistoryVariable historyVariable : this.historyVariables) {
+				if(historyVariable.getName().equals(variable.getName())) {
+					historyVariable.setVariableType(variable.getVariableType());
+					historyVariable.setValue(variable.getValue());
+					existed = true;
+					break;
+				}
+			}
+			if(!existed) this.historyVariables.add(variable);
+		}
 	}
 	
 	public String toString() {

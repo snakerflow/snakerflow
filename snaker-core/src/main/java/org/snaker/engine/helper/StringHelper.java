@@ -63,6 +63,33 @@ public class StringHelper {
 		buffer.deleteCharAt(buffer.length() - 1);
 		return buffer.toString();
 	}
+
+	/**
+	 * 对原字符串删除匹配的字符数组，构成新串
+	 * @param old 原字符串
+	 * @param removeArray 需要删除的字符数组
+	 * @return 新串
+	 */
+	public static String removeMatched(String old, String[] removeArray) {
+		if(isEmpty(old)) return "";
+		String[] actorArray = old.split(",");
+		StringBuilder newActor = new StringBuilder(old.length());
+		boolean isMatch;
+		for(String actor : actorArray) {
+			isMatch = false;
+			if (StringHelper.isEmpty(actor)) continue;
+			for (String removeActor : removeArray) {
+				if (actor.equals(removeActor)) {
+					isMatch = true;
+					break;
+				}
+			}
+			if (isMatch) continue;
+			newActor.append(actor).append(",");
+		}
+		newActor.deleteCharAt(newActor.length() - 1);
+		return newActor.toString();
+	}
 	
 	/**
 	 * xml内容特殊符号替换

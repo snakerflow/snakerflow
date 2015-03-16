@@ -87,12 +87,12 @@ public abstract class ServiceContext {
 	 * @param name 服务名称
 	 * @param clazz 服务类型
 	 */
-	public static void put(String name, Class<?> clazz) {
+	public static Object put(String name, Class<?> clazz) {
 		AssertHelper.notNull(context, "未注册服务上下文");
 		if(log.isInfoEnabled()) {
 			log.info("put new instance[name=" + name + "][clazz=" + clazz.getName() + "]");
 		}
-		context.put(name, clazz);
+		return context.put(name, clazz);
 	}
 	
 	/**

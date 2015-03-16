@@ -23,6 +23,8 @@ import org.snaker.engine.entity.HistoryTask;
 import org.snaker.engine.entity.Order;
 import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.WorkItem;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.Variable;
 
 /**
  * 流程相关的查询服务
@@ -150,7 +152,37 @@ public interface IQueryService {
 	 * @return List<WorkItem> 历史工作项集合
 	 */
 	List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter);
-	
+
+	/**
+	 * 根据流程实例id获取该实例的所有变量数据
+	 * @param orderId 流程实例id
+	 * @param isGlobal 是否全局变量
+	 * @return 变量集合
+	 */
+	public List<Variable> getVariablesByOrderId(String orderId, boolean isGlobal);
+
+	/**
+	 * 根据任务id获取该任务的所有变量数据
+	 * @param taskId 任务id
+	 * @return 变量集合
+	 */
+	public List<Variable> getVariablesByTaskId(String taskId) ;
+
+	/**
+	 * 根据流程实例id获取该实例的所有历史变量数据
+	 * @param orderId 流程实例id
+	 * @param isGlobal 是否全局变量
+	 * @return 变量集合
+	 */
+	public List<HistoryVariable> getHistoryVariablesByOrderId(String orderId, boolean isGlobal);
+
+	/**
+	 * 根据任务id获取该任务的所有历史变量数据
+	 * @param taskId 任务id
+	 * @return 变量集合
+	 */
+	public List<HistoryVariable> getHistoryVariablesByTaskId(String taskId) ;
+
 	/**
 	 * 根据类型T、Sql语句、参数查询单个对象
 	 * @param T 类型

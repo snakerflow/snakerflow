@@ -33,7 +33,7 @@ public class SubProcessModel extends WorkModel {
 	/**
 	 * 子流程版本号
 	 */
-	private Integer version;
+	private Integer version = null;
 	/**
 	 * 子流程定义引用
 	 */

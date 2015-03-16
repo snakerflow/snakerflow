@@ -23,9 +23,9 @@ import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.access.QueryFilter;
 import org.snaker.engine.entity.*;
 import org.snaker.engine.entity.Process;
+import org.snaker.engine.entity.var.Variable;
 import org.snaker.engine.helper.AssertHelper;
 import org.snaker.engine.helper.DateHelper;
-import org.snaker.engine.helper.JsonHelper;
 import org.snaker.engine.helper.StringHelper;
 import org.snaker.engine.model.ProcessModel;
 
@@ -70,24 +70,10 @@ public class OrderService extends AccessService implements IOrderService {
                 order.setOrderNo(model.getGenerator().generate(model));
             }
 		}
-
-		order.setVariable(JsonHelper.toJson(args));
+		order.createVariables(args);
 		saveOrder(order);
 		return order;
 	}
-
-    /**
-     * 向活动实例临时添加全局变量数据
-     * @param orderId 实例id
-     * @param args 变量数据
-     */
-    public void addVariable(String orderId, Map<String, Object> args) {
-        Order order = access().getOrder(orderId);
-        Map<String, Object> data = order.getVariableMap();
-        data.putAll(args);
-        order.setVariable(JsonHelper.toJson(data));
-        access().updateOrderVariable(order);
-    }
 
     /**
 	 * 创建实例的抄送
@@ -115,7 +101,7 @@ public class OrderService extends AccessService implements IOrderService {
 	}
 	
 	/**
-	 * 更新活动实例的last_Updator、last_Update_Time、expire_Time、version、variable
+	 * 更新活动实例的last_Updator、last_Update_Time、expire_Time、version
 	 */
 	public void updateOrder(Order order) {
 		access().updateOrder(order);
@@ -156,10 +142,7 @@ public class OrderService extends AccessService implements IOrderService {
 		
 		access().updateHistory(history);
 		access().deleteOrder(order);
-        Completion completion = getCompletion();
-        if(completion != null) {
-            completion.complete(history);
-        }
+		getCompletion().complete(history);
 	}
 	
 	/**
@@ -188,10 +171,7 @@ public class OrderService extends AccessService implements IOrderService {
 		
 		access().updateHistory(history);
 		access().deleteOrder(order);
-        Completion completion = getCompletion();
-        if(completion != null) {
-            completion.complete(history);
-        }
+		getCompletion().complete(history);
 	}
 
     /**

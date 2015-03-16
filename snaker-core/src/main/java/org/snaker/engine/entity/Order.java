@@ -15,32 +15,34 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
-import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.core.ServiceContext;
+import org.snaker.engine.entity.var.Variable;
+import org.snaker.engine.entity.var.VariableScope;
 
 /**
  * 流程工作单实体类（一般称为流程实例）
+ *
  * @author yuqs
  * @since 1.0
  */
-public class Order implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8335779448165343933L;
-	/**
-	 * 主键ID
-	 */
-	private String id;
-	/**
-	 * 版本
-	 */
-	private Integer version = 0;
-	/**
-	 * 流程定义ID
-	 */
+public class Order extends VariableScope implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8335779448165343933L;
+    /**
+     * 主键ID
+     */
+    private String id;
+    /**
+     * 版本
+     */
+    private Integer version = 0;
+    /**
+     * 流程定义ID
+     */
     private String processId;
     /**
      * 流程实例创建者ID
@@ -78,129 +80,118 @@ public class Order implements Serializable {
      * 流程实例编号
      */
     private String orderNo;
-	/**
-     * 流程实例附属变量
-     */
-    private String variable;
 
-	public String getProcessId() {
-		return processId;
-	}
+    public String getProcessId() {
+        return processId;
+    }
 
-	public void setProcessId(String processId) {
-		this.processId = processId;
-	}
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
 
-	public String getCreator() {
-		return creator;
-	}
+    public String getCreator() {
+        return creator;
+    }
 
-	public void setCreator(String creator) {
-		this.creator = creator;
-	}
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
 
-	public String getCreateTime() {
-		return createTime;
-	}
+    public String getCreateTime() {
+        return createTime;
+    }
 
-	public void setCreateTime(String createTime) {
-		this.createTime = createTime;
-	}
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
 
-	public String getParentId() {
-		return parentId;
-	}
+    public String getParentId() {
+        return parentId;
+    }
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
-	public String getExpireTime() {
-		return expireTime;
-	}
+    public String getExpireTime() {
+        return expireTime;
+    }
 
-	public void setExpireTime(String expireTime) {
-		this.expireTime = expireTime;
-	}
+    public void setExpireTime(String expireTime) {
+        this.expireTime = expireTime;
+    }
 
-	public String getLastUpdateTime() {
-		return lastUpdateTime;
-	}
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
 
-	public void setLastUpdateTime(String lastUpdateTime) {
-		this.lastUpdateTime = lastUpdateTime;
-	}
+    public void setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
 
-	public String getLastUpdator() {
-		return lastUpdator;
-	}
+    public String getLastUpdator() {
+        return lastUpdator;
+    }
 
-	public void setLastUpdator(String lastUpdator) {
-		this.lastUpdator = lastUpdator;
-	}
+    public void setLastUpdator(String lastUpdator) {
+        this.lastUpdator = lastUpdator;
+    }
 
-	public Integer getPriority() {
-		return priority;
-	}
+    public Integer getPriority() {
+        return priority;
+    }
 
-	public void setPriority(Integer priority) {
-		this.priority = priority;
-	}
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getParentNodeName() {
-		return parentNodeName;
-	}
+    public String getParentNodeName() {
+        return parentNodeName;
+    }
 
-	public void setParentNodeName(String parentNodeName) {
-		this.parentNodeName = parentNodeName;
-	}
+    public void setParentNodeName(String parentNodeName) {
+        this.parentNodeName = parentNodeName;
+    }
 
-	public String getVariable() {
-		return variable;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.variable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
-	}
+    protected List<Variable> loadVariables() {
+        return ServiceContext.getEngine().query().getVariablesByOrderId(this.getId(), false);
+    }
 
-	public void setVariable(String variable) {
-		this.variable = variable;
-	}
-	
+    protected void setVariableScope(Variable variable) {
+        variable.setOrderId(this.getId());
+    }
+
     public String getOrderNo() {
-		return orderNo;
-	}
+        return orderNo;
+    }
 
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 
-	public Integer getVersion() {
-		return version;
-	}
+    public Integer getVersion() {
+        return version;
+    }
 
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
-	
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Order(id=").append(this.id);
-		sb.append(",processId=").append(this.processId);
-		sb.append(",creator=").append(this.creator);
-		sb.append(",createTime").append(this.createTime);
-		sb.append(",orderNo=").append(this.orderNo).append(")");
-		return sb.toString();
-	}
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order(id=").append(this.id);
+        sb.append(",processId=").append(this.processId);
+        sb.append(",creator=").append(this.creator);
+        sb.append(",createTime").append(this.createTime);
+        sb.append(",orderNo=").append(this.orderNo).append(")");
+        return sb.toString();
+    }
 }

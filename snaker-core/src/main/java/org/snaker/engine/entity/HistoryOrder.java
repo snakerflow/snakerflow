@@ -15,12 +15,12 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 import org.snaker.engine.SnakerEngine;
 import org.snaker.engine.core.ServiceContext;
-import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.VariableHelper;
 
 /**
  * 历史流程实例实体类
@@ -74,9 +74,9 @@ public class HistoryOrder implements Serializable {
      */
     private String orderNo;
 	/**
-     * 流程实例附属变量
-     */
-    private String variable;
+	 * 历史变量
+	 */
+	private List<HistoryVariable> historyVariables;
 
 	public HistoryOrder() {
     	
@@ -91,7 +91,7 @@ public class HistoryOrder implements Serializable {
     	this.parentId = order.getParentId();
     	this.priority = order.getPriority();
     	this.orderNo = order.getOrderNo();
-    	this.variable = order.getVariable();
+		this.historyVariables = VariableHelper.convertToHistoryVariables(order.getVariables());
     }
 
     /**
@@ -110,7 +110,7 @@ public class HistoryOrder implements Serializable {
         order.setExpireTime(this.expireTime);
         order.setOrderNo(this.orderNo);
         order.setPriority(this.priority);
-        order.setVariable(this.variable);
+		order.setVariables(VariableHelper.convertToVariableMap(getHistoryVariables()));
         order.setVersion(0);
         return order;
     }
@@ -195,20 +195,15 @@ public class HistoryOrder implements Serializable {
 		this.orderNo = orderNo;
 	}
 
-	public String getVariable() {
-		return variable;
+	public List<HistoryVariable> getHistoryVariables() {
+		if(historyVariables == null) {
+			historyVariables = ServiceContext
+					.getEngine()
+					.query()
+					.getHistoryVariablesByOrderId(this.getId(), false);
+		}
+		return historyVariables;
 	}
-
-	public void setVariable(String variable) {
-		this.variable = variable;
-	}
-
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.variable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
-    }
 	
 	public String getProcessName() {
 		SnakerEngine engine = ServiceContext.getEngine();

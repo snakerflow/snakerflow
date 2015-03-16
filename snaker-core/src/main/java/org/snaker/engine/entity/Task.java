@@ -15,11 +15,11 @@
 package org.snaker.engine.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
-import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.core.ServiceContext;
+import org.snaker.engine.entity.var.Variable;
+import org.snaker.engine.entity.var.VariableScope;
 import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TaskModel.TaskType;
 
@@ -28,7 +28,7 @@ import org.snaker.engine.model.TaskModel.TaskType;
  * @author yuqs
  * @since 1.0
  */
-public class Task implements Serializable, Cloneable {
+public class Task extends VariableScope implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
@@ -37,71 +37,67 @@ public class Task implements Serializable, Cloneable {
 	/**
 	 * 主键ID
 	 */
-	private String id;
+	protected String id;
 	/**
 	 * 版本
 	 */
-	private Integer version = 0;
+	protected Integer version = 0;
     /**
      * 流程实例ID
      */
-    private String orderId;
+	protected String orderId;
     /**
      * 任务名称
      */
-	private String taskName;
+	protected String taskName;
 	/**
 	 * 任务显示名称
 	 */
-	private String displayName;
+	protected String displayName;
 	/**
 	 * 参与方式（0：普通任务；1：参与者会签任务）
 	 */
-	private Integer performType;
+	protected Integer performType;
 	/**
 	 * 任务类型（0：主办任务；1：协办任务）
 	 */
-    private Integer taskType;
+	protected Integer taskType;
     /**
      * 任务处理者ID
      */
-    private String operator;
+	protected String operator;
     /**
      * 任务创建时间
      */
-    private String createTime;
+	protected String createTime;
     /**
      * 任务完成时间
      */
-    private String finishTime;
+	protected String finishTime;
     /**
      * 期望任务完成时间
      */
-    private String expireTime;
+	protected String expireTime;
     /**
      * 期望的完成时间date类型
      */
-    private Date expireDate;
+	protected Date expireDate;
     /**
      * 提醒时间date类型
      */
-    private Date remindDate;
+	protected Date remindDate;
     /**
      * 任务关联的表单url
      */
-    private String actionUrl;
+	protected String actionUrl;
     /**
      * 任务参与者列表
      */
-    private String[] actorIds;
+	protected String[] actorIds;
     /**
      * 父任务Id
      */
-    private String parentTaskId;
-	/**
-     * 任务附属变量
-     */
-    private String variable;
+	protected String parentTaskId;
     /**
      * 保持模型对象
      */
@@ -125,14 +121,6 @@ public class Task implements Serializable, Cloneable {
 
 	public void setParentTaskId(String parentTaskId) {
 		this.parentTaskId = parentTaskId;
-	}
-
-	public String getVariable() {
-		return variable;
-	}
-
-	public void setVariable(String variable) {
-		this.variable = variable;
 	}
 
 	public String getTaskName() {
@@ -268,14 +256,16 @@ public class Task implements Serializable, Cloneable {
 	public void setModel(TaskModel model) {
 		this.model = model;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.variable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
+
+	protected List<Variable> loadVariables() {
+		return ServiceContext.getEngine().query().getVariablesByTaskId(this.getId());
 	}
-	
+
+	protected void setVariableScope(Variable variable) {
+		variable.setOrderId(this.getOrderId());
+		variable.setTaskId(this.getId());
+	}
+
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}

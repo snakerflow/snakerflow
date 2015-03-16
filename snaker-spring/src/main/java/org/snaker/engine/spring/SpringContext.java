@@ -85,9 +85,10 @@ public class SpringContext implements Context {
 	/**
 	 * 向spring添加bean的定义
 	 */
-	public void put(String name, Class<?> clazz) {
+	public Object put(String name, Class<?> clazz) {
 		BeanDefinition definition = new RootBeanDefinition(clazz);
 		beanFactory.registerBeanDefinition(name, definition);
+		return beanFactory.getBean(name, clazz);
 	}
 
 	/**

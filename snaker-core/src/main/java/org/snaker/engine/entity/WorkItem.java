@@ -14,10 +14,14 @@
  */
 package org.snaker.engine.entity;
 
-import org.snaker.engine.helper.JsonHelper;
+import org.snaker.engine.core.ServiceContext;
+import org.snaker.engine.entity.var.HistoryVariable;
+import org.snaker.engine.entity.var.Variable;
+import org.snaker.engine.entity.var.VariableHelper;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,9 +80,9 @@ public class WorkItem implements Serializable {
      */
     private String orderNo;
 	/**
-     * 流程实例附属变量
-     */
-    private String orderVariable;
+	 * 流程实例状态
+	 */
+	private Integer orderState;
     /**
      * 任务名称
      */
@@ -111,10 +115,6 @@ public class WorkItem implements Serializable {
      * 期望任务完成时间
      */
     private String taskExpireTime;
-	/**
-     * 任务附属变量
-     */
-    private String taskVariable;
     /**
      * 任务处理者ID
      */
@@ -127,7 +127,12 @@ public class WorkItem implements Serializable {
      * 任务参与者列表
      */
     private String[] actorIds;
-
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getOrderNo() {
 		return orderNo;
 	}
@@ -194,17 +199,21 @@ public class WorkItem implements Serializable {
 	public void setOrderExpireTime(String orderExpireTime) {
 		this.orderExpireTime = orderExpireTime;
 	}
+	public Integer getOrderState() {
+		return orderState;
+	}
+	public void setOrderState(Integer orderState) {
+		this.orderState = orderState;
+	}
 	public String getTaskName() {
 		return taskName;
 	}
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;
 	}
-
 	public String getTaskKey() {
 		return taskKey;
 	}
-
 	public void setTaskKey(String taskKey) {
 		this.taskKey = taskKey;
 	}
@@ -262,30 +271,24 @@ public class WorkItem implements Serializable {
 	public void setActorIds(String[] actorIds) {
 		this.actorIds = actorIds;
 	}
-	public String getOrderVariable() {
-		return orderVariable;
+	public Map<String, Object> getVariables() {
+		Map<String, Object> variables = new HashMap<String, Object>();
+		if(orderState == null) {
+			List<Variable> variableList = ServiceContext
+					.getEngine()
+					.query()
+					.getVariablesByOrderId(this.orderId, true);
+			variables = VariableHelper.convertVariablesToMap(variableList);
+		} else {
+			List<HistoryVariable> historyVariableList = ServiceContext
+					.getEngine()
+					.query()
+					.getHistoryVariablesByOrderId(this.orderId, true);
+			variables = VariableHelper.convertHistoryVariablesToMap(historyVariableList);
+		}
+		return variables;
 	}
-	public void setOrderVariable(String orderVariable) {
-		this.orderVariable = orderVariable;
-	}
-	public String getTaskVariable() {
-		return taskVariable;
-	}
-	public void setTaskVariable(String taskVariable) {
-		this.taskVariable = taskVariable;
-	}
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getOrderVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.orderVariable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
-    }
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getTaskVariableMap() {
-        Map<String, Object> map = JsonHelper.fromJson(this.taskVariable, Map.class);
-        if(map == null) return Collections.emptyMap();
-        return map;
-    }
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("WorkItem(processId=").append(this.processId);
@@ -296,11 +299,5 @@ public class WorkItem implements Serializable {
 		sb.append(",taskName").append(this.taskName);
 		sb.append(",performType=").append(this.performType).append(")");
 		return sb.toString();
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 }

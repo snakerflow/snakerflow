@@ -44,13 +44,6 @@ public interface IOrderService {
 	 * @return 活动流程实例对象
 	 */
 	Order createOrder(Process process, String operator, Map<String, Object> args, String parentId, String parentNodeName);
-
-    /**
-     * 向指定实例id添加全局变量数据
-     * @param orderId 实例id
-     * @param args 变量数据
-     */
-    void addVariable(String orderId, Map<String ,Object> args);
 	
 	/**
 	 * 创建抄送实例

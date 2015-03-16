@@ -36,17 +36,17 @@ public class SimpleContext implements Context {
 	private Map<String, Object> contextMap = new HashMap<String, Object>();
 	
 	/**
-	 * 根据服务名称查找对象
-	 * @param name
-	 * @return
+	 * 根据名称查找实例
+	 * @param name 服务名称
+	 * @return 是否存在标识
 	 */
 	public boolean exist(String name) {
 		return contextMap.get(name) != null;
 	}
 	/**
 	 * 对外部提供的查找对象方法，根据class类型查找
-	 * @param clazz
-	 * @return
+	 * @param clazz 类型
+	 * @return 实例
 	 */
 	public <T> T find(Class<T> clazz) {
 		for (Entry<String, Object> entry : contextMap.entrySet()) {
@@ -59,8 +59,8 @@ public class SimpleContext implements Context {
 	
 	/**
 	 * 对外部提供的查找对象实例列表方法，根据class类型查找
-	 * @param clazz
-	 * @return
+	 * @param clazz 类型
+	 * @return 实例列表
 	 */
 	public <T> List<T> findList(Class<T> clazz) {
 		List<T> list = new ArrayList<T>();
@@ -74,9 +74,9 @@ public class SimpleContext implements Context {
 	
 	/**
 	 * 对外部提供的查找对象方法，根据名称、class类型查找
-	 * @param name
-	 * @param clazz
-	 * @return
+	 * @param name 名称
+	 * @param clazz 类型
+	 * @return 实例
 	 */
 	public <T> T findByName(String name, Class<T> clazz) {
 		for (Entry<String, Object> entry : contextMap.entrySet()) {
@@ -89,8 +89,8 @@ public class SimpleContext implements Context {
 	
 	/**
 	 * 对外部提供的put方法
-	 * @param name
-	 * @param object
+	 * @param name 名称
+	 * @param object 实例
 	 */
 	public void put(String name, Object object) {
 		contextMap.put(name, object);
@@ -98,10 +98,12 @@ public class SimpleContext implements Context {
 	
 	/**
 	 * 对外部提供的put方法
-	 * @param name
-	 * @param clazz
+	 * @param name 名称
+	 * @param clazz 类型
 	 */
-	public void put(String name, Class<?> clazz) {
-		contextMap.put(name, ClassHelper.instantiate(clazz));
+	public Object put(String name, Class<?> clazz) {
+		Object instance = ClassHelper.instantiate(clazz);
+		contextMap.put(name, instance);
+		return instance;
 	}
 }

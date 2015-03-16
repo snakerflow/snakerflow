@@ -370,6 +370,7 @@ public class SnakerEngineImpl implements SnakerEngine {
 		if(!task.isMajor()) {
 			return null;
 		}
+
 		Map<String, Object> orderMaps = order.getVariableMap();
 		if(orderMaps != null) {
 			for(Map.Entry<String, Object> entry : orderMaps.entrySet()) {

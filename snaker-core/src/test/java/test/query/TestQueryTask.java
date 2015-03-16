@@ -21,6 +21,8 @@ import org.snaker.engine.entity.Task;
 import org.snaker.engine.entity.WorkItem;
 import org.snaker.engine.test.TestSnakerBase;
 
+import java.util.List;
+
 /**
  * @author yuqs
  * @since 1.0
@@ -28,9 +30,19 @@ import org.snaker.engine.test.TestSnakerBase;
 public class TestQueryTask extends TestSnakerBase {
 	@Test
 	public void test() {
-		System.out.println(queryService.getActiveTasks(new Page<Task>(), 
-				new QueryFilter().setOperator("1")));
-		System.out.println(queryService.getWorkItems(new Page<WorkItem>(), 
-				new QueryFilter().setOperator("1").setOrderId("36c0228fcfa740d5b62682dc954eaecd")));
+		List<Task> tasks = queryService.getActiveTasks(new Page<Task>(),
+				new QueryFilter());
+		for(Task task : tasks) {
+			System.out.println(task);
+			System.out.println(task.getVariableMap());
+		}
+//		System.out.println(queryService.getWorkItems(new Page<WorkItem>(),
+//				new QueryFilter().setOperator("1").setOrderId("36c0228fcfa740d5b62682dc954eaecd")));
+//		List<WorkItem> workItems = queryService.getWorkItems(new Page<WorkItem>(),
+//				new QueryFilter());
+//		for(WorkItem item : workItems) {
+//			System.out.println(item);
+//			System.out.println(item.getVariables());
+//		}
 	}
 }
