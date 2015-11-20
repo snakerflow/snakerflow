@@ -17,7 +17,7 @@ public class Db2Dialect implements Dialect {
         pageSql.append(" ) AS B )AS A WHERE A.RN BETWEEN ");
         pageSql.append(start);
         pageSql.append(" AND ");
-        pageSql.append(start + page.getPageSize());
+        pageSql.append(start + page.getPageSize() - 1);
         return pageSql.toString();
     }
 }
