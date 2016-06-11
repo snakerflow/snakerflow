@@ -14,8 +14,6 @@
  */
 package org.snaker.engine.core;
 
-import java.util.*;
-
 import org.snaker.engine.*;
 import org.snaker.engine.entity.*;
 import org.snaker.engine.entity.Process;
@@ -30,6 +28,8 @@ import org.snaker.engine.model.ProcessModel;
 import org.snaker.engine.model.TaskModel;
 import org.snaker.engine.model.TaskModel.PerformType;
 import org.snaker.engine.model.TaskModel.TaskType;
+
+import java.util.*;
 
 /**
  * 任务执行业务类
@@ -64,9 +64,9 @@ public class TaskService extends AccessService implements ITaskService {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
 		task.setVariable(JsonHelper.toJson(args));
-		if(!isAllowed(task, operator)) {
+		/*if(!isAllowed(task, operator)) {
 			throw new SnakerException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
-		}
+		}*/
 		HistoryTask history = new HistoryTask(task);
 		history.setFinishTime(DateHelper.getTime());
 		history.setTaskState(STATE_FINISH);
