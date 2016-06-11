@@ -33,11 +33,11 @@
         </license>
     </licenses>
 
-    <scm>
+    <!--<scm>
         <url>git@github.com:snakerflow/snakerflow.git</url>
         <connection>scm:git:git@github.com:snakerflow/snakerflow.git</connection>
         <developerConnection>scm:git:git@github.com:snakerflow/snakerflow.git</developerConnection>
-    </scm>
+    </scm>-->
 
     <dependencies>
         <dependency>
@@ -101,7 +101,7 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
 				<version>1.4</version>
@@ -114,7 +114,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
         </plugins>
     </build>
 </project>
